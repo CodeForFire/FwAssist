@@ -38,7 +38,7 @@ public sealed partial class StoppuhrViewModel : ObservableObject
     [RelayCommand]
     private void StartStop()
     {
-        var now = _time.GetUtcNow();
+        var now = Now();
         _state = _state.IsRunning ? _state.Stop(now) : _state.Start(now);
         IsRunning = _state.IsRunning;
 
@@ -66,5 +66,8 @@ public sealed partial class StoppuhrViewModel : ObservableObject
         Refresh();
     }
 
-    private void Refresh() => Display = Formatting.Duration(_state.ElapsedAt(_time.GetUtcNow()));
+    private void Refresh() => Display = Formatting.Duration(_state.ElapsedAt(Now()));
+
+    // The monotonic clock as a span since its own arbitrary zero: only differences mean anything.
+    private TimeSpan Now() => _time.GetElapsedTime(0, _time.GetTimestamp());
 }

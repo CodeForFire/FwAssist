@@ -7,6 +7,16 @@ namespace Helfer.AppLogic.Tests;
 public class TickSubscribersTests
 {
     [Fact]
+    public void Removing_a_null_subscriber_is_refused_before_it_can_stop_the_timer()
+    {
+        var subscribers = new TickSubscribers();
+        var stopped = false;
+
+        Assert.Throws<ArgumentNullException>(() => subscribers.Remove(null!, () => stopped = true));
+        Assert.False(stopped);
+    }
+
+    [Fact]
     public void Notify_calls_every_subscriber()
     {
         var calls = new List<string>();

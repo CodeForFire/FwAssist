@@ -24,7 +24,7 @@ public class MainActivity : AvaloniaMainActivity
     protected override void OnCreate(global::Android.OS.Bundle? savedInstanceState)
     {
         _shell ??= CompositionRoot.CreateShell(
-            new HelperServices(TimeProvider.System, new DispatcherTimerTicker()),
+            new HelperServices(new BootClockTimeProvider(), new DispatcherTimerTicker()),
             new AndroidLauncherIcons(
                 ApplicationContext ?? throw new InvalidOperationException("Android created the activity without an application context.")),
             AppVersionText.Of(typeof(MainActivity).Assembly));
@@ -32,21 +32,28 @@ public class MainActivity : AvaloniaMainActivity
         Helfer.Ui.App.CreateShell = () => shell;
         CompositionRoot.RegisterViews(Helfer.Ui.App.Views);
 
-        // A cold start from a helper's own icon. A recreated Activity keeps whatever page it had.
+        // A launch, not a recreation: a recreated Activity keeps whatever page it had. A launch can
+        // still meet a shell from earlier, because on Android 11 and older Back finishes the root
+        // Activity while the process, and _shell with it, lives on.
         if (savedInstanceState is null)
         {
-            _ = OpenFromLauncher(Intent);
+            Route(Intent);
         }
 
         base.OnCreate(savedInstanceState);
     }
 
-    // An icon tapped while the app is already running (singleTask): a helper's own icon opens that
-    // helper, the app's icon the home screen. Returning from the recent-apps list sends no intent
-    // and keeps whatever page was open.
+    // An icon tapped while the app is already running (singleTask). Returning from the recent-apps
+    // list sends no intent and keeps whatever page was open.
     protected override void OnNewIntent(Intent? intent)
     {
         base.OnNewIntent(intent);
+        Route(intent);
+    }
+
+    // A helper's own icon opens that helper, the app's icon the home screen.
+    private static void Route(Intent? intent)
+    {
         if (OpenFromLauncher(intent) is false && intent?.Action == Intent.ActionMain)
         {
             _shell?.GoHome();

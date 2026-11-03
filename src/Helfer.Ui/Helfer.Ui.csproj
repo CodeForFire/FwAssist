@@ -14,6 +14,8 @@
 
   <ItemGroup>
     <AvaloniaResource Include="Assets\Fonts\*.ttf" />
+    <!-- OFL condition 2: the licence travels with the fonts, so it is embedded beside them. -->
+    <AvaloniaResource Include="Assets\Fonts\OFL.txt" />
     <AvaloniaResource Include="Assets\codeforfire.png" />
   </ItemGroup>
 

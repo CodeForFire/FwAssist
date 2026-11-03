@@ -27,6 +27,10 @@ public class ShellViewModelTests
     }
 
     [Fact]
+    public void Opening_a_null_helper_id_is_refused() =>
+        Assert.Throws<ArgumentNullException>(() => Shell().Open(null!));
+
+    [Fact]
     public void Tapping_a_tile_opens_that_helper_under_its_title()
     {
         var shell = Shell();

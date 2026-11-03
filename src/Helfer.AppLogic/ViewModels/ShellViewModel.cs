@@ -60,6 +60,7 @@ public sealed partial class ShellViewModel : ObservableObject
     /// <summary>Opens a helper from its tile on the home screen.</summary>
     public void Open(string helperId)
     {
+        ArgumentNullException.ThrowIfNull(helperId);
         if (TryShow(helperId))
         {
             _openedFromLauncher = false;

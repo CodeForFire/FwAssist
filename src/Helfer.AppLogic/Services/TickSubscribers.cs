@@ -69,6 +69,8 @@ public sealed class TickSubscribers
     /// </summary>
     public void Remove(Action onTick, Action? onLastSubscriberGone = null)
     {
+        ArgumentNullException.ThrowIfNull(onTick);
+
         lock (_gate)
         {
             _subscribers.Remove(onTick);

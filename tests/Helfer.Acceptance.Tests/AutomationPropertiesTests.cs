@@ -13,7 +13,8 @@ public class AutomationPropertiesTests
     private static IEnumerable<string> Unnamed(Control root) =>
         root.GetVisualDescendants()
             .OfType<Control>()
-            .Where(c => c is Button { Content: not string } or ToggleSwitch)
+            .Where(c => c is ToggleSwitch or TextBox
+                || (c is Button b && (b.Content is not string text || string.IsNullOrWhiteSpace(text))))
             .Where(c => c.IsEffectivelyVisible && string.IsNullOrWhiteSpace(AutomationProperties.GetName(c)))
             .Select(c => $"{c.GetType().Name} {c.Name}");
 

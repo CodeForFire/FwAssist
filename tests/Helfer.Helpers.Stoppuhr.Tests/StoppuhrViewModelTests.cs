@@ -34,6 +34,22 @@ public class StoppuhrViewModelTests
     }
 
     [Fact]
+    public void Changing_the_phones_time_does_not_change_the_measured_time()
+    {
+        var vm = Vm();
+        vm.StartStopCommand.Execute(null);
+        _time.Advance(TimeSpan.FromMinutes(1));
+
+        _time.SetWallClock(_time.GetUtcNow() - TimeSpan.FromMinutes(5));
+        _ticker.Tick();
+        Assert.Equal("01:00", vm.Display);
+
+        _time.SetWallClock(_time.GetUtcNow() + TimeSpan.FromHours(2));
+        vm.StartStopCommand.Execute(null);
+        Assert.Equal("01:00", vm.Display);
+    }
+
+    [Fact]
     public void It_ticks_only_while_running()
     {
         var vm = Vm();
