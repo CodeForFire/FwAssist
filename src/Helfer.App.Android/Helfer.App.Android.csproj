@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0-android</TargetFramework>
+    <!-- Without OutputType=Exe an android project builds as a library (.aar); the app head must be
+         Exe so publish packages a launchable .apk. -->
+    <OutputType>Exe</OutputType>
+    <!-- Permanent once the first build reaches Google Play: an application id can never be
+         changed or reused there. It must be final before the first upload. -->
+    <ApplicationId>de.codeforfire.helfer</ApplicationId>
+    <!-- Placeholders for local builds only. The tag is the source of truth: release.yml passes
+         -p:ApplicationVersion (versionCode), -p:ApplicationDisplayVersion (versionName) and
+         -p:Version (assembly version, shown on the home screen). Never bump these by hand. -->
+    <ApplicationVersion>1</ApplicationVersion>
+    <ApplicationDisplayVersion>0.0.0</ApplicationDisplayVersion>
+    <!-- Play automatic protection refuses a bundle below API 24; release.yml checks the floor. -->
+    <SupportedOSPlatformVersion>24</SupportedOSPlatformVersion>
+    <!-- .NET 9+ defaults to android-arm64;android-x64 only. Many Android tablets (the Galaxy Tab A
+         line among them) run a 32-bit armeabi-v7a userland, and Play lists the app as incompatible
+         for them. Play splits the .aab per ABI, so arm64 devices download no extra bytes. -->
+    <RuntimeIdentifiers>android-arm;android-arm64;android-x64</RuntimeIdentifiers>
+    <!-- Dependabot restores this head on an SDK without the Android workload, where the RID graph
+         for android-arm falls back to a runtime pack that was never published (NU1101). It only
+         reads package references there, so drop the 32-bit RID. DEPENDABOT_HOME is set by
+         Dependabot's updater image. A real build has the workload and keeps all three. -->
+    <RuntimeIdentifiers Condition="'$(DEPENDABOT_HOME)' != ''">android-arm64;android-x64</RuntimeIdentifiers>
+    <!-- `make apk ABI=android-x64`: one ABI, for an emulator with little room left. A property of
+         its own, because a global RuntimeIdentifiers would reach the net10.0 projects too. -->
+    <RuntimeIdentifiers Condition="'$(OnlyAbi)' != ''">$(OnlyAbi)</RuntimeIdentifiers>
+    <!-- No packages.lock.json for this head. The Android SDK injects Microsoft.NET.ILLink.Tasks at
+         the version of whichever SDK runs the restore, so a lock file here would fail CI's locked
+         restore on every SDK patch release. Its explicit packages are still pinned centrally. -->
+    <RestorePackagesWithLockFile>false</RestorePackagesWithLockFile>
+    <!-- Both formats out of one build: the .aab for Google Play, and the universal .apk that
+         bundletool extracts from that same signed bundle for the GitHub release. The SINGULAR
+         AndroidPackageFormat wins over this when set. -->
+    <AndroidPackageFormats>aab;apk</AndroidPackageFormats>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <!-- Avalonia.Android's generated Resource designer code isn't documented and would otherwise
+         trip CS1591 under TreatWarningsAsErrors + GenerateDocumentationFile. -->
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+  </PropertyGroup>
+
+  <!-- Upload key for Google Play, opt-in. Without -p:AndroidSigningKeyStore the SDK falls back to
+       its debug key, which is what a contributor's `make apk` and every Debug build want. The
+       passwords are read from a file rather than passed literally; see docs/releasing.md. -->
+  <PropertyGroup Condition="'$(AndroidSigningKeyStore)' != ''">
+    <AndroidKeyStore>true</AndroidKeyStore>
+    <AndroidSigningKeyAlias Condition="'$(AndroidSigningKeyAlias)' == ''">helfer-upload</AndroidSigningKeyAlias>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia.Android" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="Xamarin.AndroidX.Core" />
+    <PackageReference Include="Xamarin.AndroidX.Activity" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Helfer.Composition\Helfer.Composition.csproj" />
+  </ItemGroup>
+
+</Project>

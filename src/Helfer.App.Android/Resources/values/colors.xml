@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <!-- Theme/Tokens.axaml's SignalDeepColor and AppBgColor, for the launcher icons. -->
+  <color name="icon_signal">#C71E12</color>
+  <color name="icon_dark">#0B0E13</color>
+</resources>

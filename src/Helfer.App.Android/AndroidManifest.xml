@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- versionCode, versionName, package and minSdkVersion are deliberately absent: the .NET Android
+     SDK fills them only when they are missing, so declaring one here would silently override the
+     csproj and the release workflow (lagebuch shipped six releases as versionName 0.1.0 that way).
+
+     MainActivity is declared here rather than by an [Activity] attribute: an activity-alias must
+     come after the activity it targets, and the SDK appends attribute-generated activities to the
+     end of <application>. The C# class carries [Register] with the same Java name. -->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-sdk android:targetSdkVersion="36" />
+    <application android:label="Helfer" android:icon="@drawable/ic_launcher"
+                 android:theme="@style/MyTheme.NoActionBar" android:usesCleartextTraffic="false">
+
+        <!-- singleTask: a helper's own icon brings the running app forward and arrives through
+             OnNewIntent, instead of stacking a second copy of the app on top of the first. -->
+        <activity android:name="de.codeforfire.helfer.MainActivity"
+                  android:exported="true"
+                  android:launchMode="singleTask"
+                  android:windowSoftInputMode="adjustResize"
+                  android:configChanges="orientation|screenSize|uiMode|screenLayout|smallestScreenSize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- One alias per helper: its own icon on the home screen, opening that helper directly.
+             The name is de.codeforfire.helfer.launcher.<IHelperModule.Id>; MainActivity reads the
+             helper from it and AndroidLauncherIcons switches it on and off. Renaming one removes
+             the icon from every home screen it was placed on. LauncherAliasTests keeps this list
+             and CompositionRoot.Modules in step. -->
+        <activity-alias android:name="de.codeforfire.helfer.launcher.stoppuhr"
+                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+                        android:label="Stoppuhr"
+                        android:icon="@drawable/ic_helper_stoppuhr"
+                        android:exported="true"
+                        android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+    </application>
+</manifest>

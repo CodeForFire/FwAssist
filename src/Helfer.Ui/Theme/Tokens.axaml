@@ -1,0 +1,137 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- Design tokens, copied from Lagebuch so both CodeForFire apps look like one family.
+       "Dispatch console": deep charcoal surfaces, signal-red
+       emergency accent, tactical monospace for time & call-signs. -->
+
+  <!-- Typography -->
+
+  <FontFamily x:Key="DisplayFont">avares://Helfer.Ui/Assets/Fonts#Oswald</FontFamily>
+  <FontFamily x:Key="BodyFont">avares://Helfer.Ui/Assets/Fonts#Barlow</FontFamily>
+  <FontFamily x:Key="MonoFont">avares://Helfer.Ui/Assets/Fonts#JetBrains Mono</FontFamily>
+
+  <!-- Raw colors -->
+
+  <Color x:Key="AppBgColor">#0B0E13</Color>
+  <Color x:Key="AppBgColor2">#10141C</Color>
+  <Color x:Key="SurfaceColor">#141A24</Color>
+  <Color x:Key="SurfaceRaisedColor">#1B2330</Color>
+  <Color x:Key="SurfaceTopColor">#222C3B</Color>
+
+  <Color x:Key="HairlineColor">#26303D</Color>
+  <Color x:Key="BorderStrongColor">#384556</Color>
+
+  <Color x:Key="TextPrimaryColor">#EEF2F8</Color>
+  <Color x:Key="TextSecondaryColor">#9AA7B8</Color>
+  <Color x:Key="TextMutedColor">#65728580</Color>
+
+  <Color x:Key="SignalColor">#FF3D2E</Color>
+  <Color x:Key="SignalHotColor">#FF5A3C</Color>
+  <Color x:Key="SignalDeepColor">#C71E12</Color>
+  <!-- SignalColor at zero alpha, for a gradient that has to fade out. Avalonia interpolates
+       gradient stops unpremultiplied, so fading to `Transparent` (which is transparent WHITE)
+       drifts the midtones through grey instead of dimming the hue. -->
+  <Color x:Key="SignalFadedColor">#00FF3D2E</Color>
+
+  <!-- Blocking red, softer than SignalColor, which is reserved for the emergency accent. Already
+       the colour of every "this cannot be saved" message in the app; now it has a name (lagebuch #412). -->
+  <Color x:Key="ErrorColor">#F87171</Color>
+
+  <Color x:Key="AmberColor">#FFB23E</Color>
+  <Color x:Key="AmberDeepColor">#7A4A07</Color>
+
+  <!-- Header Meldungen: the dark "ink" set on a lit tile, and the row fills behind it. A lit
+       tile is a solid patch of its hue, so its label needs the hue's own near-black rather than
+       white, which on amber falls below 2:1. -->
+  <Color x:Key="AmberInkColor">#1F1404</Color>
+  <Color x:Key="AmberWashColor">#241608</Color>
+  <Color x:Key="ErrorInkColor">#260A0D</Color>
+  <Color x:Key="ErrorDeepColor">#7A2B31</Color>
+  <Color x:Key="ErrorWashColor">#2A1013</Color>
+  <!-- An alarming Atemschutz row or card (lagebuch #669): the signal hue, dark enough that SignalColor text
+       on it still reads at 4.8:1. -->
+  <Color x:Key="SignalWashColor">#33120F</Color>
+  <!-- Keyboard focus (lagebuch #541), and nothing else. Deliberately not SignalColor: a red ring roaming
+       every control would wear out the meaning of red next to a Rückzugsalarm. Keep it apart
+       from Signal, Error, Amber and Incoming, which all carry a meaning of their own. -->
+  <Color x:Key="FocusColor">#2DD4E8</Color>
+
+  <Color x:Key="ActiveColor">#37D17C</Color>
+  <Color x:Key="IncomingColor">#52ABFF</Color>
+
+  <!-- Brushes -->
+
+  <SolidColorBrush x:Key="SurfaceBrush" Color="{StaticResource SurfaceColor}" />
+  <SolidColorBrush x:Key="SurfaceRaisedBrush" Color="{StaticResource SurfaceRaisedColor}" />
+  <SolidColorBrush x:Key="SurfaceTopBrush" Color="{StaticResource SurfaceTopColor}" />
+  <SolidColorBrush x:Key="HairlineBrush" Color="{StaticResource HairlineColor}" />
+  <SolidColorBrush x:Key="BorderStrongBrush" Color="{StaticResource BorderStrongColor}" />
+
+  <SolidColorBrush x:Key="TextPrimaryBrush" Color="{StaticResource TextPrimaryColor}" />
+  <SolidColorBrush x:Key="TextSecondaryBrush" Color="{StaticResource TextSecondaryColor}" />
+  <SolidColorBrush x:Key="TextMutedBrush" Color="{StaticResource TextMutedColor}" />
+
+  <SolidColorBrush x:Key="SignalBrush" Color="{StaticResource SignalColor}" />
+  <SolidColorBrush x:Key="SignalHotBrush" Color="{StaticResource SignalHotColor}" />
+  <SolidColorBrush x:Key="ErrorBrush" Color="{StaticResource ErrorColor}" />
+  <SolidColorBrush x:Key="AmberBrush" Color="{StaticResource AmberColor}" />
+  <SolidColorBrush x:Key="AmberDeepBrush" Color="{StaticResource AmberDeepColor}" />
+  <SolidColorBrush x:Key="AmberInkBrush" Color="{StaticResource AmberInkColor}" />
+  <SolidColorBrush x:Key="AmberWashBrush" Color="{StaticResource AmberWashColor}" />
+  <SolidColorBrush x:Key="ErrorInkBrush" Color="{StaticResource ErrorInkColor}" />
+  <SolidColorBrush x:Key="ErrorDeepBrush" Color="{StaticResource ErrorDeepColor}" />
+  <SolidColorBrush x:Key="ErrorWashBrush" Color="{StaticResource ErrorWashColor}" />
+  <SolidColorBrush x:Key="SignalWashBrush" Color="{StaticResource SignalWashColor}" />
+  <SolidColorBrush x:Key="SignalDeepBrush" Color="{StaticResource SignalDeepColor}" />
+  <SolidColorBrush x:Key="ActiveBrush" Color="{StaticResource ActiveColor}" />
+  <SolidColorBrush x:Key="IncomingBrush" Color="{StaticResource IncomingColor}" />
+  <SolidColorBrush x:Key="FocusBrush" Color="{StaticResource FocusColor}" />
+
+  <!-- Fluent draws its focus adorner on every control that is :focus-visible (keyboard focus,
+       never a click or a touch): a 2px ring on the control's edge with a 1px line inside it.
+       Recolouring it here gives every control, custom templates included, the one focus edge;
+       the dark inner line keeps it readable against a selected row's fill. Only the brushes:
+       overriding SystemControlFocusVisualMargin or the thickness keys makes Fluent draw no ring
+       at all. -->
+  <SolidColorBrush x:Key="SystemControlFocusVisualPrimaryBrush" Color="{StaticResource FocusColor}" />
+  <SolidColorBrush x:Key="SystemControlFocusVisualSecondaryBrush" Color="{StaticResource AppBgColor}" />
+
+  <!-- Atmospheric app background: vertical charcoal wash -->
+  <LinearGradientBrush x:Key="AppBackgroundBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="{StaticResource AppBgColor2}" Offset="0" />
+    <GradientStop Color="{StaticResource AppBgColor}" Offset="1" />
+  </LinearGradientBrush>
+
+  <!-- Header bar: deep panel with a faint top-light sheen -->
+  <LinearGradientBrush x:Key="HeaderBarBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#1A2230" Offset="0" />
+    <GradientStop Color="#10151E" Offset="1" />
+  </LinearGradientBrush>
+
+  <!-- Signal accent gradient (brand bar, primary buttons) -->
+  <LinearGradientBrush x:Key="SignalGradientBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="{StaticResource SignalHotColor}" Offset="0" />
+    <GradientStop Color="{StaticResource SignalDeepColor}" Offset="1" />
+  </LinearGradientBrush>
+
+  <!-- Sidebar (tab strip) wash -->
+  <LinearGradientBrush x:Key="SidebarBrush" StartPoint="0%,0%" EndPoint="0%,100%">
+    <GradientStop Color="#121823" Offset="0" />
+    <GradientStop Color="#0D121A" Offset="1" />
+  </LinearGradientBrush>
+
+  <!-- Metrics -->
+
+  <CornerRadius x:Key="RadiusSm">5</CornerRadius>
+  <CornerRadius x:Key="RadiusMd">8</CornerRadius>
+  <CornerRadius x:Key="RadiusLg">12</CornerRadius>
+  <!-- A gloved thumb is not a mouse pointer. Lagebuch uses 36 on the desktop and 48 only in its
+       narrow layout; this app has no desktop, so every control is at Android's 48dp touch-target
+       minimum. See AGENTS.md, "Mobile". -->
+  <x:Double x:Key="ControlHeight">48</x:Double>
+
+  <BoxShadows x:Key="PanelShadow">0 8 28 -8 #99000000</BoxShadows>
+  <BoxShadows x:Key="OverlayShadow">0 24 60 -12 #CC000000</BoxShadows>
+
+</ResourceDictionary>

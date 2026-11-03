@@ -1,0 +1,19 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Helfer.Helpers.Stoppuhr;assembly=Helfer.Helpers.Stoppuhr"
+             x:Class="Helfer.Helpers.Stoppuhr.Ui.StoppuhrView"
+             x:DataType="vm:StoppuhrViewModel">
+  <!-- The time fills the top, the two buttons sit at the bottom: in thumb reach, wide enough to
+       hit with a glove. -->
+  <Grid RowDefinitions="*,Auto" Margin="16">
+    <Viewbox Grid.Row="0" Stretch="Uniform" StretchDirection="Both" MaxHeight="160">
+      <TextBlock x:Name="Display" Classes="metric" Text="{Binding Display}" />
+    </Viewbox>
+    <Grid Grid.Row="1" ColumnDefinitions="*,12,*">
+      <Button Grid.Column="0" Classes="signal" HorizontalAlignment="Stretch"
+              Content="{Binding StartStopLabel}" Command="{Binding StartStopCommand}" />
+      <Button Grid.Column="2" HorizontalAlignment="Stretch"
+              Content="ZURÜCKSETZEN" Command="{Binding ResetCommand}" />
+    </Grid>
+  </Grid>
+</UserControl>
