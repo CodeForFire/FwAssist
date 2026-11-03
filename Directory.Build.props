@@ -1,0 +1,40 @@
+<Project>
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+
+    <!-- TreatWarningsAsErrors above is Roslyn-only: it already fails the build on CS0612/0618/0619
+         (obsolete C# API). Avalonia's XAML compiler logs through MSBuild instead, so AVLN5001
+         ("member is obsolete") only printed a warning, and a deprecated TextBox.Watermark
+         shipped unnoticed, because it surfaces only on a full rebuild. Escalating it here is what
+         gives the AGENTS.md "never call an obsolete API" rule teeth. Scoped to this one code on
+         purpose: the whole AVLN class also covers warnings that are not deprecations. -->
+    <MSBuildWarningsAsErrors>$(MSBuildWarningsAsErrors);AVLN5001</MSBuildWarningsAsErrors>
+    <AnalysisMode>All</AnalysisMode>
+    <Deterministic>true</Deterministic>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+    <AnalysisLevel>10.0</AnalysisLevel>
+    <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <!-- Required so IDE0005 (unused usings) runs during build; suppress the
+         XML-doc-comment warnings that GenerateDocumentationFile turns on. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- The XML docs exist only for the build; nothing reads them at runtime. Keep them, and
+         every package's, out of the installed app (GHSA-3pc7-r86c-pwf2). -->
+    <PublishDocumentationFiles>false</PublishDocumentationFiles>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+
+    <!-- Every project records its resolved package graph, content hashes included, in a
+         packages.lock.json. CI restores in locked mode, so a restore that would resolve
+         anything other than the committed graph fails instead of building. Dependabot updates
+         the lock files alongside Directory.Packages.props. -->
+    <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="StyleCop.Analyzers" PrivateAssets="all" />
+    <AdditionalFiles Include="$(MSBuildThisFileDirectory)stylecop.json" Link="stylecop.json" />
+  </ItemGroup>
+</Project>
