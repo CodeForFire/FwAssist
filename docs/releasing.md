@@ -121,10 +121,11 @@ Google Play has not accepted an APK for a new app since 2021, so the upload is a
 **Android App Bundle**. The build produces one: `AndroidPackageFormats` is
 `aab;apk` in
 [`Helfer.App.Android.csproj`](../src/Helfer.App.Android/Helfer.App.Android.csproj),
-and the SDK then runs bundletool over that same signed bundle to extract the
-universal `.apk` the GitHub release carries. The sideload APK is therefore a
-render of the exact bytes Play receives, not a second, independently built
-artefact — which is why there is no separate "verify the bundle" step below.
+and the SDK then runs bundletool over that same signed bundle to extract a
+universal `.apk`. The `.apk` that `make aab` leaves beside the bundle is
+therefore a render of the exact bytes Play receives, and installing it on a
+phone is the check on the bundle. The GitHub release's `.apk` is not that
+check: CI builds it separately from the same tag, signed with another key.
 
 **Submitting is a manual step at release time, and deliberately so.**
 Automating it would mean keeping the upload keystore and its password in this

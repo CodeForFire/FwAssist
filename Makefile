@@ -209,6 +209,7 @@ aab: android-image ## Build the signed .aab for Google Play (VERSION=x.y.z)
 	    -v "$$HOME/.nuget":/home/build/.nuget \
 	    -v "$$PWD":/src \
 	    -v "$(dir $(KEYSTORE))":/keys:ro \
+	    -v "$(abspath $(KEYSTORE_PASS))":/keypass/$(notdir $(KEYSTORE_PASS)):ro \
 	    $(IMAGE) \
 	    publish $(ANDROID_PROJ) -c Release -f net10.0-android \
 	    -p:EmbedAssembliesIntoApk=true \
@@ -216,8 +217,8 @@ aab: android-image ## Build the signed .aab for Google Play (VERSION=x.y.z)
 	    -p:ApplicationDisplayVersion=$(VERSION) -p:Version=$(VERSION) \
 	    -p:AndroidSigningKeyStore=/keys/$(notdir $(KEYSTORE)) \
 	    -p:AndroidSigningKeyAlias=$(KEY_ALIAS) \
-	    -p:AndroidSigningStorePass=file:/keys/$(notdir $(KEYSTORE_PASS)) \
-	    -p:AndroidSigningKeyPass=file:/keys/$(notdir $(KEYSTORE_PASS))
+	    -p:AndroidSigningStorePass=file:/keypass/$(notdir $(KEYSTORE_PASS)) \
+	    -p:AndroidSigningKeyPass=file:/keypass/$(notdir $(KEYSTORE_PASS))
 	@echo "AAB: $(AAB)"
 	@echo "APK: $(RELEASE_APK)   (universal, extracted from that bundle)"
 

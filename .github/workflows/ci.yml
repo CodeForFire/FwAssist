@@ -9,6 +9,9 @@ on:
       - opened
       - synchronize
       - reopened
+      # Adding or removing the `no-changelog` exemption must re-decide the changelog check.
+      - labeled
+      - unlabeled
 
 # This workflow builds and tests untrusted pull_request code; the token only
 # needs to read the repository to check it out, so keep it read-only
