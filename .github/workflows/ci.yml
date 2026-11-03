@@ -1,0 +1,147 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+
+# This workflow builds and tests untrusted pull_request code; the token only
+# needs to read the repository to check it out, so keep it read-only
+# regardless of the org/repo default permissions.
+permissions:
+  contents: read
+
+jobs:
+  # One leg: there is no desktop app, and the Android head only builds where the Android
+  # workload is installed. Branch protection requires this check by name ("build-test").
+  build-test:
+    name: build-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Bidirectional overrides and isolates (U+202A-U+202E, U+2066-U+2069) are invisible and
+      # reorder the text around them: the Trojan Source trick in code, and a literal one in a doc
+      # comment once shipped in Lagebuch's XML docs, which antivirus software quarantined as an
+      # extension-spoofing script (lagebuch GHSA-3pc7-r86c-pwf2). Write them as escapes.
+      - name: No bidirectional control characters
+        shell: bash
+        env:
+          LC_ALL: C.UTF-8
+        run: |
+          if git grep -nIP '[\x{202A}-\x{202E}\x{2066}-\x{2069}]'; then
+            echo "::error::Bidirectional control characters found; write them as escapes."
+            exit 1
+          fi
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Setup JDK
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      # Manifest mode, not the default workload-set mode. A workload set pins
+      # every manifest at once -- iOS, MAUI, emscripten -- and Microsoft has
+      # published sets before all of those were on nuget.org (10.0.402.1, on
+      # 2026-10-19), failing every Android job for an hour over an iOS manifest
+      # we never install. In manifest mode an unpublished manifest we do not use
+      # is only a warning, and Android still updates to its latest version;
+      # `--skip-manifest-update` would instead pin the SDK's GA-era baseline.
+      - name: Install Android workload
+        run: |
+          dotnet workload config --update-mode manifests
+          dotnet workload install android
+
+      # Cheap, and it guards a number that cannot be taken back: the Android versionCode is
+      # derived by this script for both `make aab` and the release workflow, and Google Play
+      # refuses any upload that does not raise it, on any track, permanently.
+      - name: Android versionCode self-test
+        run: scripts/android-version-code.sh --self-test
+
+      # --locked-mode: restore exactly the graph and content hashes in the committed
+      # packages.lock.json files, or fail. A package change that forgot to commit its
+      # regenerated lock file fails here with NU1004 instead of building something else.
+      - name: Restore
+        run: dotnet restore Helfer.sln --locked-mode
+
+      # One command per step, so each exit code gates the job on its own.
+      - name: Format check (whitespace)
+        run: dotnet format whitespace Helfer.Host.slnf --verify-no-changes
+
+      - name: Format check (style)
+        run: dotnet format style Helfer.Host.slnf --verify-no-changes
+
+      - name: Build
+        run: dotnet build Helfer.sln --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test Helfer.sln --configuration Release --no-build --verbosity normal
+
+  # A pull request that changes src/ carries its changelog entry as its own file
+  # in changelog.d/, never as an edit to CHANGELOG.md — one file per change is
+  # what keeps concurrent pull requests from conflicting over the changelog.
+  # Apply the `no-changelog` label to skip this. A packages.lock.json under src/
+  # does not count as a src/ change: a dependency bump rewrites those lock files
+  # but changes no code, and Dependabot cannot write a fragment.
+  changelog-check:
+    name: changelog entry
+    if: >-
+      github.event_name == 'pull_request' &&
+      !contains(github.event.pull_request.labels.*.name, 'no-changelog')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Setup Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.x'
+
+      - name: Install towncrier
+        run: pip install --require-hashes -r .github/requirements-changelog.txt
+
+      - name: Require a changelog fragment for src/ changes
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          if git diff --name-only "origin/${BASE_REF}...HEAD" \
+              | grep -v '/packages\.lock\.json$' | grep -q '^src/'; then
+            towncrier check --compare-with "origin/${BASE_REF}"
+          else
+            echo "No src/ changes in this pull request — changelog fragment not required."
+          fi
+
+      # Advisory, never a gate. CHANGELOG.md is English (CONTRIBUTING.md), but
+      # every correct entry here carries German Fachbegriffe — Atemschutz,
+      # Stammdaten, Messreihe — so a detector strict enough to block on would
+      # fail hardest on the entries that are right. The script exits 0 rather
+      # than the job using continue-on-error, so this job's conclusion keeps its
+      # one meaning: a changelog fragment exists.
+      - name: Hint if a changelog fragment looks German
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          mapfile -t fragments < <(
+            git diff --name-only --diff-filter=AM \
+              "origin/${BASE_REF}...HEAD" -- changelog.d
+          )
+          if [ ${#fragments[@]} -eq 0 ]; then
+            echo "No changelog fragments added or changed in this pull request."
+          else
+            python scripts/changelog-language-hint.py "${fragments[@]}"
+          fi

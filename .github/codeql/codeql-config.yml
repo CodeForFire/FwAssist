@@ -1,0 +1,48 @@
+# CodeQL query exclusions for the security-and-quality suite.
+#
+# The suite's quality half overlaps heavily with the .NET analyzers and StyleCop
+# that Directory.Build.props already runs at AnalysisMode=All with
+# TreatWarningsAsErrors. Where the two disagree it is never because CodeQL found
+# something new -- it is because CodeQL cannot see a per-member
+# [SuppressMessage(..., Justification = "...")] or an .editorconfig severity, so
+# it re-reports a decision this repository already made and wrote down as a
+# permanently open alert.
+#
+# Every exclusion below names that decision. The rules:
+#
+#   * Never exclude a query that carries a security severity. None of these do.
+#   * Prefer fixing the code. Exclude a query only when the finding duplicates a
+#     rule the build already governs at a finer granularity, or when applying it
+#     would make the code worse.
+#   * A one-off false positive is dismissed on the alert itself with a written
+#     reason, not excluded here -- a rule-wide filter is for rule-wide decisions.
+#
+# See AGENTS.md, "Static analysis", for the procedure when a new alert appears.
+
+query-filters:
+  # == CA1031 (do not catch general exception types) ==
+  # On as an error, so no `catch (Exception)` compiles without an explicit
+  # opt-out. Every site carries a per-member [SuppressMessage] naming where the
+  # failure surfaces (AGENTS.md, "Static analysis"). These helpers run at an
+  # Einsatz, where killing the process is the worst available outcome.
+  - exclude:
+      id: cs/catch-of-all-exceptions
+
+  # == CA2000 / CA2213 (dispose objects before losing scope) ==
+  # Already `= none` under [tests/**/*.cs] in .editorconfig: "Perf/impl-noise
+  # rules -- they add churn to test code without catching real bugs."
+  - exclude:
+      id: cs/local-not-disposed
+  - exclude:
+      id: cs/dispose-not-called-on-throw
+
+  # == SA1600-SA1649 / CS1591 (documentation) ==
+  # The StyleCop documentation family is disabled in .editorconfig and CS1591
+  # sits in NoWarn: documentation is optional here, not mandated.
+  - exclude:
+      id: cs/xmldoc/missing-summary
+
+# Generated code is not excluded here. paths-ignore cannot reach it -- GitHub
+# restricts paths and paths-ignore to interpreted languages or build-mode: none,
+# and this analysis is C# under build-mode: manual -- so codeql.yml drops every
+# result under obj/ between analysis and upload (scripts/codeql-results.py).

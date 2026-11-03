@@ -1,0 +1,87 @@
+name: CodeQL
+
+# Static analysis for the C# code. Results land in the repository's Code
+# Scanning tab, and satisfy both OpenSSF Scorecard's SAST check and the
+# OpenSSF Best Practices "static analysis" criterion, which is a MUST at the
+# passing level.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    # Weekly, so a new CodeQL query release finds existing code even when the
+    # repository is quiet.
+    - cron: '27 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: codeql-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analyze:
+    name: analyze (csharp)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      security-events: write # upload the SARIF results
+      actions: read
+      contents: read
+
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # dotnet-version is explicit, matching ci.yml and release.yml. Without it
+      # setup-dotnet falls back to global.json, whose "10.0.0" plus rollForward
+      # it rejects as not a full SDK version.
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          languages: csharp
+          build-mode: manual
+          queries: security-and-quality
+          # Query exclusions, each justified against the .NET analyzer or
+          # StyleCop rule that already governs the same code at build time.
+          config-file: ./.github/codeql/codeql-config.yml
+
+      # Helfer.Host.slnf deliberately excludes the Android head:
+      # Microsoft.Android.Sdk rejects any JDK above 21 and the runner ships a
+      # newer one, so building the full solution here would fail with XA0030.
+      # The head is thin by design (AGENTS.md, "Architecture"); everything with
+      # logic in it is analysed.
+      - name: Build
+        run: dotnet build Helfer.Host.slnf -c Release
+
+      # Analysis and upload are split so that generated code can be dropped in
+      # between: paths-ignore does not work under build-mode: manual, and the
+      # Regex and xunit source generators' output under obj/ otherwise opens
+      # alerts nobody can fix. `make codeql` reads the results the same way.
+      - name: Perform CodeQL analysis
+        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          category: /language:csharp
+          upload: never
+          output: sarif-results
+
+      - name: Drop results in generated code
+        run: |
+          python3 -I scripts/codeql-results.py --self-test
+          python3 -I scripts/codeql-results.py filter --config .github/codeql/codeql-config.yml \
+            sarif-results/csharp.sarif sarif-results/csharp.sarif
+
+      - name: Upload CodeQL results
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          sarif_file: sarif-results/csharp.sarif
+          category: /language:csharp

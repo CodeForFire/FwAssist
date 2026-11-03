@@ -1,0 +1,263 @@
+name: Release
+
+# Pushing a version tag (v0.2.0) builds the APK and publishes it as a GitHub release. The bundle
+# for Google Play is built on a laptop with the upload key (docs/releasing.md); the .aab this
+# workflow builds is debug-signed and kept only as a build artifact for inspection.
+on:
+  push:
+    tags: ['v*']
+
+# Read-only by default. Only the `release` job, which creates the GitHub
+# release and uploads the packages, escalates to contents: write; the build
+# job just compiles and hands artifacts over.
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.v.outputs.version }}
+      version_code: ${{ steps.v.outputs.version_code }}
+      prerelease: ${{ steps.v.outputs.prerelease }}
+    steps:
+      # The leading 'v' stripped from the tag. A prerelease tag (v0.6.0-beta.1) keeps its suffix
+      # in every file name and in -p:Version=; only the versionCode below needs it encoded.
+      # The checkout comes first: the versionCode is derived by scripts/android-version-code.sh.
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - id: v
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          v="${REF_NAME#v}"
+          case "$v" in
+            *-*) prerelease=true ;;
+            *)   prerelease=false ;;
+          esac
+
+          # Android needs an integer spelling of the version. Google Play refuses any upload
+          # whose versionCode is not strictly greater than every versionCode already uploaded --
+          # to any track, forever -- so it is derived, never typed. A prerelease must sort BELOW
+          # the final release of the same version.
+          #
+          # The formula lives in scripts/android-version-code.sh rather than here, because
+          # `make aab` needs the same number when it builds the bundle that actually goes to
+          # Play. Two copies that could disagree is the one thing this must not be.
+          code=$(scripts/android-version-code.sh "$v") || {
+            echo "::error::$v has no versionCode under this scheme - see docs/releasing.md"
+            exit 1
+          }
+          {
+            echo "version=$v"
+            echo "version_code=$code"
+            echo "prerelease=$prerelease"
+          } >> "$GITHUB_OUTPUT"
+
+      # The release body links to this section, and a tag without one would publish
+      # notes-less. Checked here, before the Android build, so a forgotten release section
+      # costs seconds rather than minutes.
+      #
+      # Final releases only. A prerelease (v0.6.0-beta.1) is cut from work in progress,
+      # before that version's section is assembled, so requiring one would block exactly
+      # the beta tagging this workflow supports. The body links to CHANGELOG.md rather
+      # than inlining it, so a beta without a section still reads correctly.
+      - name: Verify the tag has a changelog section
+        if: steps.v.outputs.prerelease == 'false'
+        env:
+          VERSION: ${{ steps.v.outputs.version }}
+        run: |
+          grep -q "^## \[${VERSION}\]" CHANGELOG.md || {
+            echo "::error::No CHANGELOG.md section for v${VERSION} — assemble the release section before tagging."
+            exit 1
+          }
+
+  android:
+    needs: version
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+      - name: Setup JDK
+        uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
+        with:
+          distribution: temurin
+          java-version: '21'
+      # Manifest mode, so a half-published workload set cannot block a
+      # release; see the same step in ci.yml.
+      - name: Install Android workload
+        run: |
+          dotnet workload config --update-mode manifests
+          dotnet workload install android
+      - name: Publish
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          VERSION_CODE: ${{ needs.version.outputs.version_code }}
+        run: >
+          dotnet publish src/Helfer.App.Android/Helfer.App.Android.csproj -c Release
+          "-p:ApplicationVersion=${VERSION_CODE}"
+          "-p:ApplicationDisplayVersion=${VERSION}"
+          "-p:Version=${VERSION}"
+          -o publish-android
+      - name: Write the Android SBOM
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          dotnet tool restore
+          scripts/sbom.sh src/Helfer.App.Android/Helfer.App.Android.csproj helfer-android "$VERSION" \
+            "sbom/helfer-${VERSION}-android.cdx.json"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: sbom
+          path: sbom/*.cdx.json
+          if-no-files-found: error
+      # The publish emits both formats: the .aab, and the universal .apk bundletool extracts
+      # from that same signed bundle. The .apk goes on the release; the .aab is kept as a build
+      # artifact for inspection (docs/releasing.md).
+      - name: Locate and rename the packages
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+        run: |
+          apk=$(find publish-android -name "*-Signed.apk" -o -name "*.apk" | head -n1)
+          aab=$(find publish-android -name "*.aab" | head -n1)
+          test -n "$aab" || { echo "::error::No .aab was produced - check AndroidPackageFormats"; exit 1; }
+          # An SDK default once dropped armeabi-v7a without a word, and Play then hid the app from
+          # every 32-bit tablet. Refuse to release a package missing any ABI the csproj lists.
+          for abi in armeabi-v7a arm64-v8a x86_64; do
+            unzip -l "$apk" "lib/$abi/*" > /dev/null || { echo "::error::The APK has no lib/$abi - check RuntimeIdentifiers"; exit 1; }
+          done
+          # Play automatic protection rejects a bundle whose minSdkVersion is below 24, and
+          # Lagebuch 0.7.0 only found out at the Play upload. The .apk is rendered from the same
+          # bundle.
+          aapt2=$(ls -d "$ANDROID_HOME"/build-tools/*/aapt2 | sort -V | tail -n1)
+          min_sdk=$("$aapt2" dump badging "$apk" | sed -n "s/^\(minSdkVersion\|sdkVersion\):'\([0-9]*\)'$/\2/p")
+          test "${min_sdk:-0}" -ge 24 || { echo "::error::The APK has minSdkVersion '${min_sdk}', Play needs 24 - check SupportedOSPlatformVersion"; exit 1; }
+          mkdir -p dist play
+          cp "$apk" "dist/helfer-${VERSION}.apk"
+          cp "$aab" "play/helfer-${VERSION}.aab"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: apk
+          path: dist/*.apk
+          if-no-files-found: error
+      # Deliberately not a release asset: it is signed with the CI debug key, so it is only good
+      # for inspection. The bundle that goes to Play is built on a laptop with the upload key.
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: aab
+          path: play/*.aab
+          if-no-files-found: error
+
+  release:
+    needs: [version, android]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # create the release and upload its assets
+      id-token: write # Sigstore needs an OIDC token to sign the provenance
+      attestations: write # and write the signed attestation back to the repo
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      # Only the package a user installs and its SBOM. Without a pattern this pulls every
+      # artifact of the run, and the CI-debug-signed .aab ended up on Lagebuch releases.
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: '{apk,sbom}'
+          path: dist
+      # download-artifact nests each artifact in its own directory (dist/apk/...),
+      # but on the release page the assets sit side by side. Flatten first, so the
+      # checksum file lists the bare names a downloader actually has on disk and
+      # `sha256sum -c SHA256SUMS.txt` works in the download folder.
+      - name: Flatten artifacts and write SHA-256 checksums
+        run: |
+          find dist -mindepth 2 -type f -exec mv -t dist {} +
+          find dist -mindepth 1 -type d -empty -delete
+          # Exactly the APK and its SBOM, so a pattern that matches too much or too little fails
+          # here instead of publishing a release with a missing or stray file.
+          ls -l dist
+          test "$(find dist -maxdepth 1 -type f -name '*.apk' | wc -l)" -eq 1 || { echo "::error::Expected exactly one .apk in dist/"; exit 1; }
+          test "$(find dist -maxdepth 1 -type f -name '*-android.cdx.json' | wc -l)" -eq 1 || { echo "::error::Expected exactly one SBOM in dist/"; exit 1; }
+          test "$(find dist -maxdepth 1 -type f | wc -l)" -eq 2 || { echo "::error::Unexpected files in dist/ - only the .apk and its SBOM belong on the release"; exit 1; }
+          cd dist
+          sha256sum -- * > "${RUNNER_TEMP}/SHA256SUMS.txt"
+          mv "${RUNNER_TEMP}/SHA256SUMS.txt" SHA256SUMS.txt
+          cat SHA256SUMS.txt
+      # Sigstore-backed build provenance: proves these exact bytes came out of this
+      # workflow, from this commit. Android does not know about it, but
+      # `gh attestation verify` does, and it is what a Datenschutzbeauftragter can
+      # check for the sideloaded APK.
+      - uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-path: dist/*.apk
+      # The SBOM, signed and bound to the package it describes, so `gh attestation verify`
+      # can show what the package was built from, not only where.
+      - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
+        with:
+          subject-path: dist/*.apk
+          sbom-path: dist/helfer-${{ needs.version.outputs.version }}-android.cdx.json
+      - name: Build release notes
+        env:
+          VERSION: ${{ needs.version.outputs.version }}
+          PRERELEASE: ${{ needs.version.outputs.prerelease }}
+        run: |
+          : > release-notes.md
+          if [ "$PRERELEASE" = "true" ]; then
+            cat >> release-notes.md <<'EOF'
+          > **Vorabversion.** Zum Ausprobieren und für Übungen gedacht — im Einsatz bitte nicht
+          > als einzige Dokumentation verwenden. Rückmeldungen gerne als GitHub-Issue.
+
+          EOF
+          fi
+          # The changelog is written in English; the release body is German for the
+          # ELW crews who download it, so link the entries rather than inlining them.
+          # No #anchor: GitHub's slug for '## [0.6.0] - 2026-09-16' embeds the release
+          # date. At this tag the version's section is the top one in the file anyway.
+          cat >> release-notes.md <<EOF
+          → [Alle Änderungen in dieser Version](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/v${VERSION}/CHANGELOG.md)
+
+          Getaggter Release-Build für Android: \`helfer-${VERSION}.apk\`.
+
+          **Prüfsumme und Herkunftsnachweis.** Dem Release liegt \`SHA256SUMS.txt\` bei:
+
+          \`\`\`
+          sha256sum -c SHA256SUMS.txt        # Linux, im Download-Ordner
+          shasum -a 256 -c SHA256SUMS.txt    # macOS
+          certutil -hashfile <Datei> SHA256  # Windows, mit SHA256SUMS.txt vergleichen
+          \`\`\`
+
+          Die APK trägt zusätzlich einen Sigstore-Herkunftsnachweis aus dem Workflow-Lauf, der
+          sie gebaut hat — prüfbar mit der GitHub CLI:
+
+          \`\`\`
+          gh attestation verify <Datei> --repo CodeForFire/helfer
+          \`\`\`
+
+          **Stückliste (SBOM).** \`helfer-${VERSION}-android.cdx.json\` listet jede enthaltene
+          Bibliothek mit Version, Lizenz und Prüfsumme im CycloneDX-Format, ebenfalls signiert an
+          die APK gebunden:
+
+          \`\`\`
+          gh attestation verify <Datei> --repo CodeForFire/helfer --predicate-type https://cyclonedx.org/bom
+          \`\`\`
+
+          **Installation ohne Play Store.** Aktiviere einmalig *Installation aus unbekannten
+          Quellen* für den Browser oder Dateimanager, mit dem die APK geöffnet wird.
+          EOF
+      # `gh release create` could do this too (zizmor's superfluous-actions); swapping a working
+      # release step is a change of its own, tested on a tag.
+      - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3 # zizmor: ignore[superfluous-actions]
+        with:
+          tag_name: v${{ needs.version.outputs.version }}
+          name: Helfer v${{ needs.version.outputs.version }}
+          # A prerelease tag (v0.6.0-beta.1) flags itself and leaves the last full release as
+          # "Latest".
+          prerelease: ${{ needs.version.outputs.prerelease }}
+          files: dist/* # flat since the checksum step; includes SHA256SUMS.txt
+          body_path: release-notes.md

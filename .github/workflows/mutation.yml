@@ -1,0 +1,170 @@
+name: Mutation testing
+
+# Stryker.NET mutates the production code (flips a comparison, drops a
+# statement, swaps a return) and re-runs the tests: a mutant no test notices
+# marks code the suite executes without really checking. It runs two ways:
+#
+# - mutate: every project, weekly and on demand. A report for finding weak
+#   tests, and a ratchet: it fails when a project drops below the floor in its
+#   stryker-config.json (thresholds.break), which the PR gate cannot see,
+#   since it never counts code a PR leaves alone.
+# - mutate-diff: on a pull request, only the lines it adds or changes, failing
+#   below 80%. It judges new work, not the debt already in the weekly report
+#   (scripts/mutation-diff-score.py).
+#
+# See CONTRIBUTING.md#mutation-testing.
+
+on:
+  pull_request:
+  schedule:
+    - cron: '13 3 * * 6'
+  workflow_dispatch:
+    inputs:
+      project:
+        description: Project to mutate
+        type: choice
+        default: all
+        options:
+          - all
+          - Core
+          - AppLogic
+          - Helpers.Stoppuhr
+
+permissions:
+  contents: read
+
+# A new push to a pull request supersedes the run on the previous one.
+concurrency:
+  group: mutation-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: true
+
+jobs:
+  mutate:
+    name: mutate (${{ matrix.project }})
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        # A scheduled run has no inputs and mutates everything; a manual run
+        # can pick one project. Keep this list in step with MUTATE_PROJECTS in
+        # the Makefile.
+        project: ${{ fromJSON((inputs.project == '' || inputs.project == 'all') && '["Core","AppLogic","Helpers.Stoppuhr"]' || format('["{0}"]', inputs.project)) }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore tools
+        run: dotnet tool restore
+
+      - name: Mutate
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: make mutate PROJECT="$PROJECT"
+
+      - name: Summary
+        if: always()
+        env:
+          PROJECT: ${{ matrix.project }}
+        run: |
+          report="StrykerOutput/$PROJECT/reports/mutation-report.md"
+          if [ -f "$report" ]; then
+            echo "## $PROJECT" >> "$GITHUB_STEP_SUMMARY"
+            cat "$report" >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mutation-report-${{ matrix.project }}
+          path: StrykerOutput/${{ matrix.project }}/reports/
+          if-no-files-found: ignore
+          retention-days: 30
+
+  mutate-diff:
+    name: mutate-diff (${{ matrix.project }})
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        # Keep in step with MUTATE_PROJECTS in the Makefile. A new helper adds
+        # its Helpers.<Name> entry here and to the workflow_dispatch options.
+        project: [Core, AppLogic, Helpers.Stoppuhr]
+    env:
+      PROJECT: ${{ matrix.project }}
+      BASE: origin/${{ github.base_ref }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          # The diff is taken from the merge base, so it needs the history.
+          fetch-depth: 0
+
+      # Skipping by step rather than by a paths filter keeps the job
+      # reporting success, which a required check needs.
+      - name: Check for changes
+        id: changes
+        run: |
+          src="$(make -s mutate-src PROJECT="$PROJECT")"
+          if git diff --quiet "$(git merge-base "$BASE" HEAD)" -- "$src/*.cs"; then
+            echo "No changes to Helfer.$PROJECT -- nothing to mutate."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Setup .NET
+        if: steps.changes.outputs.changed == 'true'
+        uses: actions/setup-dotnet@a98b56852c35b8e3190ac28c8c2271da59106c68 # v6.0.0
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Restore tools
+        if: steps.changes.outputs.changed == 'true'
+        run: dotnet tool restore
+
+      - name: Self-test the changed-line scorer
+        if: steps.changes.outputs.changed == 'true'
+        run: python3 -I scripts/mutation-diff-score.py --self-test
+
+      - name: Mutate changed lines
+        if: steps.changes.outputs.changed == 'true'
+        run: make mutate PROJECT="$PROJECT" SINCE="$BASE" BREAK=80
+
+      - name: Summary
+        if: always() && steps.changes.outputs.changed == 'true'
+        run: |
+          lines="StrykerOutput/$PROJECT/reports/changed-lines.md"
+          report="StrykerOutput/$PROJECT/reports/mutation-report.md"
+          echo "## $PROJECT" >> "$GITHUB_STEP_SUMMARY"
+          if [ -f "$lines" ]; then
+            cat "$lines" >> "$GITHUB_STEP_SUMMARY"
+          fi
+          if [ -f "$report" ]; then
+            {
+              echo "<details><summary>Stryker report (not gated)</summary>"
+              echo
+              cat "$report"
+              echo
+              echo "</details>"
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Upload report
+        if: always() && steps.changes.outputs.changed == 'true'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: mutation-diff-report-${{ matrix.project }}
+          path: StrykerOutput/${{ matrix.project }}/reports/
+          if-no-files-found: ignore
+          retention-days: 14
