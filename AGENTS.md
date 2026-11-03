@@ -48,6 +48,9 @@ Every PR that touches the UI must include screenshots. The flow is:
    - New PR: `gh pr create --attach './before.png#Before' --attach './after.png#After'`
    - Existing PR body: `gh pr edit <number> --attach './screenshot.png#Alt text'`
    - PR comment: `gh pr comment <number> --attach './screenshot.png#Alt text'`
+
+   If `gh` refuses the upload, drag the PNGs into the pull request's
+   description in the web UI instead; it is the same pipeline.
 3. Link each image to its own asset URL. GitHub renders a bare
    `![alt](https://github.com/user-attachments/assets/<id>)` with a
    click-through link to `private-user-images.githubusercontent.com` whose
@@ -173,7 +176,9 @@ open a PR. Absolute rule, no exceptions.
   workflows may follow repo convention.
 - Always pin to the latest release: resolve with
   `gh api repos/<owner>/<action>/releases/latest --jq .tag_name`, then
-  `gh api repos/<owner>/<action>/git/refs/tags/<tag> --jq .object.sha`.
+  `gh api repos/<owner>/<action>/commits/<tag> --jq .sha`. That resolves an
+  annotated tag to its commit; `git/refs/tags/<tag>` would hand back the tag
+  object's SHA instead.
 - Every repo needs `.github/dependabot.yml` covering the `github-actions`
   ecosystem; add it if missing.
 - `zizmor.yml` audits every workflow and composite action, and its findings

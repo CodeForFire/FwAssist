@@ -51,6 +51,9 @@ jobs:
         id: claude
         uses: anthropics/claude-code-action@925afb53776cf1a2b738c6bdbed37b4d4000ef13 # v1.0.262
         with:
+          # The job's `actions: read` alone does not hand Claude its CI status and job-log tools.
+          additional_permissions: |
+            actions: read
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
           # Optional: Customize the trigger phrase (default: @claude)

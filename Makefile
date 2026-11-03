@@ -145,7 +145,7 @@ codeql: ## Run the PR's CodeQL analysis locally; fail on a result in lines chang
 	scripts/codeql-local.sh "$(BASE)"
 
 ci: ## Reproduce CI's build, test and format legs locally (everything except the Android head)
-	$(DOTNET) restore $(SLNF)
+	$(DOTNET) restore $(SLNF) --locked-mode
 	$(DOTNET) build $(SLNF) --configuration Release --no-restore
 	$(DOTNET) test $(SLNF) --configuration Release --no-build --verbosity normal
 	$(MAKE) format-check

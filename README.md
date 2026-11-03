@@ -50,7 +50,8 @@ im Play Store ist in Vorbereitung.
 ### Downloads prüfen
 
 Jedem Release liegt `SHA256SUMS.txt` bei, und die APK trägt einen
-Sigstore-Herkunftsnachweis:
+Sigstore-Herkunftsnachweis. Die Prüfsummen decken APK und SBOM ab; beide
+gehören zum Prüfen in denselben Ordner wie `SHA256SUMS.txt`:
 
 ```
 sha256sum -c SHA256SUMS.txt
