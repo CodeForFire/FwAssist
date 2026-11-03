@@ -25,7 +25,8 @@ public class MainActivity : AvaloniaMainActivity
     {
         _shell ??= CompositionRoot.CreateShell(
             new HelperServices(TimeProvider.System, new DispatcherTimerTicker()),
-            new AndroidLauncherIcons(ApplicationContext!),
+            new AndroidLauncherIcons(
+                ApplicationContext ?? throw new InvalidOperationException("Android created the activity without an application context.")),
             AppVersionText.Of(typeof(MainActivity).Assembly));
         var shell = _shell;
         Helfer.Ui.App.CreateShell = () => shell;

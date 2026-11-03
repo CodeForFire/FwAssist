@@ -31,10 +31,12 @@ public class DemoFlowRenderTests
         var phone = new PhoneRender();
         var tile = phone.Window.GetVisualDescendants().OfType<Button>().First(b => b.Classes.Contains("tile"));
 
-        tile.Command!.Execute(null);
+        Assert.NotNull(tile.Command);
+        tile.Command.Execute(null);
         PhoneRender.Settle();
         var start = phone.Window.GetVisualDescendants().OfType<Button>().First(b => Equals(b.Content, "START"));
-        start.Command!.Execute(null);
+        Assert.NotNull(start.Command);
+        start.Command.Execute(null);
         phone.Time.Advance(TimeSpan.FromSeconds(247));
         phone.Ticker.Tick();
         PhoneRender.Settle();

@@ -12,11 +12,14 @@ namespace Helfer.App.Android.Services;
 internal sealed class AndroidLauncherIcons : ILauncherIcons
 {
     private readonly Context _context;
+    private readonly string _packageName;
 
     public AndroidLauncherIcons(Context context)
     {
         ArgumentNullException.ThrowIfNull(context);
         _context = context;
+        _packageName = context.PackageName
+            ?? throw new ArgumentException("The context has no package name, so no alias can be addressed.", nameof(context));
     }
 
     public bool IsEnabled(string helperId)
@@ -48,5 +51,5 @@ internal sealed class AndroidLauncherIcons : ILauncherIcons
     }
 
     private ComponentName Component(string helperId) =>
-        new(_context.PackageName!, LauncherAlias.For(helperId));
+        new(_packageName, LauncherAlias.For(helperId));
 }
