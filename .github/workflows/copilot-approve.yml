@@ -55,8 +55,17 @@ jobs:
 
           comments=$(gh api --paginate "repos/$REPO/pulls/$PR/reviews/$REVIEW_ID/comments" --jq '.[].id' | wc -l)
           if [ "$comments" -eq 0 ]; then
-            gh pr review "$PR" --repo "$REPO" --approve \
-              --body "Copilot code review found nothing to flag on $head."
+            # Fail closed: zero comments alone also fits "Copilot wasn't able to
+            # review", so the body must say it reviewed every changed file.
+            body=$(gh api "repos/$REPO/pulls/$PR/reviews/$REVIEW_ID" --jq .body)
+            if ! [[ "$body" =~ reviewed\ ([0-9]+)\ out\ of\ ([0-9]+)\ changed\ files ]] ||
+               [ "${BASH_REMATCH[1]}" != "${BASH_REMATCH[2]}" ]; then
+              echo "Copilot's review does not confirm it covered every changed file; not approving."
+              exit 0
+            fi
+            # Pinned to the reviewed commit, so a push racing this job is not approved.
+            gh api -X POST "repos/$REPO/pulls/$PR/reviews" -f commit_id="$REVIEW_SHA" -f event=APPROVE \
+              -f body="Copilot code review found nothing to flag on $REVIEW_SHA." --silent
             exit 0
           fi
 
