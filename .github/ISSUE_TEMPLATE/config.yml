@@ -1,13 +1,13 @@
 blank_issues_enabled: false
 contact_links:
   - name: Frage stellen
-    url: https://github.com/CodeForFire/helfer/discussions/categories/q-a
-    about: Läuft das auf meinem Handy? Wie lege ich einen Helfer auf den Startbildschirm? Fragen zur Bedienung und zur Installation bitte unter Q&A stellen — nicht als Issue.
+    url: https://github.com/CodeForFire/helfer/discussions/categories/fragen-antworten
+    about: Läuft das auf meinem Handy? Wie lege ich einen Helfer auf den Startbildschirm? Fragen zur Bedienung und zur Installation bitte unter Fragen & Antworten stellen — nicht als Issue.
   - name: Idee einbringen
-    url: https://github.com/CodeForFire/helfer/discussions/categories/ideas
-    about: Welcher Helfer fehlt in der Hosentasche, was nervt, was macht Papier heute noch besser? Unter Ideas diskutieren wir das, bevor daraus ein Issue wird.
+    url: https://github.com/CodeForFire/helfer/discussions/categories/ideen
+    about: Welcher Helfer fehlt in der Hosentasche, was nervt, was macht Papier heute noch besser? Unter Ideen diskutieren wir das, bevor daraus ein Issue wird.
   - name: Aus der Praxis berichten
-    url: https://github.com/CodeForFire/helfer/discussions/categories/show-and-tell
+    url: https://github.com/CodeForFire/helfer/discussions/categories/aus-der-praxis
     about: Eure Wehr nutzt Helfer oder testet es bei einer Übung? Erzählt davon — Rückmeldung aus echten Einsätzen ist für uns das Wertvollste.
   - name: Sicherheitslücke melden
     url: https://github.com/CodeForFire/helfer/security/advisories/new

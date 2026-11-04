@@ -26,7 +26,7 @@ deshalb auch so aus.
 | **Stoppuhr** | Zeit messen, zum Beispiel bei einer Übung. Läuft weiter, während ein anderer Helfer offen ist. |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
-[Ideen](https://github.com/CodeForFire/helfer/discussions/categories/ideas).
+[Ideen](https://github.com/CodeForFire/helfer/discussions/categories/ideen).
 
 ## Ein Symbol pro Helfer
 
