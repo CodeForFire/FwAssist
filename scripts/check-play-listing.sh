@@ -16,12 +16,14 @@ listing="$repo_root/docs/play/listing-de-DE.md"
 
 fail=0
 
-# Pulls the Nth fenced block out of the listing. The blocks are, in order:
-# app name, short description, full description, reviewer instructions.
+# Pulls the fenced block under the "## <heading>" that starts with $1. Counting blocks
+# instead would hand back the next section's block once a pair of fences went missing,
+# and check it as the wrong field. A block that is never closed yields nothing.
 block() {
     awk -v want="$1" '
-        /^```$/ { inblock = !inblock; if (!inblock) n++; next }
-        inblock && n == want { print }
+        /^## / { insec = index($0, "## " want) == 1; inblock = 0; buf = ""; next }
+        insec && /^```$/ { if (inblock) { printf "%s", buf; exit } inblock = 1; next }
+        insec && inblock { buf = buf $0 "\n" }
     ' "$listing"
 }
 
@@ -39,11 +41,11 @@ check_len() {
     fi
 }
 
-name=$(block 0)
-short=$(block 1)
-full=$(block 2)
+name=$(block "App-Name")
+short=$(block "Kurzbeschreibung")
+full=$(block "Vollständige Beschreibung")
 
-# A listing whose fences were edited away yields empty blocks, and an empty block
+# A section whose fences were edited away yields an empty block, and an empty block
 # passes every length check, so absence is a failure of its own.
 for field in "app name:$name" "short description:$short" "full description:$full"; do
     if [ -z "${field#*:}" ]; then
@@ -61,14 +63,16 @@ check_len "full description" 4000 "$full"
 # documented rejection risk for a fire-service app — see docs/releasing.md.
 echo
 echo "Forbidden wording (docs/releasing.md)"
-# Anchored at a word start: "ehrenamtlich" is not a claim of official status.
-forbidden='\b(amtlich|offiziell|behördlich|Leitstelle|Notruf|alarmier|Alarmierung|112)'
+# Unanchored on purpose, so a compound such as "Einsatzleitstelle" is caught too.
+forbidden='amtlich|offiziell|behördlich|Leitstelle|Notruf|alarmier|Alarmierung|112'
 # The disclaimer has to say what the app is NOT, so its exact wording is exempt: it is
 # the one place these words legitimately appear. Only that phrase is cut out, never the
-# line around it, so a claim sharing its line is still caught.
-disclaimer='steht in keiner Verbindung zu einer Behörde oder Leitstelle'
+# line around it, so a claim sharing its line is still caught. "ehrenamtlich" is the one
+# word that contains a forbidden one without claiming anything.
 haystack=$(printf '%s\n%s\n%s' "$name" "$short" "$full")
-haystack=${haystack//"$disclaimer"/}
+for phrase in 'steht in keiner Verbindung zu einer Behörde oder Leitstelle' 'ehrenamtlich'; do
+    haystack=${haystack//"$phrase"/}
+done
 if hits=$(printf '%s' "$haystack" | grep -oiE "$forbidden" | sort -u); [ -n "$hits" ]; then
     echo "  FAIL  found: $(printf '%s' "$hits" | tr '\n' ' ')"
     fail=1
