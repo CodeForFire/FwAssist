@@ -169,6 +169,12 @@ A PR template with a short checklist will guide you:
   — CI checks for this (see [Changelog entries](#changelog-entries))
 - No real personal or Einsatz data, in code, fixtures or screenshots
 
+GitHub Copilot reviews every pull request, and again on every push. When its
+review of the latest commit has no inline comments, `github-actions[bot]`
+approves the pull request (Copilot itself cannot approve); when it does comment,
+that approval is withdrawn until a later push comes back clean. Pull requests
+from forks are reviewed but never approved by the bot.
+
 ## Changelog entries
 
 `CHANGELOG.md` is assembled, not edited. Each pull request brings its own file

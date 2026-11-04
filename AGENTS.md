@@ -65,6 +65,11 @@ Every PR that touches the UI must include screenshots. The flow is:
      > body.md && gh pr edit <number> --body-file body.md
    ```
 
+Copilot reviews every push (ruleset "Copilot review for default branch").
+`.github/workflows/copilot-approve.yml` approves as `github-actions[bot]` when
+that review has no inline comments, and withdraws the approval when a later one
+does. Treat Copilot's comments like any reviewer's: fix them or answer why not.
+
 For UI changes, provide a before/after pair. The render harness files are
 diagnostic-only and should not be committed unless they double as a real test.
 
