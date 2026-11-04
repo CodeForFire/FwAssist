@@ -1,0 +1,29 @@
+name: Feature request
+description: Suggest a new helper or an improvement to one
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem / use case
+      description: What do you need at an Einsatz or an Übung that a pocket helper could do, and that Helfer does not do (or does badly)?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: What should happen instead? Keep it concrete.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Other approaches, workarounds, or how you handle this today (paper, another app).
+  - type: checkboxes
+    id: context
+    attributes:
+      label: Context
+      options:
+        - label: I am using (or intend to use) Helfer in a fire brigade

@@ -1,0 +1,61 @@
+name: Bug report
+description: Something in Helfer is broken or behaves unexpectedly
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug!
+        Please use **fictional data only** in screenshots and examples —
+        names, phone numbers and anything from a real Einsatz must never be posted here.
+  - type: input
+    id: version
+    attributes:
+      label: Version
+      description: Shown at the bottom of the app's home screen, e.g. `0.1.0`
+      placeholder: 0.1.0
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Device and Android version
+      placeholder: Samsung Galaxy A54, Android 14
+    validations:
+      required: true
+  - type: input
+    id: helper
+    attributes:
+      label: Helper
+      description: Which helper, or "Übersicht" / "Einstellungen"
+      placeholder: Stoppuhr
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: What exactly did you do? Did you open the helper from its own icon or from the app?
+      placeholder: |
+        1. Open the Stoppuhr from its own icon
+        2. ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behaviour
+      description: Include error messages or log output if available.
+    validations:
+      required: true
+  - type: textarea
+    id: attachments
+    attributes:
+      label: Screenshots / files
+      description: Attach screenshots (fictional data only!).

@@ -1,0 +1,33 @@
+# Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+*.user
+.vs/
+TestResults/
+StrykerOutput/
+*.trx
+artifacts/
+
+# Signing material. The Google Play upload key lives in ~/.config/helfer/, never in the
+# tree — see docs/releasing.md. These patterns are defence in depth, not the mechanism.
+*.p12
+*.jks
+*.keystore
+*.pass
+
+# Planning artifacts from local tooling never land in the repository.
+docs/superpowers/
+.superpowers/
+
+# Local AI agent state
+.claude/
+.opencode/
+
+# git worktrees
+.worktrees/
+
+# Scratch renders for a pull request's before/after pair (`make phone-screenshots`).
+# The committed screenshot sets live in docs/screenshots and docs/play/screenshots.
+out/

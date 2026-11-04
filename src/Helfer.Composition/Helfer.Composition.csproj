@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The one place that knows every helper: the list the shell shows and the views that go with
+       them. Referenced by the Android head and the acceptance tests, so both see the same set. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Helfer.Ui\Helfer.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\Stoppuhr\Helfer.Helpers.Stoppuhr.Ui\Helfer.Helpers.Stoppuhr.Ui.csproj" />
+  </ItemGroup>
+
+</Project>

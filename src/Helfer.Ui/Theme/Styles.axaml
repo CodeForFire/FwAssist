@@ -1,0 +1,299 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- The base control styles from Lagebuch's Theme/Styles.axaml, without the classes that only
+       its incident views use. Change a shared look in both repositories, or accept the drift. -->
+
+  <Styles.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://Helfer.Ui/Theme/Tokens.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Styles.Resources>
+
+  <!-- =========================================================
+       GLOBAL TEXT
+       ========================================================= -->
+  <!-- SelectableTextBlock is named beside TextBlock here and in the classes below: a type selector
+       does not match a subclass, and a value made selectable so it can be copied  has to
+       look the same as plain text. -->
+  <Style Selector="TextBlock, SelectableTextBlock">
+    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="FontSize" Value="14" />
+  </Style>
+  <!-- Selectable text is for the mouse and a finger: it is no Tab stop, or every value on a card
+       would stand between the user and the next field or button. -->
+  <Style Selector="SelectableTextBlock">
+    <Setter Property="SelectionBrush" Value="#40FF3D2E" />
+    <Setter Property="IsTabStop" Value="False" />
+  </Style>
+
+  <!-- Display / heading -->
+  <Style Selector="TextBlock.display">
+    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="FontSize" Value="22" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+  </Style>
+
+  <!-- Section / overline label: condensed, tracked-out, muted -->
+  <Style Selector="TextBlock.overline">
+    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+    <Setter Property="LetterSpacing" Value="2.5" />
+  </Style>
+
+  <Style Selector="TextBlock.secondary, SelectableTextBlock.secondary">
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+  </Style>
+
+  <!-- A field's "you still have to fill this in" line: red, because it is the reason a press did
+       nothing. -->
+  <Style Selector="TextBlock.field-error">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="TextWrapping" Value="Wrap" />
+    <Setter Property="Foreground" Value="{StaticResource ErrorBrush}" />
+  </Style>
+
+  <!-- Tactical monospace: timestamps, call-signs, numbers -->
+  <Style Selector="TextBlock.mono, SelectableTextBlock.mono">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+  </Style>
+
+  <Style Selector="TextBlock.metric">
+    <Setter Property="FontFamily" Value="{StaticResource MonoFont}" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="FontSize" Value="28" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+  </Style>
+
+  <!-- =========================================================
+       BUTTONS — default = quiet outline; .signal = primary
+       ========================================================= -->
+  <Style Selector="Button">
+    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="Height" Value="{StaticResource ControlHeight}" />
+    <Setter Property="Padding" Value="16,0" />
+    <Setter Property="MinWidth" Value="0" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="Background" Duration="0:0:0.15" />
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Button /template/ ContentPresenter">
+    <Setter Property="Transitions">
+      <Transitions>
+        <TransformOperationsTransition Property="RenderTransform" Duration="0:0:0.12" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="Button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#2C3848" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+  </Style>
+  <Style Selector="Button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#161D27" />
+  </Style>
+  <Style Selector="Button:pressed">
+    <Setter Property="RenderTransform" Value="scale(0.97)" />
+  </Style>
+  <Style Selector="Button:disabled">
+    <Setter Property="Opacity" Value="0.4" />
+  </Style>
+
+  <!-- Primary signal button -->
+  <Style Selector="Button.signal">
+    <Setter Property="Background" Value="{StaticResource SignalGradientBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource SignalHotBrush}" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+  <Style Selector="Button.signal:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource SignalHotBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource SignalHotBrush}" />
+  </Style>
+  <Style Selector="Button.signal:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{StaticResource SignalDeepColor}" />
+  </Style>
+
+  <!-- Ghost button: text-only, used in header nav -->
+  <Style Selector="Button.ghost">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+  </Style>
+  <Style Selector="Button.ghost:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#1C2531" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+
+  <!-- Icon-only button: square, ghost background, at the 48dp touch minimum. Give each instance
+       an AutomationProperties.Name, since the icon alone carries no text. -->
+  <Style Selector="Button.icon-btn">
+    <Setter Property="Width" Value="{StaticResource ControlHeight}" />
+    <Setter Property="Height" Value="{StaticResource ControlHeight}" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+  <Style Selector="Button.icon-btn:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#1C2531" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
+  <Style Selector="Button.icon-btn PathIcon">
+    <Setter Property="Width" Value="20" />
+    <Setter Property="Height" Value="20" />
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+  </Style>
+  <Style Selector="Button.icon-btn:pointerover PathIcon">
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+  </Style>
+
+  <!-- =========================================================
+       INPUTS — TextBox / ComboBox / NumericUpDown
+       ========================================================= -->
+  <Style Selector="TextBox">
+    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="MinHeight" Value="{StaticResource ControlHeight}" />
+    <Setter Property="Padding" Value="11,7" />
+    <Setter Property="Background" Value="#0C1119" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="CaretBrush" Value="{StaticResource SignalBrush}" />
+    <Setter Property="SelectionBrush" Value="#40FF3D2E" />
+    <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}" />
+    <!-- Centre the text in the box: Avalonia's default is top-aligned, which shows as soon as the
+         box is taller than its padding needs. -->
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="TextBox /template/ Border#PART_BorderElement">
+    <Setter Property="Transitions">
+      <Transitions>
+        <BrushTransition Property="BorderBrush" Duration="0:0:0.15" />
+      </Transitions>
+    </Setter>
+  </Style>
+  <Style Selector="TextBox:pointerover /template/ Border#PART_BorderElement">
+    <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+    <Setter Property="Background" Value="#0C1119" />
+  </Style>
+  <!-- Text inputs show focus on their own edge, on any focus: a click into a field must show where
+       the typing goes too. So they take the focus colour on :focus and no adorner. -->
+  <Style Selector="TextBox, ComboBox">
+    <Setter Property="FocusAdorner" Value="{x:Null}" />
+  </Style>
+  <Style Selector="TextBox:focus /template/ Border#PART_BorderElement">
+    <Setter Property="BorderBrush" Value="{StaticResource FocusBrush}" />
+    <Setter Property="Background" Value="#0C1119" />
+  </Style>
+  <Style Selector="TextBox /template/ TextBlock#PART_Watermark, TextBox /template/ TextBlock#PART_FloatingWatermark">
+    <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}" />
+  </Style>
+  <!-- A field that cannot be changed is read-only, never disabled: a disabled field cannot be
+       selected, so its text could not be copied.
+       It drops the dark input well so it does not invite typing, and keeps its hairline and the
+       focus edge, so a keyboard user still sees where a selection would go. -->
+  <Style Selector="TextBox[IsReadOnly=True] /template/ Border#PART_BorderElement,
+                   TextBox[IsReadOnly=True]:pointerover /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+  </Style>
+  <Style Selector="TextBox[IsReadOnly=True]:focus /template/ Border#PART_BorderElement">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="{StaticResource FocusBrush}" />
+  </Style>
+  <!-- An example of what to type means nothing where nothing can be typed. -->
+  <Style Selector="TextBox[IsReadOnly=True] /template/ TextBlock#PART_Placeholder">
+    <Setter Property="Opacity" Value="0" />
+  </Style>
+
+  <!-- ComboBox -->
+  <Style Selector="ComboBox">
+    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="MinHeight" Value="{StaticResource ControlHeight}" />
+    <Setter Property="Padding" Value="11,5" />
+    <Setter Property="Background" Value="#0C1119" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}" />
+    <Setter Property="PlaceholderForeground" Value="{StaticResource TextMutedBrush}" />
+  </Style>
+  <Style Selector="ComboBox:pointerover /template/ Border#Background">
+    <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+    <Setter Property="Background" Value="#0C1119" />
+  </Style>
+  <Style Selector="ComboBox:focus /template/ Border#Background">
+    <Setter Property="BorderBrush" Value="{StaticResource FocusBrush}" />
+    <Setter Property="Background" Value="#0C1119" />
+  </Style>
+  <Style Selector="ComboBoxItem">
+    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="Padding" Value="11,8" />
+  </Style>
+
+  <!-- =========================================================
+       CHECKBOX
+       ========================================================= -->
+  <Style Selector="CheckBox">
+    <Setter Property="FontFamily" Value="{StaticResource BodyFont}" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+    <Setter Property="MinHeight" Value="0" />
+  </Style>
+
+  <!-- =========================================================
+       HELPER TILES — the home screen's list of helpers
+       ========================================================= -->
+  <Style Selector="Button.tile">
+    <Setter Property="Height" Value="NaN" />
+    <Setter Property="MinHeight" Value="72" />
+    <Setter Property="Padding" Value="16,12" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+    <Setter Property="Background" Value="{StaticResource SurfaceRaisedBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource HairlineBrush}" />
+    <Setter Property="CornerRadius" Value="{StaticResource RadiusMd}" />
+  </Style>
+  <!-- A full-width tile that shrinks by 3% on press reads as the whole screen jumping. -->
+  <Style Selector="Button.tile:pressed">
+    <Setter Property="RenderTransform" Value="none" />
+  </Style>
+
+  <!-- =========================================================
+       TOGGLESWITCH — on is ActiveColor, the "läuft / an" green, not Fluent's accent blue
+       ========================================================= -->
+  <Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
+    <Setter Property="Background" Value="{StaticResource ActiveBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource ActiveBrush}" />
+  </Style>
+  <Style Selector="ToggleSwitch:checked /template/ Ellipse#SwitchKnobOn">
+    <Setter Property="Fill" Value="{StaticResource AppBgColor}" />
+  </Style>
+
+  <Style Selector="ScrollBar">
+    <Setter Property="Background" Value="Transparent" />
+  </Style>
+
+</Styles>

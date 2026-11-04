@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The views, the theme and the Avalonia Application. A plain net10.0 library rather than part
+       of the Android head, so the headless acceptance tests can load every view. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\Fonts\*.ttf" />
+    <!-- OFL condition 2: the licence travels with the fonts, so it is embedded beside them. -->
+    <AvaloniaResource Include="Assets\Fonts\OFL.txt" />
+    <AvaloniaResource Include="Assets\codeforfire.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Helfer.AppLogic\Helfer.AppLogic.csproj" />
+  </ItemGroup>
+
+</Project>
