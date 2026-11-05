@@ -24,6 +24,7 @@ deshalb auch so aus.
 | Helfer | Was er tut |
 |---|---|
 | **Stoppuhr** | Zeit messen, zum Beispiel bei einer Übung. Läuft weiter, während ein anderer Helfer offen ist. |
+| **Funkalphabet** | Wörter für den Funk buchstabieren, wahlweise mit der alten Tafel (Anton, Berta, …) oder nach DIN 5009:2022 (Aachen, Berlin, …). |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
 [Ideen](https://github.com/CodeForFire/helfer/discussions/categories/ideen).
@@ -60,14 +61,18 @@ gh attestation verify helfer-<version>.apk --repo CodeForFire/helfer
 
 ## Status
 
-Frühe Entwicklung. Die App-Hülle steht, die Stoppuhr ist der erste Helfer und
-dient zugleich als Vorlage für alle weiteren.
+Frühe Entwicklung. Die App-Hülle steht, die Stoppuhr dient als Vorlage für alle
+weiteren Helfer.
 
 ## Screenshots
 
 | Übersicht | Stoppuhr | Einstellungen |
 |---|---|---|
 | ![Übersicht](docs/screenshots/01-uebersicht.png) | ![Stoppuhr](docs/screenshots/02-stoppuhr.png) | ![Einstellungen](docs/screenshots/03-einstellungen.png) |
+
+| Funkalphabet |
+|---|
+| ![Funkalphabet](docs/screenshots/04-funkalphabet.png) |
 
 ## Mitmachen & Kontakt
 

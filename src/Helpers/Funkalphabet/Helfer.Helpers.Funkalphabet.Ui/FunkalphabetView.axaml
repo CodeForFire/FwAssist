@@ -1,0 +1,54 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Helfer.Helpers.Funkalphabet;assembly=Helfer.Helpers.Funkalphabet"
+             x:Class="Helfer.Helpers.Funkalphabet.Ui.FunkalphabetView"
+             x:DataType="vm:FunkalphabetViewModel">
+  <!-- The field stays at the top and the list scrolls under it, so the soft keyboard never covers
+       what is being typed. The table switch sits at the bottom, in thumb reach. The chosen table is
+       named in words as well as lit up: colour alone does not carry it. -->
+  <DockPanel Margin="16">
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,12,*" Margin="0,12,0,0">
+      <Button x:Name="UseAltButton" Grid.Column="0" HorizontalAlignment="Stretch"
+              Classes.signal="{Binding IsAlt}"
+              Content="ALT" Command="{Binding UseAltCommand}" />
+      <Button x:Name="UseDin2022Button" Grid.Column="2" HorizontalAlignment="Stretch"
+              Classes.signal="{Binding IsDin2022}"
+              Content="DIN 2022" Command="{Binding UseDin2022Command}" />
+    </Grid>
+    <TextBox x:Name="Input" DockPanel.Dock="Top" MaxLength="40"
+             PlaceholderText="Wort eingeben"
+             AutomationProperties.Name="Text zum Buchstabieren"
+             Text="{Binding Text}" />
+    <TextBlock x:Name="TableName" DockPanel.Dock="Top" Classes="overline" Margin="0,12,0,8"
+               Text="{Binding TableName}" />
+    <ScrollViewer>
+      <StackPanel Spacing="16">
+        <ItemsControl x:Name="Spelled" ItemsSource="{Binding Spelled}" IsVisible="{Binding HasSpelling}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:CodeWord">
+              <Grid ColumnDefinitions="56,*" MinHeight="32">
+                <TextBlock Grid.Column="0" Classes="mono" VerticalAlignment="Center" Text="{Binding Symbol}" />
+                <TextBlock Grid.Column="1" Classes="display" VerticalAlignment="Center" Text="{Binding Word}" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <ItemsControl x:Name="Entries" ItemsSource="{Binding Entries}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="2" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:CodeWord">
+              <Grid ColumnDefinitions="40,*" MinHeight="32">
+                <TextBlock Grid.Column="0" Classes="mono" VerticalAlignment="Center" Text="{Binding Symbol}" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Word}" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

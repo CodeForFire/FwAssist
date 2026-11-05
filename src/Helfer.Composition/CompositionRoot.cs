@@ -1,6 +1,8 @@
 using Helfer.AppLogic.Helpers;
 using Helfer.AppLogic.Services;
 using Helfer.AppLogic.ViewModels;
+using Helfer.Helpers.Funkalphabet;
+using Helfer.Helpers.Funkalphabet.Ui;
 using Helfer.Helpers.Stoppuhr;
 using Helfer.Helpers.Stoppuhr.Ui;
 using Helfer.Ui;
@@ -17,12 +19,14 @@ public static class CompositionRoot
     public static IReadOnlyList<IHelperModule> Modules { get; } =
     [
         new StoppuhrModule(),
+        new FunkalphabetModule(),
     ];
 
     public static void RegisterViews(ViewRegistry views)
     {
         ArgumentNullException.ThrowIfNull(views);
         StoppuhrViews.Register(views);
+        FunkalphabetViews.Register(views);
     }
 
     public static ShellViewModel CreateShell(HelperServices services, ILauncherIcons launcherIcons, string appVersion) =>

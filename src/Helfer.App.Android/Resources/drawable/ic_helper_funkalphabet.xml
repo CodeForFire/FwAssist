@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Launcher icon below API 26: a round signal disc with the glyph. API 26+ uses the adaptive icon
+     in drawable-anydpi-v26 with the same glyph. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+        android:width="48dp" android:height="48dp"
+        android:viewportWidth="24" android:viewportHeight="24">
+  <path android:fillColor="@color/icon_dark" android:pathData="M12,0 A12,12 0 1 0 12,24 A12,12 0 1 0 12,0 Z" />
+  <group android:scaleX="0.6" android:scaleY="0.6" android:translateX="4.8" android:translateY="4.8">
+    <path android:fillColor="#FFFFFF" android:fillType="evenOdd" android:pathData="M7,1 H9 V7 H17 A2,2 0 0 1 19,9 V21 A2,2 0 0 1 17,23 H7 A2,2 0 0 1 5,21 V9 A2,2 0 0 1 7,7 Z M8,10 V14 H16 V10 Z M8,16 V18 H16 V16 Z" />
+  </group>
+</vector>
