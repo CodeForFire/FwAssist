@@ -13,6 +13,15 @@ public class DemoFlowRenderTests
     private static List<string?> Texts(Control root) =>
         root.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text).ToList();
 
+    // The words in the spelled list only: the reference table below it shows every code word anyway.
+    private static List<string?> SpelledWords(Control root)
+    {
+        var spelled = root.GetVisualDescendants().OfType<ItemsControl>().Single(c => c.Name == "Spelled");
+        Assert.True(spelled.IsVisible);
+        return spelled.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.Classes.Contains("display")).Select(t => t.Text).ToList();
+    }
+
     [AvaloniaFact]
     public void Home_lists_every_helper_with_its_summary()
     {
@@ -79,10 +88,8 @@ public class DemoFlowRenderTests
         input.Text = "Schlauch";
         PhoneRender.Settle();
 
-        var texts = Texts(phone.Window);
-        Assert.Contains("ALT (DIN 5009:1983)", texts);
-        Assert.Contains("Schule", texts);
-        Assert.Contains("Zacharias", texts);
+        Assert.Contains("ALT (DIN 5009:1983)", Texts(phone.Window));
+        Assert.Equal(["Schule", "Ludwig", "Anton", "Ulrich", "Charlotte"], SpelledWords(phone.Window));
 
         phone.Capture("04-funkalphabet.png");
 
@@ -91,9 +98,9 @@ public class DemoFlowRenderTests
         din.Command.Execute(null);
         PhoneRender.Settle();
 
-        texts = Texts(phone.Window);
-        Assert.Contains("DIN 5009:2022", texts);
-        Assert.Contains("Salzwedel", texts);
-        Assert.DoesNotContain("Schule", texts);
+        Assert.Contains("DIN 5009:2022", Texts(phone.Window));
+        Assert.Equal(
+            ["Salzwedel", "Chemnitz", "Hamburg", "Leipzig", "Aachen", "Unna", "Chemnitz", "Hamburg"],
+            SpelledWords(phone.Window));
     }
 }
