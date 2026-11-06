@@ -26,6 +26,7 @@ deshalb auch so aus.
 | **Stoppuhr** | Zeit messen, zum Beispiel bei einer Übung. Läuft weiter, während ein anderer Helfer offen ist. |
 | **Funkalphabet** | Wörter für den Funk buchstabieren, wahlweise mit der alten Tafel (Anton, Berta, …) oder nach DIN 5009:2022 (Aachen, Berlin, …). |
 | **Schaummittel** | Rechnet in beide Richtungen: wie viel Schaum der Vorrat ergibt und wie viel Wasser und Schaummittel ein Raum braucht. |
+| **RTH-Landeplatz** | Vorgaben und Ablauf, wenn die Feuerwehr einen Landeplatz für den Rettungshubschrauber vorbereitet, getrennt für Tag und Nacht. |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
 [Ideen](https://github.com/CodeForFire/helfer/discussions/categories/ideen).
@@ -74,6 +75,10 @@ weiteren Helfer.
 | Funkalphabet | Schaummittel |
 |---|---|
 | ![Funkalphabet](docs/screenshots/04-funkalphabet.png) | ![Schaummittel](docs/screenshots/05-schaummittel.png) |
+
+| RTH-Landeplatz bei Tag | RTH-Landeplatz bei Nacht |
+|---|---|
+| ![RTH-Landeplatz bei Tag](docs/screenshots/06-rth-landeplatz-tag.png) | ![RTH-Landeplatz bei Nacht](docs/screenshots/07-rth-landeplatz-nacht.png) |
 
 ## Mitmachen & Kontakt
 

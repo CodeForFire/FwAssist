@@ -37,6 +37,7 @@ DIE HELFER
 • Stoppuhr — Zeit messen, zum Beispiel bei einer Übung
 • Funkalphabet — Wörter für den Funk buchstabieren, mit der alten Tafel oder nach DIN 5009:2022
 • Schaummittel — Schaum aus dem Vorrat und Bedarf für einen Raum berechnen
+• RTH-Landeplatz — Vorgaben und Ablauf für den Landeplatz, bei Tag und bei Nacht
 
 Weitere Helfer folgen. Ideen dafür sammeln wir offen auf GitHub.
 

@@ -11,6 +11,7 @@
     <ProjectReference Include="..\Helpers\Stoppuhr\Helfer.Helpers.Stoppuhr.Ui\Helfer.Helpers.Stoppuhr.Ui.csproj" />
     <ProjectReference Include="..\Helpers\Funkalphabet\Helfer.Helpers.Funkalphabet.Ui\Helfer.Helpers.Funkalphabet.Ui.csproj" />
     <ProjectReference Include="..\Helpers\Schaummittel\Helfer.Helpers.Schaummittel.Ui\Helfer.Helpers.Schaummittel.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\RthLandeplatz\Helfer.Helpers.RthLandeplatz.Ui\Helfer.Helpers.RthLandeplatz.Ui.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Helfer.Helpers.RthLandeplatz;assembly=Helfer.Helpers.RthLandeplatz"
+             x:Class="Helfer.Helpers.RthLandeplatz.Ui.Drawings.LandeplatzTagDrawing"
+             x:DataType="vm:SiteDrawing">
+  <!-- Our own plan and section, new work from the facts in DRF-T, ADAC and Folie 46. Every dimension is text. -->
+  <Viewbox Stretch="Uniform">
+    <Canvas Width="360" Height="364">
+      <TextBlock Classes="d-head" Canvas.Left="0" Canvas.Top="0" Text="Von oben" />
+      <Path Classes="d-wind" Data="M330,28 L268,28 M276.1,24.1 L268,28 L276.1,31.9" />
+      <TextBlock Classes="d-small" Canvas.Left="224" Canvas.Top="19" Text="Wind" />
+      <Path Classes="d-zone" Data="M16,46 L240,72 L240,162 L16,188 Z" />
+      <TextBlock Classes="d" Canvas.Left="30" Canvas.Top="96" Text="Anflugsektor" />
+      <TextBlock Classes="d-small" Canvas.Left="30" Canvas.Top="114" Text="frei von Hindernissen" />
+      <Path Classes="d-arrow" Data="M170,136 L232,136 M223.9,139.9 L232,136 L223.9,132.1" />
+      <TextBlock Classes="d-small" Canvas.Left="176" Canvas.Top="114" Text="Anflug" />
+      <Path Classes="d-site" Data="M240,72 H330 V162 H240 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="240" Canvas.Top="96" Width="90" TextAlignment="Center" Text="30 m x 30 m" />
+      <TextBlock Classes="d-small" Canvas.Left="240" Canvas.Top="114" Width="90" TextAlignment="Center" Text="oder größer" />
+      <TextBlock Classes="d-head" Canvas.Left="0" Canvas.Top="204" Text="Im Schnitt" />
+      <Path Classes="d-zone" Data="M70,284 L310,324 L70,324 Z" />
+      <Path Classes="d-slope" Data="M70,284 L310,324" />
+      <Path Classes="d-ground" Data="M10,324 H350" />
+      <Path Classes="d-dim" Data="M45,284 H55 M50,284 V324 M45,324 H55" />
+      <TextBlock Classes="d-small" Canvas.Left="8" Canvas.Top="295" Text="20 m" />
+      <TextBlock Classes="d" Canvas.Left="92" Canvas.Top="302" Text="6:1" />
+      <Path Classes="d-dim" Data="M70,333 V343 M70,338 H310 M310,333 V343" />
+      <TextBlock Classes="d-small" Canvas.Left="70" Canvas.Top="342" Width="240" TextAlignment="Center" Text="120 m" />
+      <Path Classes="d-arrow" Data="M246,222 L306,316 M298.3,311.3 L306,316 L304.9,307.1" />
+      <TextBlock Classes="d-small" Canvas.Left="146" Canvas.Top="222" Text="Steillandung" />
+    </Canvas>
+  </Viewbox>
+</UserControl>

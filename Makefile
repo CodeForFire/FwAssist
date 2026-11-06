@@ -88,7 +88,7 @@ test: ## Run tests (PROJECT=path and/or FILTER=FullyQualifiedName~Foo to narrow)
 
 # Projects with a tests/Helfer.<name>.Tests/stryker-config.json, by the part after "Helfer.".
 # The acceptance tests are left out: headless UI is too slow to repeat once per mutant.
-MUTATE_PROJECTS := Core AppLogic Helpers.Stoppuhr Helpers.Funkalphabet Helpers.Schaummittel
+MUTATE_PROJECTS := Core AppLogic Helpers.Stoppuhr Helpers.Funkalphabet Helpers.Schaummittel Helpers.RthLandeplatz
 
 # Where each project's source lives, for SINCE= below.
 mutate_src = $(if $(filter Helpers.%,$(1)),src/Helpers/$(patsubst Helpers.%,%,$(1))/Helfer.$(1),src/Helfer.$(1))

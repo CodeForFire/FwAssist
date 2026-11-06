@@ -1,0 +1,21 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Helfer.Helpers.RthLandeplatz;assembly=Helfer.Helpers.RthLandeplatz"
+             x:Class="Helfer.Helpers.RthLandeplatz.Ui.Drawings.AbstandUnbeteiligteDrawing"
+             x:DataType="vm:SiteDrawing">
+  <!-- Our own plan, new work from the fact in ADAC. -->
+  <Viewbox Stretch="Uniform">
+    <Canvas Width="360" Height="214">
+      <Path Classes="d-danger-line" Data="M88,100 A92,92 0 1 0 272,100 A92,92 0 1 0 88,100 Z" />
+      <Path Classes="d-heli" Canvas.Left="144" Canvas.Top="64" Width="72" Height="104" Stretch="Uniform" />
+      <Path Classes="d-soft" Data="M180,100 L270,100 M263.7,103.0 L270,100 L263.7,97.0" />
+      <TextBlock Classes="d-small" Canvas.Left="204" Canvas.Top="104" Text="mind. 50 m" />
+      <Path Classes="d-person" Canvas.Left="8" Canvas.Top="50" Width="12" Height="22" Stretch="Uniform" />
+      <Path Classes="d-person" Canvas.Left="30" Canvas.Top="92" Width="12" Height="22" Stretch="Uniform" />
+      <Path Classes="d-person" Canvas.Left="10" Canvas.Top="134" Width="12" Height="22" Stretch="Uniform" />
+      <Path Classes="d-person" Canvas.Left="334" Canvas.Top="44" Width="12" Height="22" Stretch="Uniform" />
+      <Path Classes="d-person" Canvas.Left="338" Canvas.Top="146" Width="12" Height="22" Stretch="Uniform" />
+      <TextBlock Classes="d-small" Canvas.Left="0" Canvas.Top="194" Width="360" TextAlignment="Center" Text="Unbeteiligte bleiben draußen" />
+    </Canvas>
+  </Viewbox>
+</UserControl>
