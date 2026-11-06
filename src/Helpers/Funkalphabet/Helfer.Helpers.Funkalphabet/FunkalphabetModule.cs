@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Helfer.AppLogic.Helpers;
+using Helfer.AppLogic.Services;
 
 namespace Helfer.Helpers.Funkalphabet;
 
@@ -20,6 +21,6 @@ public sealed class FunkalphabetModule : IHelperModule
     public ObservableObject CreateViewModel(HelperServices services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        return new FunkalphabetViewModel();
+        return new FunkalphabetViewModel(services.Settings ?? new InMemoryHelperSettings());
     }
 }

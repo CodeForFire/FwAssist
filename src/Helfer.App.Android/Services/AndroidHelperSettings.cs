@@ -17,7 +17,19 @@ internal sealed class AndroidHelperSettings : IHelperSettings
             ?? throw new InvalidOperationException("Android returned no SharedPreferences.");
     }
 
-    public string? Get(string key) => _preferences.GetString(key, null);
+    public string? Get(string key)
+    {
+        try
+        {
+            return _preferences.GetString(key, null);
+        }
+        catch (Java.Lang.ClassCastException)
+        {
+            // The key holds something other than a string. This app never writes one, but a helper
+            // must still open: it treats the value as missing and falls back to its default.
+            return null;
+        }
+    }
 
     public void Set(string key, string value)
     {
