@@ -3,6 +3,7 @@ using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using Helfer.Composition;
 using Helfer.Helpers.Funkalphabet;
+using Helfer.Helpers.Schaummittel;
 
 namespace Helfer.Acceptance.Tests;
 
@@ -20,6 +21,22 @@ public class DemoFlowRenderTests
         Assert.True(spelled.IsVisible);
         return spelled.GetVisualDescendants().OfType<TextBlock>()
             .Where(t => t.Classes.Contains("display")).Select(t => t.Text).ToList();
+    }
+
+    // The result lines only, label then value: the form above them holds similar words.
+    private static List<string?> ResultTexts(Control root)
+    {
+        var results = root.GetVisualDescendants().OfType<ItemsControl>().Single(c => c.Name == "Results");
+        Assert.True(results.IsEffectivelyVisible);
+        return Texts(results);
+    }
+
+    private static SchaummittelViewModel OpenSchaummittel(PhoneRender phone)
+    {
+        phone.Shell.Open(SchaummittelModule.HelperId);
+        PhoneRender.Settle();
+        return phone.Window.GetVisualDescendants().OfType<Control>()
+            .Select(c => c.DataContext).OfType<SchaummittelViewModel>().First();
     }
 
     [AvaloniaFact]
@@ -111,5 +128,45 @@ public class DemoFlowRenderTests
         PhoneRender.Settle();
 
         Assert.True(string.IsNullOrEmpty(input.Text));
+    }
+
+    [AvaloniaFact]
+    public void The_schaummittel_rechner_works_out_a_room_and_shows_only_that_mode()
+    {
+        var phone = new PhoneRender();
+        var page = OpenSchaummittel(phone);
+        var panels = phone.Window.GetVisualDescendants().OfType<StackPanel>().ToList();
+        Assert.False(panels.Single(p => p.Name == "RaumFields").IsVisible);
+
+        phone.Window.GetVisualDescendants().OfType<RadioButton>().Single(b => b.Name == "RaumMode").IsChecked = true;
+        page.Verschaeumungszahl.Text = "10";
+        page.Laenge.Text = "10";
+        page.Breite.Text = "5";
+        page.Hoehe.Text = "3";
+        PhoneRender.Settle();
+
+        Assert.True(page.IsRaum);
+        Assert.True(panels.Single(p => p.Name == "RaumFields").IsVisible);
+        Assert.False(panels.Single(p => p.Name == "VorratFields").IsVisible);
+        Assert.Equal(
+            ["Raum", "150,0 m³", "Schaum", "150,0 m³", "Gemisch", "15.000 l", "Schaummittel", "450 l", "Wasser", "14.550 l"],
+            ResultTexts(phone.Window));
+
+        phone.Capture("05-schaummittel.png");
+    }
+
+    [AvaloniaFact]
+    public void A_bad_schaummittel_value_shows_its_error_under_the_field()
+    {
+        var phone = new PhoneRender();
+        var page = OpenSchaummittel(phone);
+
+        page.Zumischrate.Text = "300";
+        PhoneRender.Settle();
+
+        var errors = phone.Window.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.Classes.Contains("field-error") && t.IsEffectivelyVisible)
+            .Select(t => t.Text);
+        Assert.Equal(["Von 0,1 bis 50 % möglich."], errors);
     }
 }

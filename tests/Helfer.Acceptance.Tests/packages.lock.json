@@ -301,6 +301,7 @@
         "type": "Project",
         "dependencies": {
           "Helfer.Helpers.Funkalphabet.Ui": "[1.0.0, )",
+          "Helfer.Helpers.Schaummittel.Ui": "[1.0.0, )",
           "Helfer.Helpers.Stoppuhr.Ui": "[1.0.0, )",
           "Helfer.Ui": "[1.0.0, )"
         }
@@ -321,6 +322,22 @@
         "dependencies": {
           "Avalonia": "[12.1.4, )",
           "Helfer.Helpers.Funkalphabet": "[1.0.0, )",
+          "Helfer.Ui": "[1.0.0, )"
+        }
+      },
+      "helfer.helpers.schaummittel": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
+          "Helfer.AppLogic": "[1.0.0, )",
+          "Helfer.Core": "[1.0.0, )"
+        }
+      },
+      "helfer.helpers.schaummittel.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Avalonia": "[12.1.4, )",
+          "Helfer.Helpers.Schaummittel": "[1.0.0, )",
           "Helfer.Ui": "[1.0.0, )"
         }
       },

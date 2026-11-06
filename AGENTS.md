@@ -104,7 +104,8 @@ manifest disagree. `AutomationPropertiesTests` walks every helper's page.
 
 A helper's view model is created once per process and kept while the user
 visits other helpers, so a running timer keeps running. A helper whose state
-must survive the process being killed persists it itself.
+must survive the process being killed persists it itself, through
+`HelperServices.Settings` (`IHelperSettings`).
 
 ## Mobile
 
@@ -216,8 +217,8 @@ Dependencies point one way, and nothing may invert them:
 - `Core` references nothing. It is Lagebuch's `Domain`: values and rules any
   helper may share, such as `Formatting`.
 - `AppLogic` holds the shell's view models and the service seams (`ITicker`,
-  `ILauncherIcons`, `IHelperModule`) and has **no Avalonia reference**, which
-  is what makes it testable without a UI.
+  `ILauncherIcons`, `IHelperSettings`, `IHelperModule`) and has **no Avalonia
+  reference**, which is what makes it testable without a UI.
 - `Ui` holds the Avalonia `App`, the theme and the shell's views. It is a plain
   `net10.0` library so the headless tests can load it.
 - A helper is two projects under `src/Helpers/<Name>/`: `Helfer.Helpers.<Name>`

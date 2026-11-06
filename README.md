@@ -25,6 +25,7 @@ deshalb auch so aus.
 |---|---|
 | **Stoppuhr** | Zeit messen, zum Beispiel bei einer Übung. Läuft weiter, während ein anderer Helfer offen ist. |
 | **Funkalphabet** | Wörter für den Funk buchstabieren, wahlweise mit der alten Tafel (Anton, Berta, …) oder nach DIN 5009:2022 (Aachen, Berlin, …). |
+| **Schaummittel** | Rechnet in beide Richtungen: wie viel Schaum der Vorrat ergibt und wie viel Wasser und Schaummittel ein Raum braucht. |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
 [Ideen](https://github.com/CodeForFire/helfer/discussions/categories/ideen).
@@ -70,9 +71,9 @@ weiteren Helfer.
 |---|---|---|
 | ![Übersicht](docs/screenshots/01-uebersicht.png) | ![Stoppuhr](docs/screenshots/02-stoppuhr.png) | ![Einstellungen](docs/screenshots/03-einstellungen.png) |
 
-| Funkalphabet |
-|---|
-| ![Funkalphabet](docs/screenshots/04-funkalphabet.png) |
+| Funkalphabet | Schaummittel |
+|---|---|
+| ![Funkalphabet](docs/screenshots/04-funkalphabet.png) | ![Schaummittel](docs/screenshots/05-schaummittel.png) |
 
 ## Mitmachen & Kontakt
 
