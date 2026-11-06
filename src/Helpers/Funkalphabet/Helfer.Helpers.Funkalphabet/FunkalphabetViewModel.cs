@@ -12,7 +12,7 @@ public sealed partial class FunkalphabetViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(Spelled))]
     [NotifyPropertyChangedFor(nameof(HasSpelling))]
-    private string _text = string.Empty;
+    private string? _text = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TableName))]
@@ -32,7 +32,7 @@ public sealed partial class FunkalphabetViewModel : ObservableObject
 
     public bool HasSpelling => Spelled.Count > 0;
 
-    public IReadOnlyList<CodeWord> Spelled => Table.Spell(Text);
+    public IReadOnlyList<CodeWord> Spelled => Table.Spell(Text ?? string.Empty);
 
     public IReadOnlyList<CodeWord> Entries => Table.Entries;
 

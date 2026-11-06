@@ -36,6 +36,17 @@ public class FunkalphabetViewModelTests
     }
 
     [Fact]
+    public void A_null_from_the_binding_spells_nothing()
+    {
+        var vm = new FunkalphabetViewModel { Text = "ab" };
+
+        vm.Text = null;
+
+        Assert.False(vm.HasSpelling);
+        Assert.Empty(vm.Spelled);
+    }
+
+    [Fact]
     public void Switching_the_table_respells_the_text_and_changes_the_list()
     {
         var vm = new FunkalphabetViewModel { Text = "ab" };
