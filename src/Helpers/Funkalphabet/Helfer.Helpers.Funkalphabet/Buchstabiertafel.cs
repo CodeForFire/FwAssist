@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Text;
 
 namespace Helfer.Helpers.Funkalphabet;
@@ -10,13 +11,30 @@ namespace Helfer.Helpers.Funkalphabet;
 /// </summary>
 public sealed class Buchstabiertafel
 {
+    // Spoken one at a time in either table, and "zwo" so that it is not misheard as "drei". These
+    // are radio procedure, not DIN's letters, so they stay out of Entries. Declared before Alt and
+    // Din2022: their initializers read this.
+    private static readonly CodeWord[] Digits =
+    [
+        new("0", "null"),
+        new("1", "eins"),
+        new("2", "zwo"),
+        new("3", "drei"),
+        new("4", "vier"),
+        new("5", "fünf"),
+        new("6", "sechs"),
+        new("7", "sieben"),
+        new("8", "acht"),
+        new("9", "neun"),
+    ];
+
     // Sch before S and Ch before C: the longest match wins.
     private readonly List<CodeWord> _longestFirst;
 
     private Buchstabiertafel(IReadOnlyList<CodeWord> entries)
     {
         Entries = entries;
-        _longestFirst = entries.OrderByDescending(e => e.Symbol.Length).ToList();
+        _longestFirst = entries.Concat(Digits).OrderByDescending(e => e.Symbol.Length).ToList();
     }
 
     public static Buchstabiertafel Alt { get; } = new(
@@ -93,8 +111,8 @@ public sealed class Buchstabiertafel
     public IReadOnlyList<CodeWord> Entries { get; }
 
     /// <summary>
-    /// The text as it is said: one code word per letter, a digit or sign as itself, and one
-    /// <see cref="CodeWord.Gap"/> between words.
+    /// The text as it is said: one code word per letter, one word per digit, a sign as itself, and
+    /// one <see cref="CodeWord.Gap"/> between words.
     /// </summary>
     public IReadOnlyList<CodeWord> Spell(string text)
     {
@@ -133,11 +151,19 @@ public sealed class Buchstabiertafel
     // by cutting an emoji in half, for U+FFFD: Normalize throws on one. FormC folds an umlaut typed
     // as a letter plus a combining mark into the one character the table lists. Upper-casing leaves
     // ß alone, so a capital ẞ is folded onto it by hand. This is a lookup key, not display text.
-    private static string ToKey(string text) =>
-        Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(text))
+    private static string ToKey(string text)
+    {
+        var folded = Encoding.UTF8.GetString(Encoding.UTF8.GetBytes(text))
             .Normalize(NormalizationForm.FormC)
             .ToUpperInvariant()
             .Replace('ẞ', 'ß');
+        return string.Concat(folded.EnumerateRunes().Where(IsVisible).Select(r => r.ToString()));
+    }
+
+    // A joiner, soft hyphen or variation selector would be a row that looks empty. A combining mark
+    // still here after FormC has no letter to fold into. Variation selectors are marks, not Format.
+    private static bool IsVisible(Rune rune) =>
+        Rune.GetUnicodeCategory(rune) is not (UnicodeCategory.Format or UnicodeCategory.NonSpacingMark);
 
     private CodeWord Match(string key, int index)
     {
@@ -149,7 +175,7 @@ public sealed class Buchstabiertafel
             }
         }
 
-        // Anything else stands for itself, and a character outside the BMP stays in one piece.
+        // A sign stands for itself, and a character outside the BMP stays in one piece.
         Rune.DecodeFromUtf16(key.AsSpan(index), out var rune, out _);
         var symbol = rune.ToString();
         return new CodeWord(symbol, symbol);

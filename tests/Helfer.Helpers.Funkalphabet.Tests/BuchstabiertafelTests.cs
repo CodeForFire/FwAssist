@@ -69,12 +69,37 @@ public class BuchstabiertafelTests
         Assert.Equal(["Ärger"], Words(Buchstabiertafel.Alt, "Ä"));
 
     [Fact]
-    public void Digits_and_signs_pass_through_unchanged()
+    public void A_digit_is_spoken_as_its_word_and_a_sign_stands_for_itself()
     {
         var spelled = Buchstabiertafel.Alt.Spell("B-7");
 
-        Assert.Equal(["Berta", "-", "7"], spelled.Select(c => c.Word));
+        Assert.Equal(["Berta", "-", "sieben"], spelled.Select(c => c.Word));
         Assert.Equal(["B", "-", "7"], spelled.Select(c => c.Symbol));
+    }
+
+    [Fact]
+    public void Every_digit_has_its_word_and_two_is_zwo()
+    {
+        string[] words = ["null", "eins", "zwo", "drei", "vier", "fünf", "sechs", "sieben", "acht", "neun"];
+
+        Assert.Equal(words, Words(Buchstabiertafel.Alt, "0123456789"));
+        Assert.Equal(words, Words(Buchstabiertafel.Din2022, "0123456789"));
+    }
+
+    [Fact]
+    public void A_number_is_spoken_digit_by_digit_in_either_table()
+    {
+        string[] words = ["eins", "/", "vier", "vier", "-", "zwo"];
+
+        Assert.Equal(words, Words(Buchstabiertafel.Alt, "1/44-2"));
+        Assert.Equal(words, Words(Buchstabiertafel.Din2022, "1/44-2"));
+    }
+
+    [Fact]
+    public void The_digits_stay_out_of_the_reference_tables()
+    {
+        Assert.DoesNotContain(Buchstabiertafel.Alt.Entries, e => char.IsDigit(e.Symbol[0]));
+        Assert.DoesNotContain(Buchstabiertafel.Din2022.Entries, e => char.IsDigit(e.Symbol[0]));
     }
 
     [Fact]
@@ -99,6 +124,30 @@ public class BuchstabiertafelTests
     [Fact]
     public void An_emoji_passes_through_whole() =>
         Assert.Equal(["\U0001F692"], Words(Buchstabiertafel.Alt, "\U0001F692"));
+
+    [Theory]
+    [InlineData("A\u200BB")] // zero width space
+    [InlineData("A\u200DB")] // zero width joiner
+    [InlineData("A\u00ADB")] // soft hyphen
+    [InlineData("A\uFE0FB")] // variation selector
+    public void An_invisible_character_leaves_no_row(string text) =>
+        Assert.Equal(["Anton", "Berta"], Words(Buchstabiertafel.Alt, text));
+
+    [Fact]
+    public void An_invisible_character_outside_the_bmp_leaves_no_row() =>
+        Assert.Equal(["Anton", "Berta"], Words(Buchstabiertafel.Alt, "A\U000E0001B"));
+
+    [Fact]
+    public void A_soft_hyphen_does_not_split_sch() =>
+        Assert.Equal(["Schule"], Words(Buchstabiertafel.Alt, "S\u00ADCH"));
+
+    [Fact]
+    public void A_joined_emoji_spells_as_its_visible_parts() =>
+        Assert.Equal(["\U0001F469", "\U0001F692"], Words(Buchstabiertafel.Alt, "\U0001F469\u200D\U0001F692"));
+
+    [Fact]
+    public void Nothing_but_invisible_characters_spells_as_nothing() =>
+        Assert.Empty(Buchstabiertafel.Alt.Spell("\u200B\u00AD\uFE0F"));
 
     [Fact]
     public void A_broken_surrogate_does_not_throw()
