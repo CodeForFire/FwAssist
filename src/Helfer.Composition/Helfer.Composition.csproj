@@ -9,6 +9,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Helfer.Ui\Helfer.Ui.csproj" />
     <ProjectReference Include="..\Helpers\Stoppuhr\Helfer.Helpers.Stoppuhr.Ui\Helfer.Helpers.Stoppuhr.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\Funkalphabet\Helfer.Helpers.Funkalphabet.Ui\Helfer.Helpers.Funkalphabet.Ui.csproj" />
   </ItemGroup>
 
 </Project>

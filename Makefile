@@ -88,7 +88,7 @@ test: ## Run tests (PROJECT=path and/or FILTER=FullyQualifiedName~Foo to narrow)
 
 # Projects with a tests/Helfer.<name>.Tests/stryker-config.json, by the part after "Helfer.".
 # The acceptance tests are left out: headless UI is too slow to repeat once per mutant.
-MUTATE_PROJECTS := Core AppLogic Helpers.Stoppuhr
+MUTATE_PROJECTS := Core AppLogic Helpers.Stoppuhr Helpers.Funkalphabet
 
 # Where each project's source lives, for SINCE= below.
 mutate_src = $(if $(filter Helpers.%,$(1)),src/Helpers/$(patsubst Helpers.%,%,$(1))/Helfer.$(1),src/Helfer.$(1))
@@ -110,7 +110,7 @@ BREAK ?= 80
 MUTATE_OUT = $(CURDIR)/StrykerOutput/$(PROJECT)
 MUTATE_SCORE = python3 -I scripts/mutation-diff-score.py
 
-mutate: ## Mutation-test one project (PROJECT=Core|AppLogic|Helpers.Stoppuhr [SINCE= BREAK=80])
+mutate: ## Mutation-test one project (PROJECT=Core|AppLogic|Helpers.<Name> [SINCE= BREAK=80])
 	@if [ -z "$(filter $(PROJECT),$(MUTATE_PROJECTS))" ]; then \
 	  echo "Usage: make mutate PROJECT=<one of: $(MUTATE_PROJECTS)>"; exit 2; fi
 	@rm -f $(MUTATE_OUT)/reports/changed-lines.md

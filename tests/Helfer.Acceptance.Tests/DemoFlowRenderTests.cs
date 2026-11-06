@@ -1,7 +1,8 @@
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
-using Helfer.Helpers.Stoppuhr;
+using Helfer.Composition;
+using Helfer.Helpers.Funkalphabet;
 
 namespace Helfer.Acceptance.Tests;
 
@@ -12,14 +13,27 @@ public class DemoFlowRenderTests
     private static List<string?> Texts(Control root) =>
         root.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text).ToList();
 
+    // The words in the spelled list only: the reference table below it shows every code word anyway.
+    private static List<string?> SpelledWords(Control root)
+    {
+        var spelled = root.GetVisualDescendants().OfType<ItemsControl>().Single(c => c.Name == "Spelled");
+        Assert.True(spelled.IsVisible);
+        return spelled.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.Classes.Contains("display")).Select(t => t.Text).ToList();
+    }
+
     [AvaloniaFact]
     public void Home_lists_every_helper_with_its_summary()
     {
         var phone = new PhoneRender();
 
         var texts = Texts(phone.Window);
-        Assert.Contains("Stoppuhr", texts);
-        Assert.Contains(new StoppuhrModule().Summary, texts);
+        foreach (var module in CompositionRoot.Modules)
+        {
+            Assert.Contains(module.Title, texts);
+            Assert.Contains(module.Summary, texts);
+        }
+
         Assert.Contains("Version 0.1.0", texts);
 
         phone.Capture("01-uebersicht.png");
@@ -56,9 +70,46 @@ public class DemoFlowRenderTests
         phone.Shell.Home.OpenSettingsCommand.Execute(null);
         PhoneRender.Settle();
 
-        var toggle = Assert.Single(phone.Window.GetVisualDescendants().OfType<ToggleSwitch>());
-        Assert.True(toggle.IsChecked);
+        var toggles = phone.Window.GetVisualDescendants().OfType<ToggleSwitch>().ToList();
+        Assert.Equal(CompositionRoot.Modules.Count, toggles.Count);
+        Assert.All(toggles, t => Assert.True(t.IsChecked));
 
         phone.Capture("03-einstellungen.png");
+    }
+
+    [AvaloniaFact]
+    public void The_funkalphabet_spells_what_is_typed_and_switches_to_the_din_table()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(FunkalphabetModule.HelperId);
+        PhoneRender.Settle();
+        var input = phone.Window.GetVisualDescendants().OfType<TextBox>().Single(t => t.Name == "Input");
+
+        input.Text = "Schlauch";
+        PhoneRender.Settle();
+
+        Assert.Contains("ALT (DIN 5009:1983)", Texts(phone.Window));
+        Assert.Equal(["Schule", "Ludwig", "Anton", "Ulrich", "Charlotte"], SpelledWords(phone.Window));
+
+        phone.Capture("04-funkalphabet.png");
+
+        var alt = phone.Window.GetVisualDescendants().OfType<RadioButton>().Single(b => b.Name == "AltTable");
+        var din = phone.Window.GetVisualDescendants().OfType<RadioButton>().Single(b => b.Name == "Din2022Table");
+        Assert.True(alt.IsChecked);
+        din.IsChecked = true;
+        PhoneRender.Settle();
+
+        Assert.False(alt.IsChecked);
+        Assert.Contains("DIN 5009:2022", Texts(phone.Window));
+        Assert.Equal(
+            ["Salzwedel", "Chemnitz", "Hamburg", "Leipzig", "Aachen", "Unna", "Chemnitz", "Hamburg"],
+            SpelledWords(phone.Window));
+
+        var clear = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "ClearButton");
+        Assert.NotNull(clear.Command);
+        clear.Command.Execute(null);
+        PhoneRender.Settle();
+
+        Assert.True(string.IsNullOrEmpty(input.Text));
     }
 }

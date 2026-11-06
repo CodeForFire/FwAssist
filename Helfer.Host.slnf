@@ -8,10 +8,13 @@
       "src/Helfer.Core/Helfer.Core.csproj",
       "src/Helpers/Stoppuhr/Helfer.Helpers.Stoppuhr.Ui/Helfer.Helpers.Stoppuhr.Ui.csproj",
       "src/Helpers/Stoppuhr/Helfer.Helpers.Stoppuhr/Helfer.Helpers.Stoppuhr.csproj",
+      "src/Helpers/Funkalphabet/Helfer.Helpers.Funkalphabet.Ui/Helfer.Helpers.Funkalphabet.Ui.csproj",
+      "src/Helpers/Funkalphabet/Helfer.Helpers.Funkalphabet/Helfer.Helpers.Funkalphabet.csproj",
       "tests/Helfer.Acceptance.Tests/Helfer.Acceptance.Tests.csproj",
       "tests/Helfer.AppLogic.Tests/Helfer.AppLogic.Tests.csproj",
       "tests/Helfer.Core.Tests/Helfer.Core.Tests.csproj",
-      "tests/Helfer.Helpers.Stoppuhr.Tests/Helfer.Helpers.Stoppuhr.Tests.csproj"
+      "tests/Helfer.Helpers.Stoppuhr.Tests/Helfer.Helpers.Stoppuhr.Tests.csproj",
+      "tests/Helfer.Helpers.Funkalphabet.Tests/Helfer.Helpers.Funkalphabet.Tests.csproj"
     ]
   }
 }
