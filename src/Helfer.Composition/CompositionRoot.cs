@@ -3,6 +3,8 @@ using Helfer.AppLogic.Services;
 using Helfer.AppLogic.ViewModels;
 using Helfer.Helpers.Funkalphabet;
 using Helfer.Helpers.Funkalphabet.Ui;
+using Helfer.Helpers.RthLandeplatz;
+using Helfer.Helpers.RthLandeplatz.Ui;
 using Helfer.Helpers.Schaummittel;
 using Helfer.Helpers.Schaummittel.Ui;
 using Helfer.Helpers.Stoppuhr;
@@ -23,6 +25,7 @@ public static class CompositionRoot
         new StoppuhrModule(),
         new FunkalphabetModule(),
         new SchaummittelModule(),
+        new RthLandeplatzModule(),
     ];
 
     public static void RegisterViews(ViewRegistry views)
@@ -31,6 +34,7 @@ public static class CompositionRoot
         StoppuhrViews.Register(views);
         FunkalphabetViews.Register(views);
         SchaummittelViews.Register(views);
+        RthLandeplatzViews.Register(views);
     }
 
     public static ShellViewModel CreateShell(HelperServices services, ILauncherIcons launcherIcons, string appVersion) =>

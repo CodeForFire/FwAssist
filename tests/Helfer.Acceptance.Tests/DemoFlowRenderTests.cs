@@ -1,8 +1,10 @@
+using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using Helfer.Composition;
 using Helfer.Helpers.Funkalphabet;
+using Helfer.Helpers.RthLandeplatz;
 using Helfer.Helpers.Schaummittel;
 
 namespace Helfer.Acceptance.Tests;
@@ -168,5 +170,91 @@ public class DemoFlowRenderTests
             .Where(t => t.Classes.Contains("field-error") && t.IsEffectivelyVisible)
             .Select(t => t.Text);
         Assert.Equal(["Von 0,1 bis 50 % möglich."], errors);
+    }
+
+    private static Control Named(PhoneRender phone, string name) =>
+        phone.Window.GetVisualDescendants().OfType<Control>().Single(c => c.Name == name);
+
+    private static List<string> VisibleTexts(Control root) =>
+        root.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.IsEffectivelyVisible)
+            .Select(t => t.Text ?? string.Empty)
+            .ToList();
+
+    private static List<string?> DrawingNames(Control root) =>
+        root.GetVisualDescendants().OfType<UserControl>()
+            .Where(c => c.GetType().Name.EndsWith("Drawing", StringComparison.Ordinal))
+            .Select(AutomationProperties.GetName)
+            .ToList();
+
+    [AvaloniaFact]
+    public void The_rth_landeplatz_shows_only_the_values_of_its_mode()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(RthLandeplatzModule.HelperId);
+        PhoneRender.Settle();
+
+        Assert.Contains(Landeplatzvorgaben.PilotDecides, VisibleTexts(phone.Window));
+        Assert.DoesNotContain(Landeplatzvorgaben.AbortRule, VisibleTexts(phone.Window));
+        Assert.Contains("Fläche: 30 m x 30 m oder größer", VisibleTexts(phone.Window));
+        Assert.DoesNotContain(VisibleTexts(phone.Window), t => t.Contains("35 m x 70 m", StringComparison.Ordinal));
+
+        phone.Capture("06-rth-landeplatz-tag.png");
+
+        ((RadioButton)Named(phone, "NachtMode")).IsChecked = true;
+        PhoneRender.Settle();
+
+        Assert.Contains(Landeplatzvorgaben.PilotDecides, VisibleTexts(phone.Window));
+        Assert.Contains(Landeplatzvorgaben.AbortRule, VisibleTexts(phone.Window));
+        Assert.Contains("Fläche: 35 m x 70 m oder größer", VisibleTexts(phone.Window));
+        Assert.DoesNotContain(VisibleTexts(phone.Window), t => t.Contains("30 m x 30 m", StringComparison.Ordinal));
+
+        phone.Capture("07-rth-landeplatz-nacht.png");
+    }
+
+    [AvaloniaFact]
+    public void The_pilot_line_and_the_abort_rule_stay_outside_the_scrolling_steps()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(RthLandeplatzModule.HelperId);
+        PhoneRender.Settle();
+
+        var scroller = Named(phone, "Sections").GetVisualAncestors().OfType<ScrollViewer>().First();
+
+        Assert.False(scroller.IsVisualAncestorOf(Named(phone, "PilotDecides")));
+        Assert.False(scroller.IsVisualAncestorOf(Named(phone, "AbortRule")));
+    }
+
+    [AvaloniaFact]
+    public void Every_rth_landeplatz_drawing_tells_a_screen_reader_what_it_shows()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(RthLandeplatzModule.HelperId);
+        PhoneRender.Settle();
+
+        var tag = DrawingNames(phone.Window);
+        ((RadioButton)Named(phone, "NachtMode")).IsChecked = true;
+        PhoneRender.Settle();
+        var nacht = DrawingNames(phone.Window);
+
+        Assert.Equal(
+            Landeplatzvorgaben.Tag.SelectMany(s => s.Drawings).Select(d => d.Description),
+            tag);
+        Assert.Equal(
+            Landeplatzvorgaben.Nacht.SelectMany(s => s.Drawings).Select(d => d.Description),
+            nacht);
+    }
+
+    [AvaloniaFact]
+    public void The_rth_landeplatz_names_its_sources()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(RthLandeplatzModule.HelperId);
+        PhoneRender.Settle();
+
+        var texts = Texts(Named(phone, "SourceList"));
+
+        Assert.All(Landeplatzvorgaben.Sources, source => Assert.Contains(source, texts));
+        Assert.Contains(Landeplatzvorgaben.SourceNote, texts);
     }
 }

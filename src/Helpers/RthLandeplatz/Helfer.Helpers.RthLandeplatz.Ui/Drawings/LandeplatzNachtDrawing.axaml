@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Helfer.Helpers.RthLandeplatz;assembly=Helfer.Helpers.RthLandeplatz"
+             x:Class="Helfer.Helpers.RthLandeplatz.Ui.Drawings.LandeplatzNachtDrawing"
+             x:DataType="vm:SiteDrawing">
+  <!-- Our own plan, new work from the facts in DRF-N, vfdb-C and Folie 46. -->
+  <Viewbox Stretch="Uniform">
+    <Canvas Width="360" Height="252">
+      <TextBlock Classes="d-head" Canvas.Left="0" Canvas.Top="0" Text="Von oben" />
+      <Path Classes="d-arrow" Data="M66,30 L122,30 M113.9,33.9 L122,30 L113.9,26.1" />
+      <TextBlock Classes="d-small" Canvas.Left="66" Canvas.Top="8" Text="Anflug" />
+      <Path Classes="d-wind" Data="M294,30 L238,30 M246.1,26.1 L238,30 L246.1,33.9" />
+      <TextBlock Classes="d-small" Canvas.Left="256" Canvas.Top="8" Text="Wind" />
+      <Path Classes="d-zone" Data="M2,48 L126,84 L126,152 L2,188 Z" />
+      <Path Classes="d-zone" Data="M358,48 L234,84 L234,152 L358,188 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="8" Canvas.Top="92" Text="Anflugsektor" />
+      <TextBlock Classes="d-small" Canvas.Left="8" Canvas.Top="108" Text="ca. 250 m frei" />
+      <TextBlock Classes="d-small" Canvas.Left="8" Canvas.Top="124" Text="mindestens 6:1" />
+      <TextBlock Classes="d-small" Canvas.Left="254" Canvas.Top="92" Text="Anflugsektor" />
+      <TextBlock Classes="d-small" Canvas.Left="254" Canvas.Top="108" Text="ca. 250 m frei" />
+      <TextBlock Classes="d-small" Canvas.Left="254" Canvas.Top="124" Text="mindestens 6:1" />
+      <Path Classes="d-site" Data="M126,84 H234 V152 H126 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="126" Canvas.Top="100" Width="108" TextAlignment="Center" Text="35 m x 70 m" />
+      <TextBlock Classes="d-small" Canvas.Left="126" Canvas.Top="118" Width="108" TextAlignment="Center" Text="oder größer" />
+      <Path Classes="d-lamp" Data="M120,84 A6,6 0 1 0 132,84 A6,6 0 1 0 120,84 Z" />
+      <Path Classes="d-lamp" Data="M228,84 A6,6 0 1 0 240,84 A6,6 0 1 0 228,84 Z" />
+      <Path Classes="d-lamp" Data="M120,152 A6,6 0 1 0 132,152 A6,6 0 1 0 120,152 Z" />
+      <Path Classes="d-lamp" Data="M228,152 A6,6 0 1 0 240,152 A6,6 0 1 0 228,152 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="80" Canvas.Top="60" Width="200" TextAlignment="Center" Text="Scheinwerfer an jeder Ecke" />
+      <Path Classes="d-car" Data="M150,166 H178 V180 H150 Z" />
+      <Path Classes="d-blue" Data="M160,173 A4,4 0 1 0 168,173 A4,4 0 1 0 160,173 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="186" Canvas.Top="165" Text="Fahrzeug mit Blaulicht" />
+      <Path Classes="d-beam" Data="M86,236 L30,208 L48,194 Z" />
+      <Path Classes="d-obstacle" Data="M22,224 L38,188 L54,224 Z M35,224 H41 V236 H35 Z" />
+      <Path Classes="d-lamp" Data="M85,238 A5,5 0 1 0 95,238 A5,5 0 1 0 85,238 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="102" Canvas.Top="214" Text="Hindernis anstrahlen," />
+      <TextBlock Classes="d-small" Canvas.Left="102" Canvas.Top="230" Text="das Licht zeigt vom Platz weg" />
+    </Canvas>
+  </Viewbox>
+</UserControl>
