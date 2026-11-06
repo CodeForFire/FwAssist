@@ -3,6 +3,8 @@ using Helfer.AppLogic.Services;
 using Helfer.AppLogic.ViewModels;
 using Helfer.Helpers.Funkalphabet;
 using Helfer.Helpers.Funkalphabet.Ui;
+using Helfer.Helpers.Schaummittel;
+using Helfer.Helpers.Schaummittel.Ui;
 using Helfer.Helpers.Stoppuhr;
 using Helfer.Helpers.Stoppuhr.Ui;
 using Helfer.Ui;
@@ -20,6 +22,7 @@ public static class CompositionRoot
     [
         new StoppuhrModule(),
         new FunkalphabetModule(),
+        new SchaummittelModule(),
     ];
 
     public static void RegisterViews(ViewRegistry views)
@@ -27,6 +30,7 @@ public static class CompositionRoot
         ArgumentNullException.ThrowIfNull(views);
         StoppuhrViews.Register(views);
         FunkalphabetViews.Register(views);
+        SchaummittelViews.Register(views);
     }
 
     public static ShellViewModel CreateShell(HelperServices services, ILauncherIcons launcherIcons, string appVersion) =>

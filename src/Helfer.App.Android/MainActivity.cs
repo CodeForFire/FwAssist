@@ -23,10 +23,11 @@ public class MainActivity : AvaloniaMainActivity
 
     protected override void OnCreate(global::Android.OS.Bundle? savedInstanceState)
     {
+        var context = ApplicationContext
+            ?? throw new InvalidOperationException("Android created the activity without an application context.");
         _shell ??= CompositionRoot.CreateShell(
-            new HelperServices(new BootClockTimeProvider(), new DispatcherTimerTicker()),
-            new AndroidLauncherIcons(
-                ApplicationContext ?? throw new InvalidOperationException("Android created the activity without an application context.")),
+            new HelperServices(new BootClockTimeProvider(), new DispatcherTimerTicker(), new AndroidHelperSettings(context)),
+            new AndroidLauncherIcons(context),
             AppVersionText.Of(typeof(MainActivity).Assembly));
         var shell = _shell;
         Helfer.Ui.App.CreateShell = () => shell;

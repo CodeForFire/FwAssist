@@ -14,6 +14,25 @@ public static class Formatting
     /// <summary>A whole number the way the user reads it (de-DE grouping).</summary>
     public static string Number(int value) => value.ToString("N0", De);
 
+    /// <summary>A number the way the user reads it, with a fixed count of decimals: "1.234,5".</summary>
+    public static string Number(decimal value, int decimals) =>
+        value.ToString("N" + decimals.ToString(CultureInfo.InvariantCulture), De);
+
+    /// <summary>
+    /// A number as typed on a phone. A comma and a dot both mean the decimal separator, because
+    /// which one a number keyboard offers depends on the keyboard, so "1.234" is 1,234 and never
+    /// a thousand. No sign and no exponent: every amount in this app is positive.
+    /// </summary>
+    public static bool TryParseNumber(string text, out decimal value)
+    {
+        ArgumentNullException.ThrowIfNull(text);
+        return decimal.TryParse(
+            text.Trim().Replace(',', '.'),
+            NumberStyles.AllowDecimalPoint,
+            CultureInfo.InvariantCulture,
+            out value);
+    }
+
     public static string Timestamp(DateTimeOffset t) => t.ToString("dd.MM.yyyy HH:mm", De);
 
     /// <summary>Clock time alone, "14:05".</summary>
