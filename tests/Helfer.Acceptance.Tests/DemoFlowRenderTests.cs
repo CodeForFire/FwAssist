@@ -93,14 +93,23 @@ public class DemoFlowRenderTests
 
         phone.Capture("04-funkalphabet.png");
 
-        var din = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "UseDin2022Button");
-        Assert.NotNull(din.Command);
-        din.Command.Execute(null);
+        var alt = phone.Window.GetVisualDescendants().OfType<RadioButton>().Single(b => b.Name == "AltTable");
+        var din = phone.Window.GetVisualDescendants().OfType<RadioButton>().Single(b => b.Name == "Din2022Table");
+        Assert.True(alt.IsChecked);
+        din.IsChecked = true;
         PhoneRender.Settle();
 
+        Assert.False(alt.IsChecked);
         Assert.Contains("DIN 5009:2022", Texts(phone.Window));
         Assert.Equal(
             ["Salzwedel", "Chemnitz", "Hamburg", "Leipzig", "Aachen", "Unna", "Chemnitz", "Hamburg"],
             SpelledWords(phone.Window));
+
+        var clear = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "ClearButton");
+        Assert.NotNull(clear.Command);
+        clear.Command.Execute(null);
+        PhoneRender.Settle();
+
+        Assert.True(string.IsNullOrEmpty(input.Text));
     }
 }

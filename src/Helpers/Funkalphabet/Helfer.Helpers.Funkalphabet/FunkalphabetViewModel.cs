@@ -10,35 +10,44 @@ namespace Helfer.Helpers.Funkalphabet;
 public sealed partial class FunkalphabetViewModel : ObservableObject
 {
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(Spelled))]
-    [NotifyPropertyChangedFor(nameof(HasSpelling))]
     private string? _text = string.Empty;
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(TableName))]
     [NotifyPropertyChangedFor(nameof(IsAlt))]
     [NotifyPropertyChangedFor(nameof(IsDin2022))]
-    [NotifyPropertyChangedFor(nameof(Spelled))]
-    [NotifyPropertyChangedFor(nameof(HasSpelling))]
     [NotifyPropertyChangedFor(nameof(Entries))]
     private Buchstabiertafel _table = Buchstabiertafel.Alt;
+
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasSpelling))]
+    private IReadOnlyList<CodeWord> _spelled = [];
 
     /// <summary>On screen at all times: the two tables give different words for every letter.</summary>
     public string TableName => IsAlt ? "ALT (DIN 5009:1983)" : "DIN 5009:2022";
 
-    public bool IsAlt => ReferenceEquals(Table, Buchstabiertafel.Alt);
+    public bool IsAlt
+    {
+        get => ReferenceEquals(Table, Buchstabiertafel.Alt);
+        set => Table = value ? Buchstabiertafel.Alt : Buchstabiertafel.Din2022;
+    }
 
-    public bool IsDin2022 => !IsAlt;
+    public bool IsDin2022
+    {
+        get => !IsAlt;
+        set => IsAlt = !value;
+    }
 
     public bool HasSpelling => Spelled.Count > 0;
 
-    public IReadOnlyList<CodeWord> Spelled => Table.Spell(Text ?? string.Empty);
-
     public IReadOnlyList<CodeWord> Entries => Table.Entries;
 
-    [RelayCommand]
-    private void UseAlt() => Table = Buchstabiertafel.Alt;
+    partial void OnTextChanged(string? value) => Respell();
+
+    partial void OnTableChanged(Buchstabiertafel value) => Respell();
 
     [RelayCommand]
-    private void UseDin2022() => Table = Buchstabiertafel.Din2022;
+    private void Clear() => Text = string.Empty;
+
+    private void Respell() => Spelled = Table.Spell(Text ?? string.Empty);
 }

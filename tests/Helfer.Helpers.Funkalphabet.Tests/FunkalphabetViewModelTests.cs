@@ -51,7 +51,7 @@ public class FunkalphabetViewModelTests
     {
         var vm = new FunkalphabetViewModel { Text = "ab" };
 
-        vm.UseDin2022Command.Execute(null);
+        vm.IsDin2022 = true;
 
         Assert.Equal("DIN 5009:2022", vm.TableName);
         Assert.True(vm.IsDin2022);
@@ -61,12 +61,44 @@ public class FunkalphabetViewModelTests
     }
 
     [Fact]
+    public void Unchecking_one_table_selects_the_other()
+    {
+        var vm = new FunkalphabetViewModel();
+
+        vm.IsAlt = false;
+        Assert.True(vm.IsDin2022);
+
+        vm.IsDin2022 = false;
+        Assert.True(vm.IsAlt);
+    }
+
+    [Fact]
+    public void Reading_the_spelling_twice_does_not_spell_twice()
+    {
+        var vm = new FunkalphabetViewModel { Text = "ab" };
+
+        Assert.Same(vm.Spelled, vm.Spelled);
+    }
+
+    [Fact]
+    public void Clearing_empties_the_field_and_the_spelling()
+    {
+        var vm = new FunkalphabetViewModel { Text = "ab" };
+
+        vm.ClearCommand.Execute(null);
+
+        Assert.Equal(string.Empty, vm.Text);
+        Assert.False(vm.HasSpelling);
+        Assert.Empty(vm.Spelled);
+    }
+
+    [Fact]
     public void Switching_back_returns_to_the_old_table()
     {
         var vm = new FunkalphabetViewModel { Text = "a" };
 
-        vm.UseDin2022Command.Execute(null);
-        vm.UseAltCommand.Execute(null);
+        vm.IsDin2022 = true;
+        vm.IsAlt = true;
 
         Assert.Equal(["Anton"], vm.Spelled.Select(c => c.Word));
     }
@@ -78,7 +110,7 @@ public class FunkalphabetViewModelTests
         var changed = new List<string?>();
         vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
 
-        vm.UseDin2022Command.Execute(null);
+        vm.IsDin2022 = true;
 
         Assert.Contains(nameof(vm.TableName), changed);
         Assert.Contains(nameof(vm.IsAlt), changed);

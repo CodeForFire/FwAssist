@@ -9,6 +9,9 @@
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="avares://Helfer.Ui/Theme/Tokens.axaml" />
       </ResourceDictionary.MergedDictionaries>
+      <!-- Fluent's RadioButton sizes the box around its circle from this, so at the default 32 the
+           circle sits above the centre of a glove-sized control. -->
+      <StaticResource x:Key="RadioButtonMinHeight" ResourceKey="ControlHeight" />
     </ResourceDictionary>
   </Styles.Resources>
 
@@ -279,6 +282,20 @@
   <!-- A full-width tile that shrinks by 3% on press reads as the whole screen jumping. -->
   <Style Selector="Button.tile:pressed">
     <Setter Property="RenderTransform" Value="none" />
+  </Style>
+
+  <!-- =========================================================
+       RADIOBUTTON — a choice of one, in the signal colour, not Fluent's accent blue
+       ========================================================= -->
+  <Style Selector="RadioButton">
+    <Setter Property="MinHeight" Value="{StaticResource ControlHeight}" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+    <Setter Property="FontFamily" Value="{StaticResource DisplayFont}" />
+    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+  </Style>
+  <Style Selector="RadioButton:checked /template/ Ellipse#CheckOuterEllipse">
+    <Setter Property="Fill" Value="{StaticResource SignalBrush}" />
+    <Setter Property="Stroke" Value="{StaticResource SignalBrush}" />
   </Style>
 
   <!-- =========================================================
