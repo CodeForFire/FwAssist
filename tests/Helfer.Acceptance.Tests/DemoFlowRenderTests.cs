@@ -174,6 +174,47 @@ public class DemoFlowRenderTests
         Assert.Equal(["Von 0,1 bis 50 % möglich."], errors);
     }
 
+    [AvaloniaTheory]
+    [InlineData("Zumischrate in %", "1 %")]
+    [InlineData("Verschäumungszahl", "LEICHT 500")]
+    public void A_schaummittel_preset_sits_beside_its_field_at_glove_size(string field, string preset)
+    {
+        var phone = new PhoneRender();
+        OpenSchaummittel(phone);
+
+        var input = phone.Window.GetVisualDescendants().OfType<TextBox>()
+            .Single(t => AutomationProperties.GetName(t) == field);
+        var button = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => Equals(b.Content, preset));
+        var inputTop = input.TranslatePoint(default, phone.Window);
+        var buttonTop = button.TranslatePoint(default, phone.Window);
+
+        Assert.NotNull(inputTop);
+        Assert.NotNull(buttonTop);
+        Assert.Equal(inputTop.Value.Y, buttonTop.Value.Y, precision: 0);
+        Assert.True(button.Bounds.Height >= 48, $"{preset} is {button.Bounds.Height} high");
+    }
+
+    // 780 dp is about what a 915 dp phone leaves between its status and navigation bars.
+    [AvaloniaFact]
+    public void A_whole_schaummittel_room_calculation_fits_without_scrolling()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Height = 780;
+        var page = OpenSchaummittel(phone);
+
+        page.IsRaum = true;
+        page.Verschaeumungszahl.Text = "10";
+        page.Laenge.Text = "10";
+        page.Breite.Text = "5";
+        page.Hoehe.Text = "3";
+        PhoneRender.Settle();
+
+        var form = phone.Window.GetVisualDescendants().OfType<ScrollViewer>().Single(s => s.Name == "Form");
+        Assert.True(
+            form.Extent.Height <= form.Viewport.Height + 1,
+            $"The form is {form.Extent.Height} high in a viewport of {form.Viewport.Height}");
+    }
+
     private static Control Named(PhoneRender phone, string name) =>
         phone.Window.GetVisualDescendants().OfType<Control>().Single(c => c.Name == name);
 

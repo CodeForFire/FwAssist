@@ -3,16 +3,31 @@
              xmlns:vm="clr-namespace:Helfer.Helpers.Schaummittel;assembly=Helfer.Helpers.Schaummittel"
              x:Class="Helfer.Helpers.Schaummittel.Ui.SchaummittelView"
              x:DataType="vm:SchaummittelViewModel">
-  <UserControl.DataTemplates>
+  <UserControl.Resources>
     <!-- Every input looks the same. Number opens the phone's decimal keyboard, and with no
          suggestions it cannot rewrite a value. -->
+    <DataTemplate x:Key="NumberInput" x:DataType="vm:NumberField">
+      <TextBox Text="{Binding Text}"
+               AutomationProperties.Name="{Binding Label}"
+               TextInputOptions.ContentType="Number"
+               TextInputOptions.ShowSuggestions="False" />
+    </DataTemplate>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <!-- Three presets share what the field leaves of a phone's width: the width goes, the height
+         stays at the glove-sized 48 dp. -->
+    <Style Selector="Button.preset">
+      <Setter Property="Padding" Value="4,0" />
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
+  </UserControl.Styles>
+
+  <UserControl.DataTemplates>
     <DataTemplate DataType="vm:NumberField" x:DataType="vm:NumberField">
       <StackPanel Spacing="4">
         <TextBlock Classes="overline" Text="{Binding Label}" />
-        <TextBox Text="{Binding Text}"
-                 AutomationProperties.Name="{Binding Label}"
-                 TextInputOptions.ContentType="Number"
-                 TextInputOptions.ShowSuggestions="False" />
+        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource NumberInput}" />
         <TextBlock Classes="field-error" Text="{Binding Error}"
                    IsVisible="{Binding !IsValid}" />
       </StackPanel>
@@ -23,7 +38,7 @@
   <DockPanel Margin="16">
     <Button x:Name="ResetButton" DockPanel.Dock="Bottom" Margin="0,12,0,0" HorizontalAlignment="Stretch"
             Content="ZURÜCKSETZEN" Command="{Binding ResetCommand}" />
-    <ScrollViewer>
+    <ScrollViewer x:Name="Form">
       <StackPanel Spacing="12">
         <!-- RadioButtons: a screen reader hears which direction is selected. -->
         <Grid ColumnDefinitions="*,*">
@@ -35,25 +50,39 @@
                        IsChecked="{Binding IsRaum}" />
         </Grid>
 
-        <ContentControl Content="{Binding Zumischrate}" />
-        <Grid ColumnDefinitions="*,8,*,8,*">
-          <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="1 %"
-                  Command="{Binding SetZumischrateCommand}" CommandParameter="1" />
-          <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="3 %"
-                  Command="{Binding SetZumischrateCommand}" CommandParameter="3" />
-          <Button Grid.Column="4" HorizontalAlignment="Stretch" Content="6 %"
-                  Command="{Binding SetZumischrateCommand}" CommandParameter="6" />
-        </Grid>
+        <!-- These two hold a short number, so their presets share the row. The label is wider than
+             the field and the error can be too, so both keep the whole width. -->
+        <StackPanel Spacing="4">
+          <TextBlock Classes="overline" Text="{Binding Zumischrate.Label}" />
+          <Grid ColumnDefinitions="72,8,*,8,*,8,*">
+            <ContentControl Grid.Column="0" HorizontalContentAlignment="Stretch"
+                            Content="{Binding Zumischrate}" ContentTemplate="{StaticResource NumberInput}" />
+            <Button Grid.Column="2" Classes="preset" Content="1 %"
+                    Command="{Binding SetZumischrateCommand}" CommandParameter="1" />
+            <Button Grid.Column="4" Classes="preset" Content="3 %"
+                    Command="{Binding SetZumischrateCommand}" CommandParameter="3" />
+            <Button Grid.Column="6" Classes="preset" Content="6 %"
+                    Command="{Binding SetZumischrateCommand}" CommandParameter="6" />
+          </Grid>
+          <TextBlock Classes="field-error" Text="{Binding Zumischrate.Error}"
+                     IsVisible="{Binding !Zumischrate.IsValid}" />
+        </StackPanel>
 
-        <ContentControl Content="{Binding Verschaeumungszahl}" />
-        <Grid ColumnDefinitions="*,8,*,8,*">
-          <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="SCHWER 10"
-                  Command="{Binding SetVerschaeumungszahlCommand}" CommandParameter="10" />
-          <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="MITTEL 75"
-                  Command="{Binding SetVerschaeumungszahlCommand}" CommandParameter="75" />
-          <Button Grid.Column="4" HorizontalAlignment="Stretch" Content="LEICHT 500"
-                  Command="{Binding SetVerschaeumungszahlCommand}" CommandParameter="500" />
-        </Grid>
+        <StackPanel Spacing="4">
+          <TextBlock Classes="overline" Text="{Binding Verschaeumungszahl.Label}" />
+          <Grid ColumnDefinitions="72,8,*,8,*,8,*">
+            <ContentControl Grid.Column="0" HorizontalContentAlignment="Stretch"
+                            Content="{Binding Verschaeumungszahl}" ContentTemplate="{StaticResource NumberInput}" />
+            <Button Grid.Column="2" Classes="preset" Content="SCHWER 10"
+                    Command="{Binding SetVerschaeumungszahlCommand}" CommandParameter="10" />
+            <Button Grid.Column="4" Classes="preset" Content="MITTEL 75"
+                    Command="{Binding SetVerschaeumungszahlCommand}" CommandParameter="75" />
+            <Button Grid.Column="6" Classes="preset" Content="LEICHT 500"
+                    Command="{Binding SetVerschaeumungszahlCommand}" CommandParameter="500" />
+          </Grid>
+          <TextBlock Classes="field-error" Text="{Binding Verschaeumungszahl.Error}"
+                     IsVisible="{Binding !Verschaeumungszahl.IsValid}" />
+        </StackPanel>
 
         <StackPanel x:Name="VorratFields" Spacing="12" IsVisible="{Binding IsVorrat}">
           <ContentControl Content="{Binding SchaummittelVorrat}" />
