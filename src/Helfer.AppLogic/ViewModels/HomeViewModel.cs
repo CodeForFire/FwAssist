@@ -8,27 +8,29 @@ namespace Helfer.AppLogic.ViewModels;
 public sealed partial class HomeViewModel : ObservableObject
 {
     private readonly Action _openSettings;
+    private readonly Action _openAbout;
 
     public HomeViewModel(
         IReadOnlyList<IHelperModule> modules,
         Action<string> open,
         Action openSettings,
-        string appVersion)
+        Action openAbout)
     {
         ArgumentNullException.ThrowIfNull(modules);
         ArgumentNullException.ThrowIfNull(open);
         ArgumentNullException.ThrowIfNull(openSettings);
-        ArgumentNullException.ThrowIfNull(appVersion);
+        ArgumentNullException.ThrowIfNull(openAbout);
 
         _openSettings = openSettings;
+        _openAbout = openAbout;
         Tiles = modules.Select(m => new HelperTileViewModel(m, open)).ToList();
-        VersionText = $"Version {appVersion}";
     }
 
     public IReadOnlyList<HelperTileViewModel> Tiles { get; }
 
-    public string VersionText { get; }
-
     [RelayCommand]
     private void OpenSettings() => _openSettings();
+
+    [RelayCommand]
+    private void OpenAbout() => _openAbout();
 }

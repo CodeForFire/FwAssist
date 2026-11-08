@@ -13,6 +13,7 @@ public class ShellViewModelTests
         [_stoppuhr, _other],
         new HelperServices(new FakeTimeProvider(), new ManualTicker()),
         new FakeLauncherIcons(),
+        new FakeExternalLinks(),
         "1.2.3");
 
     [Fact]
@@ -23,7 +24,33 @@ public class ShellViewModelTests
         Assert.True(shell.IsHome);
         Assert.Equal(ShellViewModel.HomeTitle, shell.Title);
         Assert.Equal(["Stoppuhr", "Anderes"], shell.Home.Tiles.Select(t => t.Title));
-        Assert.Equal("Version 1.2.3", shell.Home.VersionText);
+    }
+
+    [Fact]
+    public void The_about_page_opens_from_the_home_screen_with_the_version_and_back_returns_home()
+    {
+        var shell = Shell();
+
+        shell.Home.OpenAboutCommand.Execute(null);
+
+        var about = Assert.IsType<AboutViewModel>(shell.Current);
+        Assert.Equal("1.2.3", about.VersionText);
+        Assert.Equal(AboutViewModel.PageTitle, shell.Title);
+        Assert.True(shell.HandleSystemBack());
+        Assert.True(shell.IsHome);
+    }
+
+    [Fact]
+    public void The_about_page_after_a_launcher_start_returns_home_on_back()
+    {
+        var shell = Shell();
+        shell.OpenFromLauncher("stoppuhr");
+        shell.GoHome();
+
+        shell.Home.OpenAboutCommand.Execute(null);
+
+        Assert.True(shell.HandleSystemBack());
+        Assert.True(shell.IsHome);
     }
 
     [Fact]

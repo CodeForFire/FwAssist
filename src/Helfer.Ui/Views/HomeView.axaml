@@ -5,8 +5,9 @@
              x:Class="Helfer.Ui.Views.HomeView"
              x:DataType="vm:HomeViewModel">
   <DockPanel>
-    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,Auto" Margin="16,8,8,8">
-      <TextBlock Grid.Column="0" Classes="mono" Text="{Binding VersionText}" VerticalAlignment="Center" />
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,Auto" Margin="8">
+      <Button x:Name="AboutButton" Grid.Column="0" Classes="ghost" Content="INFO"
+              Command="{Binding OpenAboutCommand}" />
       <Button x:Name="SettingsButton" Grid.Column="1" Classes="ghost" Content="EINSTELLUNGEN"
               Command="{Binding OpenSettingsCommand}" />
     </Grid>

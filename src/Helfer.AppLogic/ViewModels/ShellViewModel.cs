@@ -22,23 +22,27 @@ public sealed partial class ShellViewModel : ObservableObject
     private readonly Dictionary<string, ObservableObject> _opened = new(StringComparer.Ordinal);
     private readonly HelperServices _services;
     private readonly SettingsViewModel _settings;
+    private readonly AboutViewModel _about;
     private bool _openedFromLauncher;
 
     public ShellViewModel(
         IReadOnlyList<IHelperModule> modules,
         HelperServices services,
         ILauncherIcons launcherIcons,
+        IExternalLinks externalLinks,
         string appVersion)
     {
         ArgumentNullException.ThrowIfNull(modules);
         ArgumentNullException.ThrowIfNull(services);
         ArgumentNullException.ThrowIfNull(launcherIcons);
+        ArgumentNullException.ThrowIfNull(externalLinks);
         ArgumentNullException.ThrowIfNull(appVersion);
 
         _modules = modules.ToDictionary(m => m.Id, StringComparer.Ordinal);
         _services = services;
-        Home = new HomeViewModel(modules, Open, OpenSettings, appVersion);
+        Home = new HomeViewModel(modules, Open, OpenSettings, OpenAbout);
         _settings = new SettingsViewModel(modules, launcherIcons);
+        _about = new AboutViewModel(externalLinks, appVersion);
         _current = Home;
         _title = HomeTitle;
     }
@@ -112,6 +116,14 @@ public sealed partial class ShellViewModel : ObservableObject
         _settings.Refresh();
         Current = _settings;
         Title = SettingsViewModel.PageTitle;
+    }
+
+    private void OpenAbout()
+    {
+        _openedFromLauncher = false;
+        _about.Refresh();
+        Current = _about;
+        Title = AboutViewModel.PageTitle;
     }
 
     private bool TryShow(string helperId)

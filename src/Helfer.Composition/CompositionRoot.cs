@@ -41,6 +41,10 @@ public static class CompositionRoot
         DekonPlatzViews.Register(views);
     }
 
-    public static ShellViewModel CreateShell(HelperServices services, ILauncherIcons launcherIcons, string appVersion) =>
-        new(Modules, services, launcherIcons, appVersion);
+    public static ShellViewModel CreateShell(
+        HelperServices services,
+        ILauncherIcons launcherIcons,
+        IExternalLinks externalLinks,
+        string appVersion) =>
+        new(Modules, services, launcherIcons, externalLinks, appVersion);
 }

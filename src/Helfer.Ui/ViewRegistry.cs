@@ -17,6 +17,7 @@ public sealed class ViewRegistry
     {
         Register<HomeViewModel>(() => new HomeView());
         Register<SettingsViewModel>(() => new SettingsView());
+        Register<AboutViewModel>(() => new AboutView());
     }
 
     public void Register<TViewModel>(Func<Control> createView)
