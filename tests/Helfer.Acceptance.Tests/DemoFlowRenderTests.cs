@@ -234,6 +234,20 @@ public class DemoFlowRenderTests
         Assert.Equal(WidthOf("Zumischrate in %"), WidthOf("Zuschlag für Verluste in %"), precision: 0);
     }
 
+    [AvaloniaFact]
+    public void Every_schaummittel_preset_stays_glove_wide_on_a_320_dp_phone()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Width = 320;
+        OpenSchaummittel(phone);
+
+        var presets = phone.Window.GetVisualDescendants().OfType<Button>()
+            .Where(b => b.Classes.Contains("preset")).ToList();
+
+        Assert.Equal(7, presets.Count);
+        Assert.All(presets, b => Assert.True(b.Bounds.Width >= 48, $"{b.Content} is {b.Bounds.Width} wide"));
+    }
+
     // 780 dp is about what a 915 dp phone leaves between its status and navigation bars.
     [AvaloniaFact]
     public void A_whole_schaummittel_room_calculation_fits_without_scrolling()
