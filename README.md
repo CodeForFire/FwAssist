@@ -1,5 +1,5 @@
 <p align="center">
-  <strong>Helfer — kleine Werkzeuge für die Feuerwehr.</strong><br />
+  <strong>FwAssist — kleine Werkzeuge für die Feuerwehr.</strong><br />
   Für die Hosentasche. Offline. Open Source.
 </p>
 
@@ -9,11 +9,11 @@
   <a href="LICENSE"><img src="https://img.shields.io/github/license/CodeForFire/helfer" alt="MIT" /></a>
 </p>
 
-Helfer ist eine Android-App mit kleinen Werkzeugen für Feuerwehrangehörige.
+FwAssist ist eine Android-App mit kleinen Werkzeugen für Feuerwehrangehörige.
 Jedes Werkzeug – ein *Helfer* – macht genau eine Sache, funktioniert ohne Netz
 und lässt sich mit einem eigenen Symbol direkt vom Startbildschirm öffnen.
 
-Helfer kommt von [CodeForFire](https://codeforfire.github.io/), von denselben
+FwAssist kommt von [CodeForFire](https://codeforfire.github.io/), von denselben
 Leuten wie [Lagebuch](https://github.com/CodeForFire/lagebuch), und sieht
 deshalb auch so aus.
 
@@ -94,7 +94,7 @@ oder Englisch. Sicherheitslücken bitte vertraulich melden, siehe
 
 ## For developers
 
-Helfer is a single Android app hosting small, independent helper tools for
+FwAssist is a single Android app hosting small, independent helper tools for
 fire brigades: .NET 10 + Avalonia 12, the same stack, theme, workflows and
 rules as [Lagebuch](https://github.com/CodeForFire/lagebuch), with a mobile-only
 focus. The code and its documentation are in English, as are issues, pull

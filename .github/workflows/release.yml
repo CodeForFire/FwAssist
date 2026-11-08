@@ -256,7 +256,7 @@ jobs:
       - uses: softprops/action-gh-release@efb35369e0ad2afab669f228072c1b0d510eae64 # v3.0.3 # zizmor: ignore[superfluous-actions]
         with:
           tag_name: v${{ needs.version.outputs.version }}
-          name: Helfer v${{ needs.version.outputs.version }}
+          name: FwAssist v${{ needs.version.outputs.version }}
           # A prerelease tag (v0.6.0-beta.1) flags itself and leaves the last full release as
           # "Latest".
           prerelease: ${{ needs.version.outputs.prerelease }}

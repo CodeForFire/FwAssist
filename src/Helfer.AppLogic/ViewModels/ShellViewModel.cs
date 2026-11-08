@@ -44,7 +44,7 @@ public sealed partial class ShellViewModel : ObservableObject
     }
 
     /// <summary>The app's name in the title bar of the home screen.</summary>
-    public const string HomeTitle = "Helfer";
+    public const string HomeTitle = "FwAssist";
 
     public HomeViewModel Home { get; }
 

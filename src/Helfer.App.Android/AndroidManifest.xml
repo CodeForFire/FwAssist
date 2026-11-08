@@ -8,7 +8,7 @@
      end of <application>. The C# class carries [Register] with the same Java name. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-sdk android:targetSdkVersion="36" />
-    <application android:label="Helfer" android:icon="@drawable/ic_launcher"
+    <application android:label="FwAssist" android:icon="@drawable/ic_launcher"
                  android:theme="@style/MyTheme.NoActionBar" android:usesCleartextTraffic="false">
 
         <!-- singleTask: a helper's own icon brings the running app forward and arrives through

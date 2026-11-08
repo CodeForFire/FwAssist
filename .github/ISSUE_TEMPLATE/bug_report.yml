@@ -1,5 +1,5 @@
 name: Bug report
-description: Something in Helfer is broken or behaves unexpectedly
+description: Something in FwAssist is broken or behaves unexpectedly
 labels: [bug]
 body:
   - type: markdown

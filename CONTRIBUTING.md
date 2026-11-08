@@ -1,6 +1,6 @@
-# Contributing to Helfer
+# Contributing to FwAssist
 
-Thanks for your interest in contributing! Helfer is a set of small, offline
+Thanks for your interest in contributing! FwAssist is a set of small, offline
 pocket tools for fire brigades, in one Android app — every contribution, from a
 typo fix to a whole new helper, is welcome.
 
