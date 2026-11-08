@@ -9,6 +9,22 @@
 
 set -euo pipefail
 
+# wc -m only counts characters in a UTF-8 locale. Without one it counts bytes, and the
+# "–" and umlauts in the listing push fields that fit over their limits. Not every
+# system has C.UTF-8, so each candidate has to prove it counts "ü" as one character.
+utf8_locale=""
+for candidate in C.UTF-8 C.utf8 en_US.UTF-8 en_US.utf8; do
+    if [ "$(printf 'ü' | LC_ALL="$candidate" wc -m | tr -d '[:space:]')" = "1" ]; then
+        utf8_locale="$candidate"
+        break
+    fi
+done
+if [ -z "$utf8_locale" ]; then
+    echo "error: no UTF-8 locale found (tried C.UTF-8 and en_US.UTF-8), so characters cannot be counted." >&2
+    exit 1
+fi
+export LC_ALL="$utf8_locale"
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 listing="$repo_root/docs/play/listing-de-DE.md"
 
