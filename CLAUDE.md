@@ -20,8 +20,8 @@ The `Makefile` wraps `dotnet` and needs a POSIX shell. Where `make` is missing (
 | Full local gate | `make clean ci` |
 | CodeQL on changed lines | `make codeql` (`BASE=origin/main`) |
 | Mutation test one project | `make mutate PROJECT=Helpers.Stoppuhr`; add `SINCE=origin/main` for the pull request gate (changed lines only, fails below `BREAK=80`) |
-| Android APK, in Docker | `make apk`, or `make apk ABI=android-x64` for an emulator |
-| Run on the emulator | `make run-android ABI=android-x64`, then `make logcat` |
+| Android APK, in Docker | `make apk`; add `ABI=android-x64` for a smaller APK on an x86-64 emulator |
+| Run on the emulator | `make run-android`, then `make logcat`; `run-android` rebuilds the APK, so pass the same `ABI=` as above |
 | PR screenshots | `make phone-screenshots`, written to `out/phone-screenshots/` |
 | README and Play screenshots | `make screenshots`, `make play-screenshots` |
 
