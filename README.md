@@ -24,7 +24,7 @@ deshalb auch so aus.
 | Helfer | Was er tut |
 |---|---|
 | **Stoppuhr** | Zeit messen, zum Beispiel bei einer Übung. Läuft weiter, während ein anderer Helfer offen ist. |
-| **Funkalphabet** | Wörter für den Funk buchstabieren, wahlweise mit der alten Tafel (Anton, Berta, …) oder nach DIN 5009:2022 (Aachen, Berlin, …). |
+| **Buchstabieralphabet** | Wörter für den Funk buchstabieren, wahlweise mit der alten Tafel (Anton, Berta, …), nach DIN 5009:2022 (Aachen, Berlin, …) oder mit dem NATO-Alphabet (Alfa, Bravo, …). |
 | **Schaummittel** | Rechnet in beide Richtungen: wie viel Schaum der Vorrat ergibt und wie viel Wasser und Schaummittel ein Raum braucht. |
 | **RTH-Landeplatz** | Vorgaben und Ablauf, wenn die Feuerwehr einen Landeplatz für den Rettungshubschrauber vorbereitet, getrennt für Tag und Nacht. |
 | **Dekon-Platz** | Dekon-Stufen I bis III: Sofortmaßnahmen, Aufbau und Plan für Stufe II, Technik und Ablauf für Stufe III. |
@@ -73,9 +73,9 @@ weiteren Helfer.
 |---|---|---|
 | ![Übersicht](docs/screenshots/01-uebersicht.png) | ![Stoppuhr](docs/screenshots/02-stoppuhr.png) | ![Einstellungen](docs/screenshots/03-einstellungen.png) |
 
-| Funkalphabet | Schaummittel |
+| Buchstabieralphabet | Schaummittel |
 |---|---|
-| ![Funkalphabet](docs/screenshots/04-funkalphabet.png) | ![Schaummittel](docs/screenshots/05-schaummittel.png) |
+| ![Buchstabieralphabet](docs/screenshots/04-funkalphabet.png) | ![Schaummittel](docs/screenshots/05-schaummittel.png) |
 
 | RTH-Landeplatz bei Tag | RTH-Landeplatz bei Nacht |
 |---|---|

@@ -12,7 +12,7 @@ public class FunkalphabetViewModelTests
     {
         var vm = new FunkalphabetViewModel(_settings);
 
-        Assert.Equal("ALT (DIN 5009:1983)", vm.TableName);
+        Assert.Equal("BOS (DIN 5009:1983)", vm.TableName);
         Assert.True(vm.IsAlt);
         Assert.False(vm.IsDin2022);
         Assert.False(vm.HasSpelling);
@@ -66,15 +66,57 @@ public class FunkalphabetViewModelTests
     }
 
     [Fact]
-    public void Unchecking_one_table_selects_the_other()
+    public void Unchecking_a_table_leaves_the_choice_alone()
     {
-        var vm = new FunkalphabetViewModel(_settings);
+        var vm = new FunkalphabetViewModel(_settings) { IsNato = true };
 
         vm.IsAlt = false;
-        Assert.True(vm.IsDin2022);
-
         vm.IsDin2022 = false;
-        Assert.True(vm.IsAlt);
+        Assert.True(vm.IsNato);
+
+        vm.IsNato = false;
+        Assert.True(vm.IsNato);
+    }
+
+    [Fact]
+    public void Switching_to_nato_respells_the_text_and_changes_the_list()
+    {
+        var vm = new FunkalphabetViewModel(_settings) { Text = "ab" };
+        var changed = new List<string?>();
+        vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+        vm.IsNato = true;
+
+        Assert.Equal("NATO", vm.TableName);
+        Assert.True(vm.IsNato);
+        Assert.False(vm.IsAlt);
+        Assert.False(vm.IsDin2022);
+        Assert.Equal("Alfa - Bravo", vm.SpelledText);
+        Assert.Equal(Buchstabiertafel.Nato.Entries, vm.Entries);
+        Assert.Contains(nameof(vm.IsNato), changed);
+        Assert.Contains(nameof(vm.SpelledText), changed);
+    }
+
+    [Fact]
+    public void The_nato_choice_is_stored_and_restored()
+    {
+        _ = new FunkalphabetViewModel(_settings) { IsNato = true };
+
+        Assert.Equal("nato", _settings.Get("funkalphabet.table"));
+        Assert.True(new FunkalphabetViewModel(_settings).IsNato);
+    }
+
+    [Theory]
+    [InlineData("", "")]
+    [InlineData("a", "Anton")]
+    [InlineData("hlf", "Heinrich - Ludwig - Friedrich")]
+    [InlineData("ab c", "Anton - Berta / Cäsar")]
+    [InlineData("  a   b  ", "Anton / Berta")]
+    public void The_spelling_reads_as_one_line(string text, string expected)
+    {
+        var vm = new FunkalphabetViewModel(_settings) { Text = text };
+
+        Assert.Equal(expected, vm.SpelledText);
     }
 
     [Fact]

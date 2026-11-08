@@ -33,6 +33,34 @@ public class BuchstabiertafelTests
         Assert.Equal(expected, Buchstabiertafel.Din2022.Entries.Select(e => e.Word));
     }
 
+    [Fact]
+    public void Nato_has_the_full_table_in_order()
+    {
+        string[] expected =
+        [
+            "Alfa", "Alfa Echo", "Bravo", "Charlie", "Delta", "Echo", "Foxtrot", "Golf", "Hotel", "India",
+            "Juliett", "Kilo", "Lima", "Mike", "November", "Oscar", "Oscar Echo", "Papa", "Quebec", "Romeo",
+            "Sierra", "Sierra Sierra", "Tango", "Uniform", "Uniform Echo", "Victor", "Whiskey", "X-ray",
+            "Yankee", "Zulu",
+        ];
+
+        Assert.Equal(expected, Buchstabiertafel.Nato.Entries.Select(e => e.Word));
+    }
+
+    [Fact]
+    public void Nato_spells_sch_letter_by_letter() =>
+        Assert.Equal(["Sierra", "Charlie", "Hotel"], Words(Buchstabiertafel.Nato, "Sch"));
+
+    [Fact]
+    public void Nato_spells_a_german_letter_with_its_two_letters() =>
+        Assert.Equal(
+            ["Alfa Echo", "Oscar Echo", "Uniform Echo", "Sierra Sierra"],
+            Words(Buchstabiertafel.Nato, "äöüß"));
+
+    [Fact]
+    public void Nato_keeps_the_german_radio_digits() =>
+        Assert.Equal(["zwo", "drei"], Words(Buchstabiertafel.Nato, "23"));
+
     [Theory]
     [InlineData("A", "Anton", "Aachen")]
     [InlineData("B", "Berta", "Berlin")]
