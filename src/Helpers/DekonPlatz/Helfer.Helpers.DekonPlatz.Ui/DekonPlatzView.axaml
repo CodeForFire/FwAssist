@@ -25,16 +25,19 @@
     <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,8,*,8,*" Margin="0,12,0,0">
       <RadioButton x:Name="StufeEins" Grid.Column="0" GroupName="Stufe" Content="STUFE I"
                    HorizontalAlignment="Stretch"
-                   IsChecked="{Binding IsStufeEins}" />
+                   IsChecked="{Binding IsStufeEins}"
+                   IsCheckedChanged="OnStufeChanged" />
       <RadioButton x:Name="StufeZwei" Grid.Column="2" GroupName="Stufe" Content="STUFE II"
                    HorizontalAlignment="Stretch"
-                   IsChecked="{Binding IsStufeZwei}" />
+                   IsChecked="{Binding IsStufeZwei}"
+                   IsCheckedChanged="OnStufeChanged" />
       <RadioButton x:Name="StufeDrei" Grid.Column="4" GroupName="Stufe" Content="STUFE III"
                    HorizontalAlignment="Stretch"
-                   IsChecked="{Binding IsStufeDrei}" />
+                   IsChecked="{Binding IsStufeDrei}"
+                   IsCheckedChanged="OnStufeChanged" />
     </Grid>
 
-    <ScrollViewer>
+    <ScrollViewer x:Name="Scroller">
       <StackPanel Spacing="20">
         <ItemsControl x:Name="Sections" ItemsSource="{Binding Sections}">
           <ItemsControl.ItemsPanel>

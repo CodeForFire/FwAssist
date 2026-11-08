@@ -1,3 +1,4 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
@@ -301,6 +302,25 @@ public class DemoFlowRenderTests
 
         Assert.Equal(Dekonvorgaben.StufeZwei.SelectMany(s => s.Drawings).Select(d => d.Description), zwei);
         Assert.Equal(Dekonvorgaben.StufeDrei.SelectMany(s => s.Drawings).Select(d => d.Description), drei);
+    }
+
+    [AvaloniaFact]
+    public void Choosing_another_stufe_starts_at_the_top_of_its_page()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(DekonPlatzModule.HelperId);
+        PhoneRender.Settle();
+        ((RadioButton)Named(phone, "StufeDrei")).IsChecked = true;
+        PhoneRender.Settle();
+        var scroller = (ScrollViewer)Named(phone, "Scroller");
+        scroller.Offset = new Vector(0, 200);
+        PhoneRender.Settle();
+        Assert.True(scroller.Offset.Y > 100, "The page must have scrolled for this test to mean anything.");
+
+        ((RadioButton)Named(phone, "StufeZwei")).IsChecked = true;
+        PhoneRender.Settle();
+
+        Assert.Equal(0, scroller.Offset.Y, precision: 0);
     }
 
     [AvaloniaFact]
