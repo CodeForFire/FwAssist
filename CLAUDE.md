@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-The `Makefile` wraps `dotnet` and needs a POSIX shell. Where `make` is missing (a plain Windows host), run the `dotnet` lines directly. CI does not call `make`.
+The `Makefile` wraps `dotnet` and needs a POSIX shell. Where `make` is missing (a plain Windows host), run the `dotnet` lines directly. The build-and-test workflow does not call `make`, but `mutation.yml` runs `make mutate` and `make mutate-src`, so changing those targets affects CI.
 
 | Task | Command |
 |---|---|
@@ -21,7 +21,7 @@ The `Makefile` wraps `dotnet` and needs a POSIX shell. Where `make` is missing (
 | CodeQL on changed lines | `make codeql` (`BASE=origin/main`) |
 | Mutation test one project | `make mutate PROJECT=Helpers.Stoppuhr`; add `SINCE=origin/main` for the pull request gate (changed lines only, fails below `BREAK=80`) |
 | Android APK, in Docker | `make apk`, or `make apk ABI=android-x64` for an emulator |
-| Run on the emulator | `make run-android`, then `make logcat` |
+| Run on the emulator | `make run-android ABI=android-x64`, then `make logcat` |
 | PR screenshots | `make phone-screenshots`, written to `out/phone-screenshots/` |
 | README and Play screenshots | `make screenshots`, `make play-screenshots` |
 
