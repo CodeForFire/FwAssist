@@ -6,6 +6,6 @@
         android:viewportWidth="24" android:viewportHeight="24">
   <path android:fillColor="@color/icon_signal" android:pathData="M12,0 A12,12 0 1 0 12,24 A12,12 0 1 0 12,0 Z" />
   <group android:scaleX="0.6" android:scaleY="0.6" android:translateX="4.8" android:translateY="4.8">
-    <path android:fillColor="#FFFFFF" android:fillType="evenOdd" android:pathData="M3,8 H21 V20 H3 Z M8,4 H16 V8 H14 V6 H10 V8 H8 Z M3,12 H21 V14 H3 Z M10,11 H14 V15 H10 Z" />
+    <path android:fillColor="#FFFFFF" android:fillType="evenOdd" android:pathData="M4,2 h5 a2,2 0 0 1 2,2 v5 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-5 a2,2 0 0 1 2,-2 Z M15,2 h5 a2,2 0 0 1 2,2 v5 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-5 a2,2 0 0 1 2,-2 Z M4,13 h5 a2,2 0 0 1 2,2 v5 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-5 a2,2 0 0 1 2,-2 Z M15,13 h5 a2,2 0 0 1 2,2 v5 a2,2 0 0 1 -2,2 h-5 a2,2 0 0 1 -2,-2 v-5 a2,2 0 0 1 2,-2 Z M6.5,3.5 C6.9,4.8 9,5.8 9,7.4 A2.5,2.5 0 0 1 4,7.4 C4,6.4 4.6,5.8 5.2,5.3 C5.4,5.9 5.7,6.2 6,6.2 C6.3,5.3 6,4.4 6.5,3.5 Z M17.5,3.5 C17.5,3.5 20,6 20,7.6 A2.5,2.5 0 0 1 15,7.6 C15,6 17.5,3.5 17.5,3.5 Z M6.5,14 L10,17.5 L6.5,21 L3,17.5 Z M14.6,17.6 L15.7,16.5 L16.9,17.7 L19.3,15.3 L20.4,16.4 L16.9,19.9 Z" />
   </group>
 </vector>

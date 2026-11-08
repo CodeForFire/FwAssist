@@ -6,7 +6,7 @@ body:
     id: problem
     attributes:
       label: Problem / use case
-      description: What do you need at an Einsatz or an Übung that a pocket helper could do, and that Helfer does not do (or does badly)?
+      description: What do you need at an Einsatz or an Übung that a pocket helper could do, and that FwAssist does not do (or does badly)?
     validations:
       required: true
   - type: textarea
@@ -26,4 +26,4 @@ body:
     attributes:
       label: Context
       options:
-        - label: I am using (or intend to use) Helfer in a fire brigade
+        - label: I am using (or intend to use) FwAssist in a fire brigade

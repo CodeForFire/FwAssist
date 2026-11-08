@@ -2,7 +2,7 @@
 
 ## Supported versions
 
-Helfer is pre-1.0 and moves quickly. Only the **latest release** receives
+FwAssist is pre-1.0 and moves quickly. Only the **latest release** receives
 security fixes; older releases are not patched.
 
 | Version | Supported |

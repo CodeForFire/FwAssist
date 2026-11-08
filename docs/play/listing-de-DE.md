@@ -14,7 +14,7 @@ was amtlichen Status nahelegt, keine Alarmierung und keine Sicherheitsverspreche
 ## App-Name (max. 30 Zeichen)
 
 ```
-Helfer – Feuerwehr-Werkzeuge
+FwAssist – Feuerwehr-Werkzeuge
 ```
 
 ## Kurzbeschreibung (max. 80 Zeichen)
@@ -26,7 +26,7 @@ Kleine Helfer für die Feuerwehr. Offline, ohne Konto, ohne Werbung. Open Source
 ## Vollständige Beschreibung (max. 4000 Zeichen)
 
 ```
-Helfer ist eine Sammlung kleiner Werkzeuge für Feuerwehrangehörige — für die Hosentasche, offline, ohne Konto und ohne Abo.
+FwAssist ist eine Sammlung kleiner Werkzeuge für Feuerwehrangehörige — für die Hosentasche, offline, ohne Konto und ohne Abo.
 
 JEDER HELFER MIT EIGENEM SYMBOL
 
@@ -49,7 +49,7 @@ Der Hersteller erhält keinerlei Daten — CodeForFire betreibt keinen Dienst, a
 
 HINWEIS
 
-Helfer ist ein ehrenamtliches Open-Source-Projekt und steht in keiner Verbindung zu einer Behörde oder Leitstelle. Die App ersetzt keine Ausbildung und keine vorgeschriebene Ausrüstung.
+FwAssist ist ein ehrenamtliches Open-Source-Projekt und steht in keiner Verbindung zu einer Behörde oder Leitstelle. Die App ersetzt keine Ausbildung und keine vorgeschriebene Ausrüstung.
 
 Quelltext (MIT): https://github.com/CodeForFire/helfer
 ```
