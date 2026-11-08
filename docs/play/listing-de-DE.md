@@ -38,6 +38,7 @@ DIE HELFER
 • Funkalphabet — Wörter für den Funk buchstabieren, mit der alten Tafel oder nach DIN 5009:2022
 • Schaummittel — Schaum aus dem Vorrat und Bedarf für einen Raum berechnen
 • RTH-Landeplatz — Vorgaben und Ablauf für den Landeplatz, bei Tag und bei Nacht
+• Dekon-Platz — Sofortmaßnahmen, Aufbau und Technik für die Dekon-Stufen I bis III
 
 Weitere Helfer folgen. Ideen dafür sammeln wir offen auf GitHub.
 

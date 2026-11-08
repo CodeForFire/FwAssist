@@ -1,8 +1,10 @@
+using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
 using Helfer.Composition;
+using Helfer.Helpers.DekonPlatz;
 using Helfer.Helpers.Funkalphabet;
 using Helfer.Helpers.RthLandeplatz;
 using Helfer.Helpers.Schaummittel;
@@ -256,5 +258,81 @@ public class DemoFlowRenderTests
 
         Assert.All(Landeplatzvorgaben.Sources, source => Assert.Contains(source, texts));
         Assert.Contains(Landeplatzvorgaben.SourceNote, texts);
+    }
+
+    [AvaloniaFact]
+    public void The_dekon_platz_shows_only_the_values_of_its_stufe()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(DekonPlatzModule.HelperId);
+        PhoneRender.Settle();
+
+        Assert.Contains("7. Person warm halten", VisibleTexts(phone.Window));
+        Assert.DoesNotContain(VisibleTexts(phone.Window), t => t.Contains("10 m x 25 m", StringComparison.Ordinal));
+        phone.Capture("08-dekon-stufe-1.png");
+
+        ((RadioButton)Named(phone, "StufeZwei")).IsChecked = true;
+        PhoneRender.Settle();
+
+        Assert.Contains("2. Fläche abgrenzen: 9 x 4 m, bei Schwarz-Weiß 8 x 4 m", VisibleTexts(phone.Window));
+        Assert.DoesNotContain("7. Person warm halten", VisibleTexts(phone.Window));
+        phone.Capture("09-dekon-stufe-2.png");
+
+        ((RadioButton)Named(phone, "StufeDrei")).IsChecked = true;
+        PhoneRender.Settle();
+
+        Assert.Contains("Platzbedarf: 10 m x 25 m", VisibleTexts(phone.Window));
+        Assert.DoesNotContain(VisibleTexts(phone.Window), t => t.Contains("9 x 4 m", StringComparison.Ordinal));
+        phone.Capture("10-dekon-stufe-3.png");
+    }
+
+    [AvaloniaFact]
+    public void Every_dekon_platz_drawing_tells_a_screen_reader_what_it_shows()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(DekonPlatzModule.HelperId);
+        PhoneRender.Settle();
+
+        ((RadioButton)Named(phone, "StufeZwei")).IsChecked = true;
+        PhoneRender.Settle();
+        var zwei = DrawingNames(phone.Window);
+        ((RadioButton)Named(phone, "StufeDrei")).IsChecked = true;
+        PhoneRender.Settle();
+        var drei = DrawingNames(phone.Window);
+
+        Assert.Equal(Dekonvorgaben.StufeZwei.SelectMany(s => s.Drawings).Select(d => d.Description), zwei);
+        Assert.Equal(Dekonvorgaben.StufeDrei.SelectMany(s => s.Drawings).Select(d => d.Description), drei);
+    }
+
+    [AvaloniaFact]
+    public void Choosing_another_stufe_starts_at_the_top_of_its_page()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(DekonPlatzModule.HelperId);
+        PhoneRender.Settle();
+        ((RadioButton)Named(phone, "StufeDrei")).IsChecked = true;
+        PhoneRender.Settle();
+        var scroller = (ScrollViewer)Named(phone, "Scroller");
+        scroller.Offset = new Vector(0, 200);
+        PhoneRender.Settle();
+        Assert.True(scroller.Offset.Y > 100, "The page must have scrolled for this test to mean anything.");
+
+        ((RadioButton)Named(phone, "StufeZwei")).IsChecked = true;
+        PhoneRender.Settle();
+
+        Assert.Equal(0, scroller.Offset.Y, precision: 0);
+    }
+
+    [AvaloniaFact]
+    public void The_dekon_platz_names_its_sources()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Open(DekonPlatzModule.HelperId);
+        PhoneRender.Settle();
+
+        var texts = Texts(Named(phone, "SourceList"));
+
+        Assert.All(Dekonvorgaben.Sources, source => Assert.Contains(source, texts));
+        Assert.Contains(Dekonvorgaben.SourceNote, texts);
     }
 }

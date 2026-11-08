@@ -14,13 +14,16 @@
       "src/Helpers/Schaummittel/Helfer.Helpers.Schaummittel/Helfer.Helpers.Schaummittel.csproj",
       "src/Helpers/RthLandeplatz/Helfer.Helpers.RthLandeplatz.Ui/Helfer.Helpers.RthLandeplatz.Ui.csproj",
       "src/Helpers/RthLandeplatz/Helfer.Helpers.RthLandeplatz/Helfer.Helpers.RthLandeplatz.csproj",
+      "src/Helpers/DekonPlatz/Helfer.Helpers.DekonPlatz.Ui/Helfer.Helpers.DekonPlatz.Ui.csproj",
+      "src/Helpers/DekonPlatz/Helfer.Helpers.DekonPlatz/Helfer.Helpers.DekonPlatz.csproj",
       "tests/Helfer.Acceptance.Tests/Helfer.Acceptance.Tests.csproj",
       "tests/Helfer.AppLogic.Tests/Helfer.AppLogic.Tests.csproj",
       "tests/Helfer.Core.Tests/Helfer.Core.Tests.csproj",
       "tests/Helfer.Helpers.Stoppuhr.Tests/Helfer.Helpers.Stoppuhr.Tests.csproj",
       "tests/Helfer.Helpers.Funkalphabet.Tests/Helfer.Helpers.Funkalphabet.Tests.csproj",
       "tests/Helfer.Helpers.Schaummittel.Tests/Helfer.Helpers.Schaummittel.Tests.csproj",
-      "tests/Helfer.Helpers.RthLandeplatz.Tests/Helfer.Helpers.RthLandeplatz.Tests.csproj"
+      "tests/Helfer.Helpers.RthLandeplatz.Tests/Helfer.Helpers.RthLandeplatz.Tests.csproj",
+      "tests/Helfer.Helpers.DekonPlatz.Tests/Helfer.Helpers.DekonPlatz.Tests.csproj"
     ]
   }
 }
