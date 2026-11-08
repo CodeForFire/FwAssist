@@ -2,7 +2,8 @@
 #
 # These targets only wrap the commands already documented in README.md,
 # CONTRIBUTING.md and .github/workflows/ — nothing here is a build system of its
-# own, and CI deliberately does not call it.
+# own. CI calls it only for mutation testing: mutation.yml runs `mutate` and
+# `mutate-src`.
 #
 # The Android head is built in Docker, never on the host: Microsoft.Android.Sdk
 # rejects any JDK above 21 (error XA0030) and current distros ship newer ones.
