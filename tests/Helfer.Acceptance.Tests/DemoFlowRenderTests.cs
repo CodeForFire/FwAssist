@@ -184,7 +184,23 @@ public class DemoFlowRenderTests
         Assert.Equal(["Von 0,1 bis 50 % möglich."], errors);
     }
 
+    [AvaloniaFact]
+    public void The_smallest_schaummittel_preset_sets_a_valid_zumischrate()
+    {
+        var phone = new PhoneRender();
+        var page = OpenSchaummittel(phone);
+        var button = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => Equals(b.Content, "0,1 %"));
+
+        Assert.NotNull(button.Command);
+        button.Command.Execute(button.CommandParameter);
+        PhoneRender.Settle();
+
+        Assert.Equal("0,1", page.Zumischrate.Text);
+        Assert.Equal(0.1m, page.Zumischrate.Value);
+    }
+
     [AvaloniaTheory]
+    [InlineData("Zumischrate in %", "0,1 %")]
     [InlineData("Zumischrate in %", "1 %")]
     [InlineData("Verschäumungszahl", "LEICHT 500")]
     public void A_schaummittel_preset_sits_beside_its_field_at_glove_size(string field, string preset)
@@ -216,6 +232,20 @@ public class DemoFlowRenderTests
             .Single(t => AutomationProperties.GetName(t) == field).Bounds.Width;
 
         Assert.Equal(WidthOf("Zumischrate in %"), WidthOf("Zuschlag für Verluste in %"), precision: 0);
+    }
+
+    [AvaloniaFact]
+    public void Every_schaummittel_preset_stays_glove_wide_on_a_320_dp_phone()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Width = 320;
+        OpenSchaummittel(phone);
+
+        var presets = phone.Window.GetVisualDescendants().OfType<Button>()
+            .Where(b => b.Classes.Contains("preset")).ToList();
+
+        Assert.Equal(7, presets.Count);
+        Assert.All(presets, b => Assert.True(b.Bounds.Width >= 48, $"{b.Content} is {b.Bounds.Width} wide"));
     }
 
     // 780 dp is about what a 915 dp phone leaves between its status and navigation bars.
