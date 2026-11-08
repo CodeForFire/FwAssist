@@ -1,6 +1,8 @@
 using Helfer.AppLogic.Helpers;
 using Helfer.AppLogic.Services;
 using Helfer.AppLogic.ViewModels;
+using Helfer.Helpers.DekonPlatz;
+using Helfer.Helpers.DekonPlatz.Ui;
 using Helfer.Helpers.Funkalphabet;
 using Helfer.Helpers.Funkalphabet.Ui;
 using Helfer.Helpers.RthLandeplatz;
@@ -26,6 +28,7 @@ public static class CompositionRoot
         new FunkalphabetModule(),
         new SchaummittelModule(),
         new RthLandeplatzModule(),
+        new DekonPlatzModule(),
     ];
 
     public static void RegisterViews(ViewRegistry views)
@@ -35,6 +38,7 @@ public static class CompositionRoot
         FunkalphabetViews.Register(views);
         SchaummittelViews.Register(views);
         RthLandeplatzViews.Register(views);
+        DekonPlatzViews.Register(views);
     }
 
     public static ShellViewModel CreateShell(HelperServices services, ILauncherIcons launcherIcons, string appVersion) =>

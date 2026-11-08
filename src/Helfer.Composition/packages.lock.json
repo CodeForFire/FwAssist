@@ -41,6 +41,22 @@
       "helfer.core": {
         "type": "Project"
       },
+      "helfer.helpers.dekonplatz": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
+          "Helfer.AppLogic": "[1.0.0, )",
+          "Helfer.Core": "[1.0.0, )"
+        }
+      },
+      "helfer.helpers.dekonplatz.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Avalonia": "[12.1.4, )",
+          "Helfer.Helpers.DekonPlatz": "[1.0.0, )",
+          "Helfer.Ui": "[1.0.0, )"
+        }
+      },
       "helfer.helpers.funkalphabet": {
         "type": "Project",
         "dependencies": {

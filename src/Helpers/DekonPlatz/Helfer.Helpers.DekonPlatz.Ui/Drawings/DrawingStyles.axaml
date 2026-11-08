@@ -1,0 +1,87 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- The look of the three drawings: token colours only, and every zone also says its colour in
+       words, so colour alone carries no meaning (AGENTS.md, "Mobile"). -->
+
+  <!-- Text -->
+  <Style Selector="Canvas TextBlock">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontWeight" Value="Medium" />
+    <Setter Property="TextWrapping" Value="NoWrap" />
+  </Style>
+  <Style Selector="Canvas TextBlock.d-small">
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="Normal" />
+  </Style>
+  <Style Selector="Canvas TextBlock.d-zone-name">
+    <Setter Property="FontSize" Value="13" />
+    <Setter Property="FontWeight" Value="Bold" />
+  </Style>
+  <Style Selector="Canvas TextBlock.d-danger">
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="{DynamicResource SignalHotBrush}" />
+  </Style>
+  <Style Selector="Canvas TextBlock.d-ink">
+    <Setter Property="Foreground" Value="{DynamicResource AmberInkBrush}" />
+  </Style>
+
+  <!-- Zones -->
+  <Style Selector="Path.d-rot">
+    <Setter Property="Fill" Value="{DynamicResource SignalDeepBrush}" />
+  </Style>
+  <Style Selector="Path.d-gelb">
+    <Setter Property="Fill" Value="{DynamicResource AmberBrush}" />
+  </Style>
+  <Style Selector="Path.d-gruen">
+    <Setter Property="Fill" Value="{DynamicResource ActiveBrush}" />
+  </Style>
+  <Style Selector="Path.d-schwarz">
+    <Setter Property="Fill" Value="{DynamicResource AmberInkBrush}" />
+  </Style>
+  <Style Selector="Path.d-weiss">
+    <Setter Property="Fill" Value="{DynamicResource TextPrimaryBrush}" />
+  </Style>
+  <Style Selector="Path.d-outline">
+    <Setter Property="Stroke" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="StrokeThickness" Value="2" />
+  </Style>
+
+  <!-- Things -->
+  <Style Selector="Path.d-box">
+    <Setter Property="Fill" Value="{DynamicResource SurfaceTopBrush}" />
+    <Setter Property="Stroke" Value="{DynamicResource BorderStrongBrush}" />
+    <Setter Property="StrokeThickness" Value="1.5" />
+  </Style>
+  <Style Selector="Path.d-item-light">
+    <Setter Property="Stroke" Value="{DynamicResource TextPrimaryBrush}" />
+    <Setter Property="StrokeThickness" Value="2" />
+  </Style>
+  <Style Selector="Path.d-item-ink">
+    <Setter Property="Stroke" Value="{DynamicResource AmberInkBrush}" />
+    <Setter Property="StrokeThickness" Value="2" />
+  </Style>
+
+  <!-- Lines -->
+  <Style Selector="Path.d-border">
+    <Setter Property="Stroke" Value="{DynamicResource SignalBrush}" />
+    <Setter Property="StrokeThickness" Value="2" />
+    <Setter Property="StrokeDashArray" Value="5,3" />
+  </Style>
+  <Style Selector="Path.d-hose">
+    <Setter Property="Stroke" Value="{DynamicResource IncomingBrush}" />
+    <Setter Property="StrokeThickness" Value="2.5" />
+  </Style>
+  <Style Selector="Path.d-dim">
+    <Setter Property="Stroke" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="StrokeThickness" Value="1.5" />
+  </Style>
+  <Style Selector="Path.d-wind">
+    <Setter Property="Stroke" Value="{DynamicResource TextSecondaryBrush}" />
+    <Setter Property="StrokeThickness" Value="2.5" />
+  </Style>
+  <Style Selector="Path.d-go">
+    <Setter Property="Stroke" Value="{DynamicResource ActiveBrush}" />
+    <Setter Property="StrokeThickness" Value="3" />
+  </Style>
+</Styles>
