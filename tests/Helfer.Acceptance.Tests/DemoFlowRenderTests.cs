@@ -184,7 +184,23 @@ public class DemoFlowRenderTests
         Assert.Equal(["Von 0,1 bis 50 % möglich."], errors);
     }
 
+    [AvaloniaFact]
+    public void The_smallest_schaummittel_preset_sets_a_valid_zumischrate()
+    {
+        var phone = new PhoneRender();
+        var page = OpenSchaummittel(phone);
+        var button = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => Equals(b.Content, "0,1 %"));
+
+        Assert.NotNull(button.Command);
+        button.Command.Execute(button.CommandParameter);
+        PhoneRender.Settle();
+
+        Assert.Equal("0,1", page.Zumischrate.Text);
+        Assert.Equal(0.1m, page.Zumischrate.Value);
+    }
+
     [AvaloniaTheory]
+    [InlineData("Zumischrate in %", "0,1 %")]
     [InlineData("Zumischrate in %", "1 %")]
     [InlineData("Verschäumungszahl", "LEICHT 500")]
     public void A_schaummittel_preset_sits_beside_its_field_at_glove_size(string field, string preset)

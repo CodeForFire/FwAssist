@@ -59,14 +59,16 @@
              the field and the error can be too, so both keep the whole width. -->
         <StackPanel Spacing="4">
           <TextBlock Classes="overline" Text="{Binding Zumischrate.Label}" />
-          <Grid ColumnDefinitions="72,8,*,8,*,8,*">
+          <Grid ColumnDefinitions="72,8,*,8,*,8,*,8,*">
             <ContentControl Grid.Column="0" HorizontalContentAlignment="Stretch"
                             Content="{Binding Zumischrate}" ContentTemplate="{StaticResource NumberInput}" />
-            <Button Grid.Column="2" Classes="preset" Content="1 %"
+            <Button Grid.Column="2" Classes="preset" Content="0,1 %"
+                    Command="{Binding SetZumischrateCommand}" CommandParameter="0,1" />
+            <Button Grid.Column="4" Classes="preset" Content="1 %"
                     Command="{Binding SetZumischrateCommand}" CommandParameter="1" />
-            <Button Grid.Column="4" Classes="preset" Content="3 %"
+            <Button Grid.Column="6" Classes="preset" Content="3 %"
                     Command="{Binding SetZumischrateCommand}" CommandParameter="3" />
-            <Button Grid.Column="6" Classes="preset" Content="6 %"
+            <Button Grid.Column="8" Classes="preset" Content="6 %"
                     Command="{Binding SetZumischrateCommand}" CommandParameter="6" />
           </Grid>
           <TextBlock Classes="field-error" Text="{Binding Zumischrate.Error}"
