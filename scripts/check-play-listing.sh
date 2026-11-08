@@ -9,6 +9,10 @@
 
 set -euo pipefail
 
+# wc -m only counts characters in a UTF-8 locale. Without one it counts bytes, and the
+# "–" and umlauts in the listing push fields that fit over their limits.
+export LC_ALL=C.UTF-8
+
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 listing="$repo_root/docs/play/listing-de-DE.md"
 
