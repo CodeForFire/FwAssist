@@ -43,7 +43,7 @@
 
         <activity-alias android:name="de.codeforfire.helfer.launcher.funkalphabet"
                         android:targetActivity="de.codeforfire.helfer.MainActivity"
-                        android:label="Funkalphabet"
+                        android:label="Buchstabieralphabet"
                         android:icon="@drawable/ic_helper_funkalphabet"
                         android:exported="true"
                         android:enabled="true">

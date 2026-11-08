@@ -4,16 +4,17 @@ using System.Text;
 namespace Helfer.Helpers.Funkalphabet;
 
 /// <summary>
-/// A German spelling table and how to spell a text with it. Two exist: <see cref="Alt"/>, the names
-/// of DIN 5009:1983 that radio traffic grew up with, and <see cref="Din2022"/>, the cities of the
-/// current standard. DIN wrote the new one for business and administration and does not bind
-/// emergency services to it, so which one applies is the user's organisation's call, not this app's.
+/// A spelling table and how to spell a text with it. Three exist: <see cref="Alt"/>, the names of
+/// DIN 5009:1983 that radio traffic grew up with and that the screen calls BOS, <see cref="Din2022"/>,
+/// the cities of the current standard, and <see cref="Nato"/>. DIN wrote the new one for business
+/// and administration and does not bind emergency services to it, so which one applies is the
+/// user's organisation's call, not this app's.
 /// </summary>
 public sealed class Buchstabiertafel
 {
-    // Spoken one at a time in either table, and "zwo" so that it is not misheard as "drei". These
-    // are radio procedure, not DIN's letters, so they stay out of Entries. Declared before Alt and
-    // Din2022: their initializers read this.
+    // Spoken one at a time in every table, and "zwo" so that it is not misheard as "drei". These
+    // are radio procedure, not DIN's letters, so they stay out of Entries. Declared before the
+    // tables: their initializers read this.
     private static readonly CodeWord[] Digits =
     [
         new("0", "null"),
@@ -105,6 +106,42 @@ public sealed class Buchstabiertafel
         new("X", "Xanten"),
         new("Y", "Ypsilon"),
         new("Z", "Zwickau"),
+    ]);
+
+    // NATO has no word for the German letters, so they go out as their usual two-letter spelling:
+    // the far end writes down AE, OE, UE or SS.
+    public static Buchstabiertafel Nato { get; } = new(
+    [
+        new("A", "Alfa"),
+        new("Ä", "Alfa Echo"),
+        new("B", "Bravo"),
+        new("C", "Charlie"),
+        new("D", "Delta"),
+        new("E", "Echo"),
+        new("F", "Foxtrot"),
+        new("G", "Golf"),
+        new("H", "Hotel"),
+        new("I", "India"),
+        new("J", "Juliett"),
+        new("K", "Kilo"),
+        new("L", "Lima"),
+        new("M", "Mike"),
+        new("N", "November"),
+        new("O", "Oscar"),
+        new("Ö", "Oscar Echo"),
+        new("P", "Papa"),
+        new("Q", "Quebec"),
+        new("R", "Romeo"),
+        new("S", "Sierra"),
+        new("ß", "Sierra Sierra"),
+        new("T", "Tango"),
+        new("U", "Uniform"),
+        new("Ü", "Uniform Echo"),
+        new("V", "Victor"),
+        new("W", "Whiskey"),
+        new("X", "X-ray"),
+        new("Y", "Yankee"),
+        new("Z", "Zulu"),
     ]);
 
     /// <summary>The table in reading order.</summary>

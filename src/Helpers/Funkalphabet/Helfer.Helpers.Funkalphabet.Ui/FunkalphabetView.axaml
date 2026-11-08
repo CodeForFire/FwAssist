@@ -7,13 +7,16 @@
        what is being typed. The table switch sits at the bottom, in thumb reach. RadioButtons: a
        screen reader hears which table is selected, and the line above the list names it in words. -->
   <DockPanel Margin="16">
-    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,12,*" Margin="0,12,0,0">
-      <RadioButton x:Name="AltTable" Grid.Column="0" GroupName="Table" Content="ALT"
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,8,*,8,*" Margin="0,12,0,0">
+      <RadioButton x:Name="AltTable" Grid.Column="0" GroupName="Table" Content="BOS"
                    HorizontalAlignment="Stretch"
                    IsChecked="{Binding IsAlt}" />
       <RadioButton x:Name="Din2022Table" Grid.Column="2" GroupName="Table" Content="DIN 2022"
                    HorizontalAlignment="Stretch"
                    IsChecked="{Binding IsDin2022}" />
+      <RadioButton x:Name="NatoTable" Grid.Column="4" GroupName="Table" Content="NATO"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsNato}" />
     </Grid>
     <!-- A word on the radio is spelled as typed, so the keyboard may not correct it: HLF stays HLF. -->
     <Grid DockPanel.Dock="Top" ColumnDefinitions="*,8,Auto">
@@ -29,16 +32,8 @@
                Text="{Binding TableName}" />
     <ScrollViewer>
       <StackPanel Spacing="16">
-        <ItemsControl x:Name="Spelled" ItemsSource="{Binding Spelled}" IsVisible="{Binding HasSpelling}">
-          <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:CodeWord">
-              <Grid ColumnDefinitions="56,*" MinHeight="32">
-                <TextBlock Grid.Column="0" Classes="mono" VerticalAlignment="Center" Text="{Binding Symbol}" />
-                <TextBlock Grid.Column="1" Classes="display" VerticalAlignment="Center" Text="{Binding Word}" />
-              </Grid>
-            </DataTemplate>
-          </ItemsControl.ItemTemplate>
-        </ItemsControl>
+        <TextBlock x:Name="Spelled" Classes="display" TextWrapping="Wrap"
+                   Text="{Binding SpelledText}" IsVisible="{Binding HasSpelling}" />
         <ItemsControl x:Name="Entries" ItemsSource="{Binding Entries}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>

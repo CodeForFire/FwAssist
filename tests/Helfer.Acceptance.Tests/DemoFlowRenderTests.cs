@@ -18,13 +18,12 @@ public class DemoFlowRenderTests
     private static List<string?> Texts(Control root) =>
         root.GetVisualDescendants().OfType<TextBlock>().Select(t => t.Text).ToList();
 
-    // The words in the spelled list only: the reference table below it shows every code word anyway.
-    private static List<string?> SpelledWords(Control root)
+    // The spelled line only: the reference table below it shows every code word anyway.
+    private static string? SpelledLine(Control root)
     {
-        var spelled = root.GetVisualDescendants().OfType<ItemsControl>().Single(c => c.Name == "Spelled");
+        var spelled = root.GetVisualDescendants().OfType<TextBlock>().Single(c => c.Name == "Spelled");
         Assert.True(spelled.IsVisible);
-        return spelled.GetVisualDescendants().OfType<TextBlock>()
-            .Where(t => t.Classes.Contains("display")).Select(t => t.Text).ToList();
+        return spelled.Text;
     }
 
     // The result lines only, label then value: the form above them holds similar words.
@@ -109,8 +108,8 @@ public class DemoFlowRenderTests
         input.Text = "Schlauch";
         PhoneRender.Settle();
 
-        Assert.Contains("ALT (DIN 5009:1983)", Texts(phone.Window));
-        Assert.Equal(["Schule", "Ludwig", "Anton", "Ulrich", "Charlotte"], SpelledWords(phone.Window));
+        Assert.Contains("BOS (DIN 5009:1983)", Texts(phone.Window));
+        Assert.Equal("Schule - Ludwig - Anton - Ulrich - Charlotte", SpelledLine(phone.Window));
 
         phone.Capture("04-funkalphabet.png");
 
@@ -123,8 +122,19 @@ public class DemoFlowRenderTests
         Assert.False(alt.IsChecked);
         Assert.Contains("DIN 5009:2022", Texts(phone.Window));
         Assert.Equal(
-            ["Salzwedel", "Chemnitz", "Hamburg", "Leipzig", "Aachen", "Unna", "Chemnitz", "Hamburg"],
-            SpelledWords(phone.Window));
+            "Salzwedel - Chemnitz - Hamburg - Leipzig - Aachen - Unna - Chemnitz - Hamburg",
+            SpelledLine(phone.Window));
+
+        var nato = phone.Window.GetVisualDescendants().OfType<RadioButton>().Single(b => b.Name == "NatoTable");
+        nato.IsChecked = true;
+        PhoneRender.Settle();
+
+        Assert.False(din.IsChecked);
+        Assert.True(nato.IsChecked);
+        Assert.Contains("NATO", Texts(phone.Window));
+        Assert.Equal(
+            "Sierra - Charlie - Hotel - Lima - Alfa - Uniform - Charlie - Hotel",
+            SpelledLine(phone.Window));
 
         var clear = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "ClearButton");
         Assert.NotNull(clear.Command);

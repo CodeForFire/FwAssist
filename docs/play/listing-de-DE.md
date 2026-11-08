@@ -35,7 +35,7 @@ Jeder Helfer kann ein eigenes Symbol auf dem Startbildschirm bekommen und öffne
 DIE HELFER
 
 • Stoppuhr — Zeit messen, zum Beispiel bei einer Übung
-• Funkalphabet — Wörter für den Funk buchstabieren, mit der alten Tafel oder nach DIN 5009:2022
+• Buchstabieralphabet — Wörter für den Funk buchstabieren, mit der alten Tafel, nach DIN 5009:2022 oder mit dem NATO-Alphabet
 • Schaummittel — Schaum aus dem Vorrat und Bedarf für einen Raum berechnen
 • RTH-Landeplatz — Vorgaben und Ablauf für den Landeplatz, bei Tag und bei Nacht
 • Dekon-Platz — Sofortmaßnahmen, Aufbau und Technik für die Dekon-Stufen I bis III

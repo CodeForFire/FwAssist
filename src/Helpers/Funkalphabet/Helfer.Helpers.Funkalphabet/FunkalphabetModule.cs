@@ -10,7 +10,7 @@ public sealed class FunkalphabetModule : IHelperModule
 
     public string Id => HelperId;
 
-    public string Title => "Funkalphabet";
+    public string Title => "Buchstabieralphabet";
 
     public string Summary => "Wörter für den Funk buchstabieren.";
 
