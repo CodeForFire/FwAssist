@@ -8,7 +8,7 @@ contact_links:
     about: Welcher Helfer fehlt in der Hosentasche, was nervt, was macht Papier heute noch besser? Unter Ideen diskutieren wir das, bevor daraus ein Issue wird.
   - name: Aus der Praxis berichten
     url: https://github.com/CodeForFire/helfer/discussions/categories/aus-der-praxis
-    about: Eure Wehr nutzt Helfer oder testet es bei einer Übung? Erzählt davon — Rückmeldung aus echten Einsätzen ist für uns das Wertvollste.
+    about: Eure Wehr nutzt FwAssist oder testet es bei einer Übung? Erzählt davon — Rückmeldung aus echten Einsätzen ist für uns das Wertvollste.
   - name: Sicherheitslücke melden
     url: https://github.com/CodeForFire/helfer/security/advisories/new
     about: Sicherheitslücken bitte vertraulich melden — nicht als öffentliches Issue. Siehe SECURITY.md.

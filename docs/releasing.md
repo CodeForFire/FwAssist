@@ -63,7 +63,7 @@ Open that as its own pull request. Pushing the tag once it merges is what
 triggers the release:
 
 ```bash
-git tag -s v0.6.0 -m "Helfer v0.6.0 — <Zusammenfassung>" && git push origin v0.6.0
+git tag -s v0.6.0 -m "FwAssist v0.6.0 — <Zusammenfassung>" && git push origin v0.6.0
 ```
 
 The release body links to the version's section rather than inlining it, and a
@@ -216,7 +216,7 @@ reproducible instead of being retyped from memory each time:
 | | Where | Regenerate |
 |---|---|---|
 | Text — name, short and full description, reviewer notes | [`docs/play/listing-de-DE.md`](play/listing-de-DE.md) | by hand; `make play-listing-check` |
-| Icon, 512x512, 32-bit | `docs/play/icon-512.png` | not yet: the app has no logo |
+| Icon, 512x512, 32-bit | `docs/play/icon-512.png` | yes |
 | Feature graphic, 1024x500, no alpha | `docs/play/feature-graphic-1024x500.png` | not yet |
 | Phone screenshots, 9:16 | `docs/play/screenshots/*.png` | `make play-screenshots` |
 
@@ -251,7 +251,7 @@ these answers. Update this list in the same pull request.
 ### What the listing must not say
 
 Play restricts apps that imply official or governmental status, and apps that
-present themselves as emergency services. Helfer is a volunteer project; it does
+present themselves as emergency services. FwAssist is a volunteer project; it does
 not alert, dispatch or replace anything.
 
 - No coat of arms, Feuerwehr emblem or BOS insignia in the icon or graphics.
@@ -260,7 +260,7 @@ not alert, dispatch or replace anything.
 - No safety claims. A timer is a timer; describe it as one, not as something
   that keeps anybody safe.
 
-Keep the disclaimer in the description: Helfer steht in keiner Verbindung zu
+Keep the disclaimer in the description: FwAssist steht in keiner Verbindung zu
 einer Behörde oder Leitstelle und ersetzt keine Ausbildung.
 
 ### After the upload

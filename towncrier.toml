@@ -4,7 +4,7 @@
 # when a release is cut. See CONTRIBUTING.md.
 
 [tool.towncrier]
-name = "Helfer"
+name = "FwAssist"
 directory = "changelog.d"
 filename = "CHANGELOG.md"
 start_string = "<!-- towncrier release notes start -->\n"

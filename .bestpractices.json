@@ -1,10 +1,10 @@
 {
-  "name": "Helfer",
+  "name": "FwAssist",
   "homepage_url": "https://github.com/CodeForFire/helfer",
   "repo_url": "https://github.com/CodeForFire/helfer",
   "license": "MIT",
   "implementation_languages": "C#, Shell, Makefile, Dockerfile, Python",
-  "description": "Small offline pocket tools for fire brigades (Feuerwehr) in one Android app, built with .NET and Avalonia. Each helper can get its own launcher icon; the first one is a Stoppuhr (stopwatch) for exercises. No network permission, no account, no telemetry. \"Helfer\" is a working name.",
+  "description": "Small offline pocket tools for fire brigades (Feuerwehr) in one Android app, built with .NET and Avalonia. Each helper can get its own launcher icon; the first one is a Stoppuhr (stopwatch) for exercises. No network permission, no account, no telemetry.",
   "description_good_status": "Met",
   "description_good_justification": "The README opens with what the app is, who it is for and which helpers it has, in German for the fire-brigade audience, with an English developer section below: https://github.com/CodeForFire/helfer/blob/main/README.md",
   "interact_status": "Met",
