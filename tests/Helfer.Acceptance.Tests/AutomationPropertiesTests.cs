@@ -38,6 +38,11 @@ public class AutomationPropertiesTests
         PhoneRender.Settle();
         problems.AddRange(Unnamed(phone.Window).Select(p => "Einstellungen: " + p));
 
+        phone.Shell.GoHome();
+        phone.Shell.Home.OpenAboutCommand.Execute(null);
+        PhoneRender.Settle();
+        problems.AddRange(Unnamed(phone.Window).Select(p => "Info: " + p));
+
         Assert.Empty(problems);
     }
 }

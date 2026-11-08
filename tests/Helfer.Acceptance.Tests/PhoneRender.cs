@@ -22,7 +22,7 @@ internal sealed class PhoneRender
 
     public PhoneRender()
     {
-        Shell = CompositionRoot.CreateShell(new HelperServices(Time, Ticker), Icons, "0.1.0");
+        Shell = CompositionRoot.CreateShell(new HelperServices(Time, Ticker), Icons, new FakeExternalLinks(), "0.1.0");
         Window = new Window
         {
             Content = new ShellView { DataContext = Shell },

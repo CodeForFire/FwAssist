@@ -54,9 +54,29 @@ public class DemoFlowRenderTests
             Assert.Contains(module.Summary, texts);
         }
 
-        Assert.Contains("Version 0.1.0", texts);
-
         phone.Capture("01-uebersicht.png");
+    }
+
+    [AvaloniaFact]
+    public void Info_on_the_home_screen_opens_the_about_page()
+    {
+        var phone = new PhoneRender();
+        var info = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "AboutButton");
+
+        Assert.True(info.Bounds.Height >= 48, $"INFO is {info.Bounds.Height} high");
+        Assert.NotNull(info.Command);
+        info.Command.Execute(null);
+        PhoneRender.Settle();
+
+        var texts = Texts(phone.Window);
+        Assert.Contains("0.1.0", texts);
+        Assert.Contains("Ein Projekt von CodeForFire", texts);
+        Assert.Contains("https://www.github.com/codeforfire/helfer", texts);
+        Assert.Contains("Veröffentlicht unter der MIT-Lizenz.", texts);
+        Assert.Contains("Copyright (C) 2026 Christian Arlt", texts);
+        Assert.True(phone.Window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "RepositoryLink").Bounds.Height >= 48);
+
+        phone.Capture("11-info.png");
     }
 
     [AvaloniaFact]

@@ -28,6 +28,7 @@ public class MainActivity : AvaloniaMainActivity
         _shell ??= CompositionRoot.CreateShell(
             new HelperServices(new BootClockTimeProvider(), new DispatcherTimerTicker(), new AndroidHelperSettings(context)),
             new AndroidLauncherIcons(context),
+            new AndroidExternalLinks(context),
             AppVersionText.Of(typeof(MainActivity).Assembly));
         var shell = _shell;
         Helfer.Ui.App.CreateShell = () => shell;
