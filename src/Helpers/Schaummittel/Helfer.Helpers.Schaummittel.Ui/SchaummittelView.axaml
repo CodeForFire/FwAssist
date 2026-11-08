@@ -21,6 +21,11 @@
       <Setter Property="Padding" Value="4,0" />
       <Setter Property="HorizontalAlignment" Value="Stretch" />
     </Style>
+    <!-- Only the box: the label and the error are wider than the number. -->
+    <Style Selector="ContentControl.short TextBox">
+      <Setter Property="Width" Value="72" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
+    </Style>
   </UserControl.Styles>
 
   <UserControl.DataTemplates>
@@ -95,7 +100,7 @@
             <ContentControl Grid.Column="2" Content="{Binding Breite}" />
             <ContentControl Grid.Column="4" Content="{Binding Hoehe}" />
           </Grid>
-          <ContentControl Content="{Binding Zuschlag}" />
+          <ContentControl Classes="short" Content="{Binding Zuschlag}" />
         </StackPanel>
 
         <StackPanel x:Name="ResultPanel" Spacing="4" IsVisible="{Binding HasResults}">
