@@ -12,16 +12,16 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageVersion Include="Avalonia" Version="12.1.4" />
+    <PackageVersion Include="Avalonia" Version="12.1.5" />
     <!-- Keep in step with Avalonia: 12.1.1 hangs destroying an Activity that is still in the
          foreground (Back from the last page, a disabled launcher alias), and the next launch then
          sticks on the splash screen. Lagebuch's separate Android props file drifted to exactly
          that version; one file here is what keeps Dependabot's Avalonia group bumping it too. -->
     <PackageVersion Include="Avalonia.Android" Version="12.1.4" />
     <PackageVersion Include="Avalonia.Fonts.Inter" Version="12.1.4" />
-    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.1.4" />
-    <PackageVersion Include="Avalonia.Skia" Version="12.1.4" />
-    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.4" />
+    <PackageVersion Include="Avalonia.Headless.XUnit" Version="12.1.5" />
+    <PackageVersion Include="Avalonia.Skia" Version="12.1.5" />
+    <PackageVersion Include="Avalonia.Themes.Fluent" Version="12.1.5" />
     <PackageVersion Include="CommunityToolkit.Mvvm" Version="8.4.2" />
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="18.11.0" />
     <PackageVersion Include="StyleCop.Analyzers" Version="1.2.0-beta.556" />
