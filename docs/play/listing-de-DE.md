@@ -52,7 +52,7 @@ HINWEIS
 
 FwAssist ist ein ehrenamtliches Open-Source-Projekt und steht in keiner Verbindung zu einer Behörde oder Leitstelle. Die App ersetzt keine Ausbildung und keine vorgeschriebene Ausrüstung.
 
-Quelltext (MIT): https://github.com/CodeForFire/helfer
+Quelltext (MIT): https://github.com/CodeForFire/FwAssist
 ```
 
 ---
@@ -73,5 +73,5 @@ Die App benötigt kein Konto und keine Anmeldung und verbindet sich mit keinem S
 
 Unter "Einstellungen" lässt sich für jeden Helfer ein eigenes Symbol auf dem Startbildschirm ein- und ausschalten.
 
-Quelltext (MIT): https://github.com/CodeForFire/helfer
+Quelltext (MIT): https://github.com/CodeForFire/FwAssist
 ```

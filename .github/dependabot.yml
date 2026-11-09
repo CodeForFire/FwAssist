@@ -69,7 +69,7 @@ updates:
   # The acceptance test project has its own Directory.Packages.props and is
   # not covered by the root entry above.
   - package-ecosystem: nuget
-    directory: /tests/Helfer.Acceptance.Tests
+    directory: /tests/FwAssist.Acceptance.Tests
     schedule:
       interval: weekly
     open-pull-requests-limit: 10

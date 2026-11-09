@@ -37,7 +37,7 @@ in front of the person who found the bug.
 Every PR that touches the UI must include screenshots. The flow is:
 
 1. Render the affected view(s) to PNG at phone size using the headless Skia
-   harness in `tests/Helfer.Acceptance.Tests` (`PhoneRender` +
+   harness in `tests/FwAssist.Acceptance.Tests` (`PhoneRender` +
    `Window.CaptureRenderedFrame()` — `UseHeadlessDrawing = false` so embedded
    fonts rasterize). `make phone-screenshots` renders `DemoFlowRenderTests`
    into `out/phone-screenshots/`.
@@ -81,19 +81,22 @@ each can have its own launcher icon on the phone's home screen.
 
 **Adding a helper** touches exactly these places:
 
-1. `src/Helpers/<Name>/Helfer.Helpers.<Name>/`: the rules and view models,
+1. `src/Helpers/<Name>/FwAssist.Helpers.<Name>/`: the rules and view models,
    plus a `sealed class <Name>Module : IHelperModule`. Its `Id` is lower-case
    ASCII and permanent. It names the launcher alias, and renaming it removes
    the icon from every home screen it was placed on.
-2. `src/Helpers/<Name>/Helfer.Helpers.<Name>.Ui/`: the views, and a
+2. `src/Helpers/<Name>/FwAssist.Helpers.<Name>.Ui/`: the views, and a
    `<Name>Views.Register(ViewRegistry)`.
 3. `CompositionRoot.Modules` and `CompositionRoot.RegisterViews`, and the
-   project reference in `Helfer.Composition.csproj`.
+   project reference in `FwAssist.Composition.csproj`.
 4. An `<activity-alias>` named `de.codeforfire.helfer.launcher.<id>` in
-   `src/Helfer.App.Android/AndroidManifest.xml`, with its icon as
+   `src/FwAssist.App.Android/AndroidManifest.xml`, with its icon as
    `Resources/drawable/ic_helper_<id>.xml`, `ic_helper_<id>_foreground.xml` and
    `drawable-anydpi-v26/ic_helper_<id>.xml` (copy the Stoppuhr's three files).
-5. `tests/Helfer.Helpers.<Name>.Tests/` with a `stryker-config.json`, and the
+   The `helfer` in that name is the applicationId, `de.codeforfire.helfer`,
+   and it stays although the app is now FwAssist: changing it would turn
+   every installed copy into a separate app that never receives an update.
+5. `tests/FwAssist.Helpers.<Name>.Tests/` with a `stryker-config.json`, and the
    project in `MUTATE_PROJECTS` (Makefile) and in both lists in
    `.github/workflows/mutation.yml`.
 6. The helper's page in `DemoFlowRenderTests`, and its line in the README and
@@ -221,9 +224,9 @@ Dependencies point one way, and nothing may invert them:
   reference**, which is what makes it testable without a UI.
 - `Ui` holds the Avalonia `App`, the theme and the shell's views. It is a plain
   `net10.0` library so the headless tests can load it.
-- A helper is two projects under `src/Helpers/<Name>/`: `Helfer.Helpers.<Name>`
+- A helper is two projects under `src/Helpers/<Name>/`: `FwAssist.Helpers.<Name>`
   (its rules and view models; references `Core` and `AppLogic` only) and
-  `Helfer.Helpers.<Name>.Ui` (its views; references the first and `Ui`).
+  `FwAssist.Helpers.<Name>.Ui` (its views; references the first and `Ui`).
   **A helper never references another helper.** What two helpers share moves
   down into `Core`, `AppLogic` or `Ui`.
 - `Composition` is the one project that knows every helper.
@@ -231,7 +234,7 @@ Dependencies point one way, and nothing may invert them:
 
 A project reference that breaks this order needs a reason in the PR.
 
-- **View models** live in `src/Helfer.AppLogic/ViewModels/`, or in the
+- **View models** live in `src/FwAssist.AppLogic/ViewModels/`, or in the
   helper's own project.
   - Write them as `sealed partial` classes over CommunityToolkit.Mvvm's
     `ObservableObject`, using `[ObservableProperty]` and `[RelayCommand]`.
@@ -239,7 +242,7 @@ A project reference that breaks this order needs a reason in the PR.
     helper that has to marshal from a background thread copies Lagebuch's
     `IUiDispatcher` seam into `AppLogic` rather than inventing another.
 - **No DI container.** Wiring is by hand, through constructor injection, in
-  `src/Helfer.Composition/CompositionRoot.cs` and `MainActivity.cs`. A helper
+  `src/FwAssist.Composition/CompositionRoot.cs` and `MainActivity.cs`. A helper
   gets its platform services through `HelperServices`.
   
   An optional dependency is a nullable constructor parameter with a default,
@@ -289,7 +292,7 @@ what they cannot see.
     default` and pass it on.
 - **Culture:**
   - Anything the user reads is formatted through the fixed `de-DE` culture in
-    `src/Helfer.Core/Formatting.cs`.
+    `src/FwAssist.Core/Formatting.cs`.
   - Anything persisted or sent over the wire uses `InvariantCulture`.
   - Keys and identifiers compare with `StringComparison.Ordinal`.
 - **Dispose deterministically.** Use `using` or `await using` for every
@@ -298,7 +301,7 @@ what they cannot see.
 - **Packages:**
   - Versions live in `Directory.Packages.props` (central package management).
     Never put a `Version` on a `PackageReference` in a `.csproj`.
-  - Only `Helfer.Acceptance.Tests` keeps its own nested props file (the
+  - Only `FwAssist.Acceptance.Tests` keeps its own nested props file (the
     xunit.v3 stack). The Android head's packages live in the root file on
     purpose, so Dependabot's Avalonia group moves `Avalonia.Android` with
     `Avalonia`: Lagebuch's separate file left it on 12.1.1, which hangs.
@@ -309,7 +312,7 @@ what they cannot see.
   - A Dependabot NuGet bump needs that by hand. Dependabot rewrites only the
     lock file of the project that references the package directly, while
     every project that gets it through a project reference pins it as a
-    `CentralTransitive` entry too (lagebuch #642). Run `dotnet restore Helfer.sln
+    `CentralTransitive` entry too (lagebuch #642). Run `dotnet restore FwAssist.sln
     --force-evaluate` on its branch and push the result as a signed,
     signed-off commit.
   - A new dependency must earn its place in the PR description: it is
@@ -399,7 +402,7 @@ personal data, so confidentiality is a requirement, not a nice-to-have.
 - **Tooling:**
   - xUnit with plain `Assert`, and handwritten test doubles. There is no
     mocking library and no FluentAssertions; do not add either.
-  - Headless UI tests use `[AvaloniaFact]` in `Helfer.Acceptance.Tests`.
+  - Headless UI tests use `[AvaloniaFact]` in `FwAssist.Acceptance.Tests`.
 - **Naming:** a test's name is a sentence in snake_case stating the behaviour,
   e.g. `Join_prompt_focuses_the_host_field_not_the_name_field`.
 - **Bug fixes:** write the failing test first.
@@ -547,7 +550,7 @@ the pull request's CodeQL analysis on this machine: the same CodeQL bundle (read
 from the action commit `codeql.yml` pins), the same `security-and-quality`
 queries, the same build and the same exclusions. It fails when a result lands
 on a line the branch changed, which is what the ruleset would block. A first
-run takes about ten minutes; the bundle is cached under `~/.cache/helfer-codeql`.
+run takes about ten minutes; the bundle is cached under `~/.cache/fwassist-codeql`.
 `scripts/codeql-results.py` is shared with CI. It drops every result in generated
 code under `obj/` before upload, because `paths-ignore` cannot. Generated code
 therefore never opens an alert and never needs an exclusion.

@@ -5,7 +5,7 @@
 
        One subtree deliberately deviates and keeps its own Directory.Packages.props
        (nearest file wins; it imports this one):
-         - tests/Helfer.Acceptance.Tests       (xunit.v3 stack)
+         - tests/FwAssist.Acceptance.Tests     (xunit.v3 stack)
        Single-reference exceptions use VersionOverride in the .csproj. -->
   <PropertyGroup>
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>

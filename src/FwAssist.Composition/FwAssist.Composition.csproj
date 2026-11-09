@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The one place that knows every helper: the list the shell shows and the views that go with
+       them. Referenced by the Android head and the acceptance tests, so both see the same set. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FwAssist.Ui\FwAssist.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\Stoppuhr\FwAssist.Helpers.Stoppuhr.Ui\FwAssist.Helpers.Stoppuhr.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\Funkalphabet\FwAssist.Helpers.Funkalphabet.Ui\FwAssist.Helpers.Funkalphabet.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\Schaummittel\FwAssist.Helpers.Schaummittel.Ui\FwAssist.Helpers.Schaummittel.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\RthLandeplatz\FwAssist.Helpers.RthLandeplatz.Ui\FwAssist.Helpers.RthLandeplatz.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\DekonPlatz\FwAssist.Helpers.DekonPlatz.Ui\FwAssist.Helpers.DekonPlatz.Ui.csproj" />
+  </ItemGroup>
+
+</Project>

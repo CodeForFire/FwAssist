@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- The RTH-Landeplatz content and view model. Like AppLogic, no Avalonia: its views live in
+       FwAssist.Helpers.RthLandeplatz.Ui. A helper references Core and AppLogic, never another helper. -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\FwAssist.Core\FwAssist.Core.csproj" />
+    <ProjectReference Include="..\..\..\FwAssist.AppLogic\FwAssist.AppLogic.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+</Project>

@@ -84,20 +84,20 @@ jobs:
       # packages.lock.json files, or fail. A package change that forgot to commit its
       # regenerated lock file fails here with NU1004 instead of building something else.
       - name: Restore
-        run: dotnet restore Helfer.sln --locked-mode
+        run: dotnet restore FwAssist.sln --locked-mode
 
       # One command per step, so each exit code gates the job on its own.
       - name: Format check (whitespace)
-        run: dotnet format whitespace Helfer.Host.slnf --verify-no-changes
+        run: dotnet format whitespace FwAssist.Host.slnf --verify-no-changes
 
       - name: Format check (style)
-        run: dotnet format style Helfer.Host.slnf --verify-no-changes
+        run: dotnet format style FwAssist.Host.slnf --verify-no-changes
 
       - name: Build
-        run: dotnet build Helfer.sln --configuration Release --no-restore
+        run: dotnet build FwAssist.sln --configuration Release --no-restore
 
       - name: Test
-        run: dotnet test Helfer.sln --configuration Release --no-build --verbosity normal
+        run: dotnet test FwAssist.sln --configuration Release --no-build --verbosity normal
 
   # A pull request that changes src/ carries its changelog entry as its own file
   # in changelog.d/, never as an edit to CHANGELOG.md — one file per change is

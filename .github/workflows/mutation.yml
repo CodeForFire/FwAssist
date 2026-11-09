@@ -121,7 +121,7 @@ jobs:
         run: |
           src="$(make -s mutate-src PROJECT="$PROJECT")"
           if git diff --quiet "$(git merge-base "$BASE" HEAD)" -- "$src/*.cs"; then
-            echo "No changes to Helfer.$PROJECT -- nothing to mutate."
+            echo "No changes to FwAssist.$PROJECT -- nothing to mutate."
             echo "changed=false" >> "$GITHUB_OUTPUT"
           else
             echo "changed=true" >> "$GITHUB_OUTPUT"

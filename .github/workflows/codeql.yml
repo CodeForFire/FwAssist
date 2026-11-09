@@ -55,13 +55,13 @@ jobs:
           # StyleCop rule that already governs the same code at build time.
           config-file: ./.github/codeql/codeql-config.yml
 
-      # Helfer.Host.slnf deliberately excludes the Android head:
+      # FwAssist.Host.slnf deliberately excludes the Android head:
       # Microsoft.Android.Sdk rejects any JDK above 21 and the runner ships a
       # newer one, so building the full solution here would fail with XA0030.
       # The head is thin by design (AGENTS.md, "Architecture"); everything with
       # logic in it is analysed.
       - name: Build
-        run: dotnet build Helfer.Host.slnf -c Release
+        run: dotnet build FwAssist.Host.slnf -c Release
 
       # Analysis and upload are split so that generated code can be dropped in
       # between: paths-ignore does not work under build-mode: manual, and the

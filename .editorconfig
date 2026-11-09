@@ -24,7 +24,7 @@ dotnet_diagnostic.CA2007.severity = none
 
 # CA1716 is a cross-language (VB/C# interop) naming rule with no value for this C#-only app:
 # interface members Get/Stop/Operator and parameters set/to are idiomatic here, and the
-# a namespace root such as Helfer.Ui must stay legal. Suppress app-wide.
+# a namespace root such as FwAssist.Ui must stay legal. Suppress app-wide.
 dotnet_diagnostic.CA1716.severity = none
 
 # StyleCop.Analyzers: curated for this codebase. Rules disabled below either
@@ -120,7 +120,7 @@ dotnet_diagnostic.CA1829.severity = none
 dotnet_diagnostic.CA2213.severity = none
 dotnet_diagnostic.CA2025.severity = none
 
-[{src/Helfer.App.Android/*.cs,src/Helfer.App.Android/**/*.cs}]
+[{src/FwAssist.App.Android/*.cs,src/FwAssist.App.Android/**/*.cs}]
 # Java-managed objects (Intent, Java.IO.File, ActivityResultLauncher, ActivityResultContracts.*)
 # have their lifetime owned by the Android runtime: they must survive past the C# call that hands
 # them to the platform (StartActivity / RegisterForActivityResult), so "dispose" here would break

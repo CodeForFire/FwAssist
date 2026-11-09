@@ -1,6 +1,6 @@
-using Helfer.AppLogic.Services;
+using FwAssist.AppLogic.Services;
 
-namespace Helfer.Testing;
+namespace FwAssist.Testing;
 
 /// <summary>Records the links the app opened; <see cref="Refuse"/> makes them fail.</summary>
 internal sealed class FakeExternalLinks : IExternalLinks

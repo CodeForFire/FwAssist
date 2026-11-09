@@ -1,0 +1,40 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.AppLogic.ViewModels;assembly=FwAssist.AppLogic"
+             xmlns:conv="clr-namespace:FwAssist.Ui.Converters"
+             x:Class="FwAssist.Ui.Views.HomeView"
+             x:DataType="vm:HomeViewModel">
+  <DockPanel>
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,Auto" Margin="8">
+      <Button x:Name="AboutButton" Grid.Column="0" Classes="ghost" Content="INFO"
+              Command="{Binding OpenAboutCommand}" />
+      <Button x:Name="SettingsButton" Grid.Column="1" Classes="ghost" Content="EINSTELLUNGEN"
+              Command="{Binding OpenSettingsCommand}" />
+    </Grid>
+    <ScrollViewer>
+      <ItemsControl x:Name="Tiles" ItemsSource="{Binding Tiles}" Margin="16,16,16,0">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate>
+            <StackPanel Spacing="12" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:HelperTileViewModel">
+            <Button Classes="tile" Command="{Binding OpenCommand}"
+                    AutomationProperties.Name="{Binding Title}">
+              <Grid ColumnDefinitions="Auto,*">
+                <PathIcon Grid.Column="0" Width="32" Height="32" Margin="0,0,16,0"
+                          Foreground="{StaticResource SignalBrush}"
+                          Data="{Binding IconPathData, Converter={x:Static conv:PathDataConverter.Instance}}" />
+                <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                  <TextBlock Classes="display" FontSize="18" Text="{Binding Title}" />
+                  <TextBlock Classes="secondary" Text="{Binding Summary}" TextWrapping="Wrap" />
+                </StackPanel>
+              </Grid>
+            </Button>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

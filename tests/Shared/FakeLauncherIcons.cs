@@ -1,6 +1,6 @@
-using Helfer.AppLogic.Services;
+using FwAssist.AppLogic.Services;
 
-namespace Helfer.Testing;
+namespace FwAssist.Testing;
 
 /// <summary>Launcher icons in memory; <see cref="Refuse"/> makes the next changes fail.</summary>
 internal sealed class FakeLauncherIcons : ILauncherIcons

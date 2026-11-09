@@ -100,7 +100,7 @@ jobs:
           VERSION: ${{ needs.version.outputs.version }}
           VERSION_CODE: ${{ needs.version.outputs.version_code }}
         run: >
-          dotnet publish src/Helfer.App.Android/Helfer.App.Android.csproj -c Release
+          dotnet publish src/FwAssist.App.Android/FwAssist.App.Android.csproj -c Release
           "-p:ApplicationVersion=${VERSION_CODE}"
           "-p:ApplicationDisplayVersion=${VERSION}"
           "-p:Version=${VERSION}"
@@ -110,8 +110,8 @@ jobs:
           VERSION: ${{ needs.version.outputs.version }}
         run: |
           dotnet tool restore
-          scripts/sbom.sh src/Helfer.App.Android/Helfer.App.Android.csproj helfer-android "$VERSION" \
-            "sbom/helfer-${VERSION}-android.cdx.json"
+          scripts/sbom.sh src/FwAssist.App.Android/FwAssist.App.Android.csproj fwassist-android "$VERSION" \
+            "sbom/fwassist-${VERSION}-android.cdx.json"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: sbom
@@ -140,8 +140,8 @@ jobs:
           min_sdk=$("$aapt2" dump badging "$apk" | sed -n "s/^\(minSdkVersion\|sdkVersion\):'\([0-9]*\)'$/\2/p")
           test "${min_sdk:-0}" -ge 24 || { echo "::error::The APK has minSdkVersion '${min_sdk}', Play needs 24 - check SupportedOSPlatformVersion"; exit 1; }
           mkdir -p dist play
-          cp "$apk" "dist/helfer-${VERSION}.apk"
-          cp "$aab" "play/helfer-${VERSION}.aab"
+          cp "$apk" "dist/fwassist-${VERSION}.apk"
+          cp "$aab" "play/fwassist-${VERSION}.aab"
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: apk
@@ -202,7 +202,7 @@ jobs:
       - uses: actions/attest@1e69f48acb82d1966a394da916b4c1698aa569d6 # v4.2.2
         with:
           subject-path: dist/*.apk
-          sbom-path: dist/helfer-${{ needs.version.outputs.version }}-android.cdx.json
+          sbom-path: dist/fwassist-${{ needs.version.outputs.version }}-android.cdx.json
       - name: Build release notes
         env:
           VERSION: ${{ needs.version.outputs.version }}
@@ -223,7 +223,7 @@ jobs:
           cat >> release-notes.md <<EOF
           → [Alle Änderungen in dieser Version](${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/v${VERSION}/CHANGELOG.md)
 
-          Getaggter Release-Build für Android: \`helfer-${VERSION}.apk\`.
+          Getaggter Release-Build für Android: \`fwassist-${VERSION}.apk\`.
 
           **Prüfsumme und Herkunftsnachweis.** Dem Release liegt \`SHA256SUMS.txt\` bei:
 
@@ -237,15 +237,15 @@ jobs:
           sie gebaut hat — prüfbar mit der GitHub CLI:
 
           \`\`\`
-          gh attestation verify <Datei> --repo CodeForFire/helfer
+          gh attestation verify <Datei> --repo CodeForFire/FwAssist
           \`\`\`
 
-          **Stückliste (SBOM).** \`helfer-${VERSION}-android.cdx.json\` listet jede enthaltene
+          **Stückliste (SBOM).** \`fwassist-${VERSION}-android.cdx.json\` listet jede enthaltene
           Bibliothek mit Version, Lizenz und Prüfsumme im CycloneDX-Format, ebenfalls signiert an
           die APK gebunden:
 
           \`\`\`
-          gh attestation verify <Datei> --repo CodeForFire/helfer --predicate-type https://cyclonedx.org/bom
+          gh attestation verify <Datei> --repo CodeForFire/FwAssist --predicate-type https://cyclonedx.org/bom
           \`\`\`
 
           **Installation ohne Play Store.** Aktiviere einmalig *Installation aus unbekannten

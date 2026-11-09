@@ -2,7 +2,7 @@
 
 Pushing a version tag triggers the release workflow
 ([`.github/workflows/release.yml`](../.github/workflows/release.yml)), which
-builds `helfer-<version>.apk` and publishes it as a GitHub release, with
+builds `fwassist-<version>.apk` and publishes it as a GitHub release, with
 `SHA256SUMS.txt`, a CycloneDX SBOM and Sigstore attestations. It also builds a
 `.aab`, kept as a build artefact for inspection only: it is signed with the CI
 debug key. The bundle Google Play gets is built on a laptop with the upload
@@ -78,7 +78,7 @@ assembled.
 - [ ] `SHA256SUMS.txt` is attached and lists the `.apk` and the SBOM under their
       bare names. `sha256sum -c SHA256SUMS.txt` has to pass in a folder holding
       nothing but the downloads.
-- [ ] `gh attestation verify helfer-<version>.apk --repo CodeForFire/helfer`
+- [ ] `gh attestation verify fwassist-<version>.apk --repo CodeForFire/FwAssist`
       passes, and again with `--predicate-type https://cyclonedx.org/bom`.
 - [ ] The release is marked pre-release if and only if the tag carries a suffix.
 - [ ] The APK installs over the previous release on a phone, every helper's
@@ -120,7 +120,7 @@ explains the first install.
 Google Play has not accepted an APK for a new app since 2021, so the upload is an
 **Android App Bundle**. The build produces one: `AndroidPackageFormats` is
 `aab;apk` in
-[`Helfer.App.Android.csproj`](../src/Helfer.App.Android/Helfer.App.Android.csproj),
+[`FwAssist.App.Android.csproj`](../src/FwAssist.App.Android/FwAssist.App.Android.csproj),
 and the SDK then runs bundletool over that same signed bundle to extract a
 universal `.apk`. The `.apk` that `make aab` leaves beside the bundle is
 therefore a render of the exact bytes Play receives, and installing it on a
@@ -272,8 +272,8 @@ einer Behörde oder Leitstelle und ersetzt keine Ausbildung.
 - The native libraries are still 16 KB-aligned, which Play requires of anything
   targeting Android 15+. The app ships 32- and 64-bit ABIs; check them all:
   ```bash
-  unzip -q -o -d /tmp/helfer helfer-<version>.apk 'lib/*'
-  for f in /tmp/helfer/lib/*/*.so; do
+  unzip -q -o -d /tmp/fwassist fwassist-<version>.apk 'lib/*'
+  for f in /tmp/fwassist/lib/*/*.so; do
     readelf -lW "$f" | awk -v f="$f" '$1=="LOAD" && $NF!="0x4000" { print "NOT 16K:", f }'
   done
   ```

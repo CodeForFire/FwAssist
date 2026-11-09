@@ -1,4 +1,4 @@
-namespace Helfer.Testing;
+namespace FwAssist.Testing;
 
 /// <summary>
 /// A clock that moves only when a test moves it. The wall clock and the monotonic timestamp move

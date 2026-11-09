@@ -3,7 +3,7 @@
 # Writes the CycloneDX SBOM for one shipped app: every NuGet package it is built
 # from, with version, licence and content hash.
 #
-#   scripts/sbom.sh src/Helfer.App.Android/Helfer.App.Android.csproj helfer-android 0.1.0 dist/x.cdx.json
+#   scripts/sbom.sh src/FwAssist.App.Android/FwAssist.App.Android.csproj fwassist-android 0.1.0 dist/x.cdx.json
 #
 # The project must already be restored; the release job calls this right after
 # its `dotnet publish`, so the SBOM describes the graph that was just built
@@ -12,7 +12,7 @@
 # once.
 #
 # Project references are walked (-rs), so packages that reach the app through
-# Helfer.Ui or a helper project are listed too.
+# FwAssist.Ui or a helper project are listed too.
 
 set -euo pipefail
 
