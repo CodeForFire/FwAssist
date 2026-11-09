@@ -14,7 +14,7 @@ you already know your way around here.
 idea for a helper, or better German wording on a screen used with gloves on in
 the rain. If you are a firefighter rather than a developer, that is where your
 judgement beats ours. Propose it under
-[Ideen](https://github.com/CodeForFire/helfer/discussions/categories/ideen),
+[Ideen](https://github.com/CodeForFire/FwAssist/discussions/categories/ideen),
 in German or English.
 
 Want to build a helper? [`AGENTS.md`](AGENTS.md#helpers) lists every place a new
@@ -195,7 +195,7 @@ A release turns that into one bullet, with a link to the pull request the
 fragment arrived in:
 
 ```markdown
-- [#34](https://github.com/CodeForFire/helfer/pull/34) - The Stoppuhr keeps
+- [#34](https://github.com/CodeForFire/FwAssist/pull/34) - The Stoppuhr keeps
   running while another helper is open. (#12)
 ```
 

@@ -9,14 +9,14 @@
 # rejects any JDK above 21 (error XA0030) and current distros ship newer ones.
 # Everything after the build — emulator, install, logcat — uses the host
 # Android SDK, because the build image has no emulator. `build` and `test`
-# therefore run against Helfer.Host.slnf, the solution minus that head; `apk`
+# therefore run against FwAssist.Host.slnf, the solution minus that head; `apk`
 # builds the head in Docker, and CI builds the full solution.
 
 DOTNET       ?= dotnet
 CONFIG       ?= Debug
-SLN          := Helfer.sln
-SLNF         := Helfer.Host.slnf
-ANDROID_PROJ := src/Helfer.App.Android/Helfer.App.Android.csproj
+SLN          := FwAssist.sln
+SLNF         := FwAssist.Host.slnf
+ANDROID_PROJ := src/FwAssist.App.Android/FwAssist.App.Android.csproj
 APP_ID       := de.codeforfire.helfer
 FILTER       ?=
 PROJECT      ?=
@@ -43,12 +43,12 @@ EMULATOR_BIN := $(ANDROID_HOME)/emulator/emulator
 AVD          ?= Medium_Phone_API_35
 TABLET_AVD   ?= Tablet_API_35
 # The same Dockerfile as Lagebuch's, so IMAGE=lagebuch-android-build reuses an image already built.
-IMAGE        ?= helfer-android-build
-DOCKER_HOME  ?= $(HOME)/.cache/helfer-android-build
-APK          := src/Helfer.App.Android/bin/$(CONFIG)/net10.0-android/$(APP_ID)-Signed.apk
+IMAGE        ?= fwassist-android-build
+DOCKER_HOME  ?= $(HOME)/.cache/fwassist-android-build
+APK          := src/FwAssist.App.Android/bin/$(CONFIG)/net10.0-android/$(APP_ID)-Signed.apk
 # `aab` always builds Release, whatever CONFIG says — a debug bundle is not uploadable.
-AAB          := src/Helfer.App.Android/bin/Release/net10.0-android/$(APP_ID)-Signed.aab
-RELEASE_APK  := src/Helfer.App.Android/bin/Release/net10.0-android/$(APP_ID)-Signed.apk
+AAB          := src/FwAssist.App.Android/bin/Release/net10.0-android/$(APP_ID)-Signed.aab
+RELEASE_APK  := src/FwAssist.App.Android/bin/Release/net10.0-android/$(APP_ID)-Signed.apk
 
 # xunit.v3 launches each test assembly as its own apphost, which fails with
 # "You must install .NET to run this application" unless DOTNET_ROOT points at
@@ -59,7 +59,7 @@ export DOTNET_ROOT ?= $(patsubst %/,%,$(dir $(realpath $(shell command -v $(DOTN
 
 TEST_FILTER := $(if $(FILTER),--filter $(FILTER),)
 # FILTER on its own matches method names only and silently runs nothing for a class name; use
-# FILTER=FullyQualifiedName~ClassName, and narrow with PROJECT=tests/Helfer.Core.Tests.
+# FILTER=FullyQualifiedName~ClassName, and narrow with PROJECT=tests/FwAssist.Core.Tests.
 TEST_TARGET := $(if $(PROJECT),$(PROJECT),$(SLNF))
 
 .DEFAULT_GOAL := help
@@ -87,12 +87,12 @@ build: ## Build everything except the Android head
 test: ## Run tests (PROJECT=path and/or FILTER=FullyQualifiedName~Foo to narrow)
 	$(DOTNET) test $(TEST_TARGET) -c $(CONFIG) $(TEST_FILTER)
 
-# Projects with a tests/Helfer.<name>.Tests/stryker-config.json, by the part after "Helfer.".
+# Projects with a tests/FwAssist.<name>.Tests/stryker-config.json, by the part after "FwAssist.".
 # The acceptance tests are left out: headless UI is too slow to repeat once per mutant.
 MUTATE_PROJECTS := Core AppLogic Helpers.Stoppuhr Helpers.Funkalphabet Helpers.Schaummittel Helpers.RthLandeplatz Helpers.DekonPlatz
 
 # Where each project's source lives, for SINCE= below.
-mutate_src = $(if $(filter Helpers.%,$(1)),src/Helpers/$(patsubst Helpers.%,%,$(1))/Helfer.$(1),src/Helfer.$(1))
+mutate_src = $(if $(filter Helpers.%,$(1)),src/Helpers/$(patsubst Helpers.%,%,$(1))/FwAssist.$(1),src/FwAssist.$(1))
 
 mutate-src: ## Print a mutation project's source directory (PROJECT=...), for mutation.yml
 	@echo $(call mutate_src,$(PROJECT))
@@ -116,14 +116,14 @@ mutate: ## Mutation-test one project (PROJECT=Core|AppLogic|Helpers.<Name> [SINC
 	  echo "Usage: make mutate PROJECT=<one of: $(MUTATE_PROJECTS)>"; exit 2; fi
 	@rm -f $(MUTATE_OUT)/reports/changed-lines.md
 	@if [ -z "$(SINCE)" ]; then \
-	  (cd tests/Helfer.$(PROJECT).Tests && $(DOTNET) tool run dotnet-stryker --output $(MUTATE_OUT)) || exit $$?; \
+	  (cd tests/FwAssist.$(PROJECT).Tests && $(DOTNET) tool run dotnet-stryker --output $(MUTATE_OUT)) || exit $$?; \
 	  echo "Report: $(MUTATE_OUT)/reports/mutation-report.html"; \
 	else \
 	  patterns=$$($(MUTATE_SCORE) patterns --base "$(SINCE)" --project-dir $(call mutate_src,$(PROJECT))) || exit 2; \
 	  if [ -z "$$patterns" ]; then \
-	    echo "No line in Helfer.$(PROJECT) added or changed since $(SINCE) -- nothing to mutate."; exit 0; fi; \
+	    echo "No line in FwAssist.$(PROJECT) added or changed since $(SINCE) -- nothing to mutate."; exit 0; fi; \
 	  set --; for p in $$patterns; do set -- "$$@" --mutate "**/$$p"; done; \
-	  (cd tests/Helfer.$(PROJECT).Tests && $(DOTNET) tool run dotnet-stryker --output $(MUTATE_OUT) --break-at 0 "$$@") || exit $$?; \
+	  (cd tests/FwAssist.$(PROJECT).Tests && $(DOTNET) tool run dotnet-stryker --output $(MUTATE_OUT) --break-at 0 "$$@") || exit $$?; \
 	  echo "Report: $(MUTATE_OUT)/reports/mutation-report.html"; \
 	  $(MUTATE_SCORE) score --report $(MUTATE_OUT)/reports/mutation-report.json --base "$(SINCE)" \
 	    --project-dir $(call mutate_src,$(PROJECT)) --threshold $(BREAK) --summary $(MUTATE_OUT)/reports/changed-lines.md; \
@@ -271,19 +271,19 @@ uninstall: ## Remove the app from the attached device/emulator
 
 # Writes into docs/: the set the README shows, at the phone size the layout is written for.
 screenshots: ## Regenerate docs/screenshots/*.png (DemoFlowRenderTests with RENDER_OUT)
-	RENDER_OUT=$(CURDIR)/docs/screenshots $(DOTNET) test tests/Helfer.Acceptance.Tests -c $(CONFIG) \
+	RENDER_OUT=$(CURDIR)/docs/screenshots $(DOTNET) test tests/FwAssist.Acceptance.Tests -c $(CONFIG) \
 	  --filter FullyQualifiedName~DemoFlowRenderTests
 
 # Writes outside docs/ on purpose: these are for a pull request's before/after pair, not for the
 # repository.
 phone-screenshots: ## Render the phone screens to out/phone-screenshots (412x915, for a PR)
-	RENDER_OUT=$(CURDIR)/out/phone-screenshots $(DOTNET) test tests/Helfer.Acceptance.Tests -c $(CONFIG) \
+	RENDER_OUT=$(CURDIR)/out/phone-screenshots $(DOTNET) test tests/FwAssist.Acceptance.Tests -c $(CONFIG) \
 	  --filter FullyQualifiedName~DemoFlowRenderTests
 
 # Google Play rejects a phone screenshot that is not exactly 9:16 (or 16:9).
 play-screenshots: ## Regenerate docs/play/screenshots/*.png at 9:16 for the Play listing
 	RENDER_OUT=$(CURDIR)/docs/play/screenshots RENDER_WIDTH=540 RENDER_HEIGHT=960 \
-	  $(DOTNET) test tests/Helfer.Acceptance.Tests -c $(CONFIG) \
+	  $(DOTNET) test tests/FwAssist.Acceptance.Tests -c $(CONFIG) \
 	  --filter FullyQualifiedName~DemoFlowRenderTests
 
 play-listing-check: ## Check the Play Store listing text against the Console's limits

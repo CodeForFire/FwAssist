@@ -1,0 +1,118 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.Helpers.RthLandeplatz;assembly=FwAssist.Helpers.RthLandeplatz"
+             xmlns:ui="clr-namespace:FwAssist.Helpers.RthLandeplatz.Ui"
+             x:Class="FwAssist.Helpers.RthLandeplatz.Ui.RthLandeplatzView"
+             x:DataType="vm:RthLandeplatzViewModel">
+  <UserControl.Styles>
+    <StyleInclude Source="avares://FwAssist.Helpers.RthLandeplatz.Ui/Drawings/DrawingStyles.axaml" />
+    <Style Selector="TextBlock.heading">
+      <Setter Property="FontSize" Value="18" />
+    </Style>
+    <Style Selector="TextBlock.line">
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="Grid.row">
+      <Setter Property="Margin" Value="0,3" />
+    </Style>
+    <Style Selector="Grid.row.sub-item">
+      <Setter Property="Margin" Value="16,3,0,3" />
+    </Style>
+    <Style Selector="Border.banner">
+      <Setter Property="CornerRadius" Value="{StaticResource RadiusSm}" />
+      <Setter Property="Padding" Value="12,8" />
+    </Style>
+    <!-- The hue's own near-black on amber: the strongest contrast the theme has. -->
+    <Style Selector="Border.abort">
+      <Setter Property="Background" Value="{StaticResource AmberBrush}" />
+    </Style>
+    <Style Selector="Border.abort TextBlock">
+      <Setter Property="Foreground" Value="{StaticResource AmberInkBrush}" />
+    </Style>
+    <Style Selector="Border.pilot">
+      <Setter Property="Background" Value="{StaticResource SurfaceTopBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+    </Style>
+  </UserControl.Styles>
+
+  <UserControl.DataTemplates>
+    <ui:DrawingTemplate />
+  </UserControl.DataTemplates>
+
+  <!-- The pilot's decision and the abort rule stay put while the steps scroll under them, so neither
+       can be scrolled away. The mode switch sits at the bottom, in thumb reach. RadioButtons: a screen
+       reader hears which mode is selected, and the section headings say which phase a line is from. -->
+  <DockPanel Margin="16">
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,12,*" Margin="0,12,0,0">
+      <RadioButton x:Name="TagMode" Grid.Column="0" GroupName="Mode" Content="TAG"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsTag}" />
+      <RadioButton x:Name="NachtMode" Grid.Column="2" GroupName="Mode" Content="NACHT"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsNacht}" />
+    </Grid>
+
+    <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,12">
+      <Border x:Name="AbortRule" Classes="banner abort" IsVisible="{Binding IsNacht}">
+        <TextBlock Classes="display heading" TextWrapping="Wrap" Text="{x:Static vm:Landeplatzvorgaben.AbortRule}" />
+      </Border>
+      <Border x:Name="PilotDecides" Classes="banner pilot">
+        <TextBlock Classes="line" FontWeight="SemiBold" Text="{x:Static vm:Landeplatzvorgaben.PilotDecides}" />
+      </Border>
+    </StackPanel>
+
+    <ScrollViewer>
+      <StackPanel Spacing="20">
+        <TextBlock x:Name="NightDefinition" Classes="secondary" TextWrapping="Wrap"
+                   Text="{x:Static vm:Landeplatzvorgaben.NightDefinition}" />
+
+        <ItemsControl x:Name="Sections" ItemsSource="{Binding Sections}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="20" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:Section">
+              <StackPanel Spacing="6">
+                <TextBlock Classes="display heading" Text="{Binding Title}" />
+                <ItemsControl ItemsSource="{Binding Lines}">
+                  <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="vm:Line">
+                      <Grid Classes="row" ColumnDefinitions="16,*" Classes.sub-item="{Binding IsSubItem}">
+                        <TextBlock Grid.Column="0" Classes="line secondary" Text="•" />
+                        <TextBlock Grid.Column="1" Classes="line" Text="{Binding Text}" />
+                      </Grid>
+                    </DataTemplate>
+                  </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <ItemsControl ItemsSource="{Binding Drawings}" MaxWidth="520">
+                  <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                      <StackPanel Spacing="12" Margin="0,6,0,0" />
+                    </ItemsPanelTemplate>
+                  </ItemsControl.ItemsPanel>
+                </ItemsControl>
+              </StackPanel>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <StackPanel x:Name="SourceList" Spacing="4">
+          <TextBlock Classes="overline" Text="QUELLEN" />
+          <ItemsControl ItemsSource="{x:Static vm:Landeplatzvorgaben.Sources}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Classes="secondary" TextWrapping="Wrap" Margin="0,2" Text="{Binding}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{x:Static vm:Landeplatzvorgaben.SourceNote}" />
+        </StackPanel>
+
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

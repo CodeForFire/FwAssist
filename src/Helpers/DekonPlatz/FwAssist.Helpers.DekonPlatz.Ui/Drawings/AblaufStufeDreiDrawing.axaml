@@ -1,0 +1,30 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.Helpers.DekonPlatz;assembly=FwAssist.Helpers.DekonPlatz"
+             x:Class="FwAssist.Helpers.DekonPlatz.Ui.Drawings.AblaufStufeDreiDrawing"
+             x:DataType="vm:SiteDrawing">
+  <!-- The order a person passes through, from BBK and #25. Deliberately no site plan: no source gives one. -->
+  <Viewbox Stretch="Uniform">
+    <Canvas Width="400" Height="104">
+      <Path Classes="d-box" Data="M0,4 H86 V76 H0 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="0" Canvas.Top="14" Width="86" TextAlignment="Center" Text="Schutz-" />
+      <TextBlock Classes="d-small" Canvas.Left="0" Canvas.Top="31" Width="86" TextAlignment="Center" Text="kleidung" />
+      <TextBlock Classes="d-small" Canvas.Left="0" Canvas.Top="48" Width="86" TextAlignment="Center" Text="ablegen" />
+      <Path Classes="d-go" Data="M89,40 H102 M96,35 L102,40 L96,45" />
+
+      <Path Classes="d-box" Data="M105,4 H191 V76 H105 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="105" Canvas.Top="31" Width="86" TextAlignment="Center" Text="Auskleiden" />
+      <TextBlock Classes="d-small" Canvas.Left="105" Canvas.Top="82" Width="86" TextAlignment="Center" Text="Auskleidezelt" />
+      <Path Classes="d-go" Data="M194,40 H207 M201,35 L207,40 L201,45" />
+
+      <Path Classes="d-box" Data="M210,4 H296 V76 H210 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="210" Canvas.Top="31" Width="86" TextAlignment="Center" Text="Duschen" />
+      <TextBlock Classes="d-small" Canvas.Left="210" Canvas.Top="82" Width="86" TextAlignment="Center" Text="Duschzelt" />
+      <Path Classes="d-go" Data="M299,40 H312 M306,35 L312,40 L306,45" />
+
+      <Path Classes="d-box" Data="M315,4 H400 V76 H315 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="315" Canvas.Top="31" Width="85" TextAlignment="Center" Text="Ankleiden" />
+      <TextBlock Classes="d-small" Canvas.Left="315" Canvas.Top="82" Width="85" TextAlignment="Center" Text="Ankleidezelt" />
+    </Canvas>
+  </Viewbox>
+</UserControl>

@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- View models and the services they depend on. No Avalonia reference, ever: that is what
+       makes everything in here testable without a UI. See AGENTS.md, "Architecture". -->
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FwAssist.Core\FwAssist.Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FwAssist.AppLogic.Tests" />
+  </ItemGroup>
+
+</Project>

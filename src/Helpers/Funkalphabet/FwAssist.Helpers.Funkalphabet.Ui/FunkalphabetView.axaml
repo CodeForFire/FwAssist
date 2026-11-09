@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.Helpers.Funkalphabet;assembly=FwAssist.Helpers.Funkalphabet"
+             x:Class="FwAssist.Helpers.Funkalphabet.Ui.FunkalphabetView"
+             x:DataType="vm:FunkalphabetViewModel">
+  <!-- The field stays at the top and the list scrolls under it, so the soft keyboard never covers
+       what is being typed. The table switch sits at the bottom, in thumb reach. RadioButtons: a
+       screen reader hears which table is selected, and the line above the list names it in words. -->
+  <DockPanel Margin="16">
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,8,*,8,*" Margin="0,12,0,0">
+      <RadioButton x:Name="AltTable" Grid.Column="0" GroupName="Table" Content="BOS"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsAlt}" />
+      <RadioButton x:Name="Din2022Table" Grid.Column="2" GroupName="Table" Content="DIN 2022"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsDin2022}" />
+      <RadioButton x:Name="NatoTable" Grid.Column="4" GroupName="Table" Content="NATO"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsNato}" />
+    </Grid>
+    <!-- A word on the radio is spelled as typed, so the keyboard may not correct it: HLF stays HLF. -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,8,Auto">
+      <TextBox x:Name="Input" Grid.Column="0" MaxLength="40"
+               PlaceholderText="Wort eingeben"
+               AutomationProperties.Name="Text zum Buchstabieren"
+               TextInputOptions.ShowSuggestions="False"
+               TextInputOptions.AutoCapitalization="False"
+               Text="{Binding Text}" />
+      <Button x:Name="ClearButton" Grid.Column="2" Content="LÖSCHEN" Command="{Binding ClearCommand}" />
+    </Grid>
+    <TextBlock x:Name="TableName" DockPanel.Dock="Top" Classes="overline" Margin="0,12,0,8"
+               Text="{Binding TableName}" />
+    <ScrollViewer>
+      <StackPanel Spacing="16">
+        <TextBlock x:Name="Spelled" Classes="display" TextWrapping="Wrap"
+                   Text="{Binding SpelledText}" IsVisible="{Binding HasSpelling}" />
+        <ItemsControl x:Name="Entries" ItemsSource="{Binding Entries}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <UniformGrid Columns="2" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:CodeWord">
+              <Grid ColumnDefinitions="40,*" MinHeight="32">
+                <TextBlock Grid.Column="0" Classes="mono" VerticalAlignment="Center" Text="{Binding Symbol}" />
+                <TextBlock Grid.Column="1" VerticalAlignment="Center" Text="{Binding Word}" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

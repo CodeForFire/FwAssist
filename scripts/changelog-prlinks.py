@@ -10,7 +10,7 @@ It is recoverable from git instead. After a squash-merge there is exactly one
 commit that adds a given fragment, and its subject ends in `(#NNN)`. This script
 resolves that number for every fragment and rewrites the fragment in place as
 
-    [#442](https://github.com/CodeForFire/helfer/pull/442) - Entry text.
+    [#442](https://github.com/CodeForFire/FwAssist/pull/442) - Entry text.
 
 so that plain `towncrier build` renders the bullet in the form CHANGELOG.md
 uses. Run it immediately before `towncrier build`; see docs/releasing.md.

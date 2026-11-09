@@ -7,12 +7,12 @@
 # Same CodeQL as CI: the bundle version is read from the codeql-action commit
 # that .github/workflows/codeql.yml pins, so a Dependabot bump of the action
 # moves this script along with it. Same queries (security-and-quality), the
-# same build (Helfer.Host.slnf, Release) and the same exclusions
+# same build (FwAssist.Host.slnf, Release) and the same exclusions
 # (.github/codeql/codeql-config.yml, applied by scripts/codeql-results.py).
 #
 # Fails when a result lands on a line changed since BASE -- what the
 # code-scanning ruleset would block. The bundle (about 1 GB unpacked) is cached
-# under ${XDG_CACHE_HOME:-~/.cache}/helfer-codeql; the database and SARIF go
+# under ${XDG_CACHE_HOME:-~/.cache}/fwassist-codeql; the database and SARIF go
 # to out/codeql. A first run takes about ten minutes, most of it the traced
 # clean build and the analysis, not the download.
 
@@ -37,7 +37,7 @@ case "$(uname -s)" in
   *) echo "no CodeQL bundle for $(uname -s); run it on Linux or macOS" >&2; exit 2 ;;
 esac
 
-cache=${XDG_CACHE_HOME:-$HOME/.cache}/helfer-codeql/$bundle
+cache=${XDG_CACHE_HOME:-$HOME/.cache}/fwassist-codeql/$bundle
 codeql=$cache/codeql/codeql
 if [ ! -x "$codeql" ]; then
   echo "Fetching $bundle ($platform) into $cache"
@@ -71,7 +71,7 @@ rm -rf "$out/db"
 
 "$codeql" database create "$out/db" --language=csharp --build-mode=manual \
   --source-root="$root" \
-  --command="dotnet build Helfer.Host.slnf -c Release --no-incremental -nodeReuse:false -p:UseSharedCompilation=false"
+  --command="dotnet build FwAssist.Host.slnf -c Release --no-incremental -nodeReuse:false -p:UseSharedCompilation=false"
 
 "$codeql" database analyze "$out/db" codeql/csharp-queries:codeql-suites/csharp-security-and-quality.qls \
   --format=sarif-latest --output="$out/raw.sarif" --threads=0 2>&1 | tee "$out/analyze.log"

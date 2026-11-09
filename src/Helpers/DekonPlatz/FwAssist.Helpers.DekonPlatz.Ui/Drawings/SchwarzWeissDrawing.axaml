@@ -1,0 +1,55 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.Helpers.DekonPlatz;assembly=FwAssist.Helpers.DekonPlatz"
+             x:Class="FwAssist.Helpers.DekonPlatz.Ui.Drawings.SchwarzWeissDrawing"
+             x:DataType="vm:SiteDrawing">
+  <!-- Our own plan, new work from the facts in TK and the maintainer's notes in #25. The black zone is drawn wider than it is, to fit its stations. -->
+  <Viewbox Stretch="Uniform">
+    <Canvas Width="400" Height="232">
+      <TextBlock Classes="d-small" Canvas.Left="340" Canvas.Top="2" Text="Wind" />
+      <Path Classes="d-wind" Data="M335,12 L270,12 M278,8 L270,12 L278,16" />
+
+      <TextBlock Classes="d-danger" Canvas.Left="4" Canvas.Top="30" Text="Gefahren-" />
+      <TextBlock Classes="d-danger" Canvas.Left="4" Canvas.Top="48" Text="bereich" />
+      <Path Classes="d-border" Data="M100,26 V218" />
+
+      <TextBlock Canvas.Left="161" Canvas.Top="32" Width="100" TextAlignment="Center" Text="Eingang" />
+      <Path Classes="d-go" Data="M286,62 L136,62 M144,57 L136,62 L144,67" />
+
+      <Path Classes="d-schwarz" Data="M100,83 H250 V194 H100 Z" />
+      <Path Classes="d-weiss" Data="M250,83 H322 V194 H250 Z" />
+      <Path Classes="d-outline" Data="M100,83 H322 V194 H100 Z" />
+
+      <Path Classes="d-box" Data="M4,90 H92 V128 H4 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="4" Canvas.Top="92" Width="88" TextAlignment="Center" Text="Geräte-" />
+      <TextBlock Classes="d-small" Canvas.Left="4" Canvas.Top="109" Width="88" TextAlignment="Center" Text="ablage" />
+      <Path Classes="d-box" Data="M4,138 H92 V190 H4 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="4" Canvas.Top="147" Width="88" TextAlignment="Center" Text="Abwasser-" />
+      <TextBlock Classes="d-small" Canvas.Left="4" Canvas.Top="164" Width="88" TextAlignment="Center" Text="behälter" />
+
+      <TextBlock Classes="d-zone-name" Canvas.Left="100" Canvas.Top="85" Width="150" TextAlignment="Center" Text="SCHWARZ" />
+      <TextBlock Classes="d-small" Canvas.Left="104" Canvas.Top="104" Width="58" TextAlignment="Center" Text="Warten" />
+      <Path Classes="d-item-light" Data="M104,128 H146 V158 H104 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="104" Canvas.Top="134" Width="42" TextAlignment="Center" Text="Gerät" />
+      <Path Classes="d-item-light" Data="M152,146 A10,10 0 1 0 172,146 A10,10 0 1 0 152,146 Z" />
+      <TextBlock Classes="d-small" Canvas.Left="137" Canvas.Top="160" Width="50" TextAlignment="Center" Text="Schuhe" />
+      <TextBlock Classes="d-small" Canvas.Left="176" Canvas.Top="102" Width="70" TextAlignment="Center" Text="Sack" />
+      <Path Classes="d-item-light" Data="M180,150 A31,31 0 1 0 242,150 A31,31 0 1 0 180,150 Z" />
+      <TextBlock Canvas.Left="180" Canvas.Top="141" Width="62" TextAlignment="Center" Text="Wanne" />
+
+      <TextBlock Classes="d-zone-name d-ink" Canvas.Left="250" Canvas.Top="85" Width="72" TextAlignment="Center" Text="WEISS" />
+      <TextBlock Classes="d-small d-ink" Canvas.Left="250" Canvas.Top="110" Width="72" TextAlignment="Center" Text="Doku" />
+      <TextBlock Classes="d-small d-ink" Canvas.Left="250" Canvas.Top="140" Width="72" TextAlignment="Center" Text="Erst-Hilfe-" />
+      <TextBlock Classes="d-small d-ink" Canvas.Left="250" Canvas.Top="157" Width="72" TextAlignment="Center" Text="Material" />
+
+      <Path Classes="d-hose" Data="M186,172 C168,200 124,198 94,176 M102,177 L94,176 L98,184" />
+
+      <Path Classes="d-dim" Data="M100,206 H322 M106,202 L100,206 L106,210 M316,202 L322,206 L316,210" />
+      <TextBlock Classes="d-small" Canvas.Left="100" Canvas.Top="211" Width="222" TextAlignment="Center" Text="8 m" />
+      <Path Classes="d-dim" Data="M334,30 V81 M330,36 L334,30 L338,36 M330,75 L334,81 L338,75" />
+      <TextBlock Classes="d-small" Canvas.Left="340" Canvas.Top="46" Text="2 m" />
+      <Path Classes="d-dim" Data="M334,85 V192 M330,91 L334,85 L338,91 M330,186 L334,192 L338,186" />
+      <TextBlock Classes="d-small" Canvas.Left="340" Canvas.Top="130" Text="4 m" />
+    </Canvas>
+  </Viewbox>
+</UserControl>

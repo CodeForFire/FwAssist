@@ -1,6 +1,6 @@
-using Helfer.AppLogic.Services;
+using FwAssist.AppLogic.Services;
 
-namespace Helfer.Testing;
+namespace FwAssist.Testing;
 
 /// <summary>An <see cref="ITicker"/> that ticks when the test calls <see cref="Tick"/>.</summary>
 internal sealed class ManualTicker : ITicker

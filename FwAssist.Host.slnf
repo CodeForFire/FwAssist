@@ -1,0 +1,29 @@
+{
+  "solution": {
+    "path": "FwAssist.sln",
+    "projects": [
+      "src/FwAssist.Composition/FwAssist.Composition.csproj",
+      "src/FwAssist.Ui/FwAssist.Ui.csproj",
+      "src/FwAssist.AppLogic/FwAssist.AppLogic.csproj",
+      "src/FwAssist.Core/FwAssist.Core.csproj",
+      "src/Helpers/Stoppuhr/FwAssist.Helpers.Stoppuhr.Ui/FwAssist.Helpers.Stoppuhr.Ui.csproj",
+      "src/Helpers/Stoppuhr/FwAssist.Helpers.Stoppuhr/FwAssist.Helpers.Stoppuhr.csproj",
+      "src/Helpers/Funkalphabet/FwAssist.Helpers.Funkalphabet.Ui/FwAssist.Helpers.Funkalphabet.Ui.csproj",
+      "src/Helpers/Funkalphabet/FwAssist.Helpers.Funkalphabet/FwAssist.Helpers.Funkalphabet.csproj",
+      "src/Helpers/Schaummittel/FwAssist.Helpers.Schaummittel.Ui/FwAssist.Helpers.Schaummittel.Ui.csproj",
+      "src/Helpers/Schaummittel/FwAssist.Helpers.Schaummittel/FwAssist.Helpers.Schaummittel.csproj",
+      "src/Helpers/RthLandeplatz/FwAssist.Helpers.RthLandeplatz.Ui/FwAssist.Helpers.RthLandeplatz.Ui.csproj",
+      "src/Helpers/RthLandeplatz/FwAssist.Helpers.RthLandeplatz/FwAssist.Helpers.RthLandeplatz.csproj",
+      "src/Helpers/DekonPlatz/FwAssist.Helpers.DekonPlatz.Ui/FwAssist.Helpers.DekonPlatz.Ui.csproj",
+      "src/Helpers/DekonPlatz/FwAssist.Helpers.DekonPlatz/FwAssist.Helpers.DekonPlatz.csproj",
+      "tests/FwAssist.Acceptance.Tests/FwAssist.Acceptance.Tests.csproj",
+      "tests/FwAssist.AppLogic.Tests/FwAssist.AppLogic.Tests.csproj",
+      "tests/FwAssist.Core.Tests/FwAssist.Core.Tests.csproj",
+      "tests/FwAssist.Helpers.Stoppuhr.Tests/FwAssist.Helpers.Stoppuhr.Tests.csproj",
+      "tests/FwAssist.Helpers.Funkalphabet.Tests/FwAssist.Helpers.Funkalphabet.Tests.csproj",
+      "tests/FwAssist.Helpers.Schaummittel.Tests/FwAssist.Helpers.Schaummittel.Tests.csproj",
+      "tests/FwAssist.Helpers.RthLandeplatz.Tests/FwAssist.Helpers.RthLandeplatz.Tests.csproj",
+      "tests/FwAssist.Helpers.DekonPlatz.Tests/FwAssist.Helpers.DekonPlatz.Tests.csproj"
+    ]
+  }
+}

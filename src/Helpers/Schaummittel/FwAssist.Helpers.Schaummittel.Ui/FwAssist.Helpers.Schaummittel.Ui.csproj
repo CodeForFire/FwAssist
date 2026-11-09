@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\FwAssist.Ui\FwAssist.Ui.csproj" />
+    <ProjectReference Include="..\FwAssist.Helpers.Schaummittel\FwAssist.Helpers.Schaummittel.csproj" />
+  </ItemGroup>
+
+</Project>

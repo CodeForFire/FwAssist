@@ -1,0 +1,29 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.AppLogic.ViewModels;assembly=FwAssist.AppLogic"
+             x:Class="FwAssist.Ui.Views.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+  <ScrollViewer>
+    <StackPanel Margin="16" Spacing="12">
+      <TextBlock Classes="overline" Text="EIGENES SYMBOL AUF DEM STARTBILDSCHIRM" TextWrapping="Wrap" />
+      <TextBlock Classes="secondary" TextWrapping="Wrap"
+                 Text="Ein Helfer mit eigenem Symbol öffnet sich mit einem Tipp direkt." />
+      <TextBlock x:Name="Error" Classes="field-error" Text="{Binding Error}"
+                 IsVisible="{Binding Error, Converter={x:Static ObjectConverters.IsNotNull}}" />
+      <ItemsControl x:Name="LauncherIcons" ItemsSource="{Binding LauncherIcons}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="vm:LauncherIconToggleViewModel">
+            <Border BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,0,1" Padding="0,4">
+              <Grid ColumnDefinitions="*,Auto" MinHeight="{StaticResource ControlHeight}">
+                <TextBlock Grid.Column="0" Text="{Binding Title}" VerticalAlignment="Center" />
+                <ToggleSwitch Grid.Column="1" IsChecked="{Binding IsEnabled}"
+                              OnContent="" OffContent=""
+                              AutomationProperties.Name="{Binding Title}" />
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

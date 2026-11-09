@@ -4,9 +4,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/CodeForFire/helfer/actions/workflows/ci.yml"><img src="https://github.com/CodeForFire/helfer/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
-  <a href="../../releases"><img src="https://img.shields.io/github/v/release/CodeForFire/helfer" alt="Release" /></a>
-  <a href="LICENSE"><img src="https://img.shields.io/github/license/CodeForFire/helfer" alt="MIT" /></a>
+  <a href="https://github.com/CodeForFire/FwAssist/actions/workflows/ci.yml"><img src="https://github.com/CodeForFire/FwAssist/actions/workflows/ci.yml/badge.svg" alt="CI" /></a>
+  <a href="../../releases"><img src="https://img.shields.io/github/v/release/CodeForFire/FwAssist" alt="Release" /></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/CodeForFire/FwAssist" alt="MIT" /></a>
 </p>
 
 FwAssist ist eine Android-App mit kleinen Werkzeugen für Feuerwehrangehörige.
@@ -30,7 +30,7 @@ deshalb auch so aus.
 | **Dekon-Platz** | Dekon-Stufen I bis III: Sofortmaßnahmen, Aufbau und Plan für Stufe II, Technik und Ablauf für Stufe III. |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
-[Ideen](https://github.com/CodeForFire/helfer/discussions/categories/ideen).
+[Ideen](https://github.com/CodeForFire/FwAssist/discussions/categories/ideen).
 
 ## Ein Symbol pro Helfer
 
@@ -59,7 +59,7 @@ gehören zum Prüfen in denselben Ordner wie `SHA256SUMS.txt`:
 
 ```
 sha256sum -c SHA256SUMS.txt
-gh attestation verify helfer-<version>.apk --repo CodeForFire/helfer
+gh attestation verify fwassist-<version>.apk --repo CodeForFire/FwAssist
 ```
 
 ## Status
@@ -88,7 +88,7 @@ weiteren Helfer.
 ## Mitmachen & Kontakt
 
 Fragen, Ideen und Berichte von der letzten Übung gerne unter
-[Discussions](https://github.com/CodeForFire/helfer/discussions) – auf Deutsch
+[Discussions](https://github.com/CodeForFire/FwAssist/discussions) – auf Deutsch
 oder Englisch. Sicherheitslücken bitte vertraulich melden, siehe
 [SECURITY.md](SECURITY.md).
 
@@ -104,12 +104,12 @@ requests and commit messages; the UI is German. Conventions are in
 ### Layout
 
 ```
-src/Helfer.Core/            values and rules shared by every helper (no dependencies)
-src/Helfer.AppLogic/        shell view models and service seams (no Avalonia)
-src/Helfer.Ui/              Avalonia App, theme, shell views
-src/Helpers/<Name>/         one helper: Helfer.Helpers.<Name> (logic) + .Ui (views)
-src/Helfer.Composition/     the list of helpers, wired by hand
-src/Helfer.App.Android/     thin Android head, one launcher alias per helper
+src/FwAssist.Core/            values and rules shared by every helper (no dependencies)
+src/FwAssist.AppLogic/        shell view models and service seams (no Avalonia)
+src/FwAssist.Ui/              Avalonia App, theme, shell views
+src/Helpers/<Name>/         one helper: FwAssist.Helpers.<Name> (logic) + .Ui (views)
+src/FwAssist.Composition/     the list of helpers, wired by hand
+src/FwAssist.App.Android/     thin Android head, one launcher alias per helper
 ```
 
 Adding a helper is a checklist: see [AGENTS.md, "Helpers"](AGENTS.md#helpers).

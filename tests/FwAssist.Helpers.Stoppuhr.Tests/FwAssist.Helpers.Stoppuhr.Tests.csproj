@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="xunit" />
+    <PackageReference Include="xunit.runner.visualstudio" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Helpers\Stoppuhr\FwAssist.Helpers.Stoppuhr\FwAssist.Helpers.Stoppuhr.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Handwritten doubles shared by the test projects; no mocking library (AGENTS.md, "Tests"). -->
+    <Compile Include="..\Shared\FakeTimeProvider.cs;..\Shared\ManualTicker.cs" LinkBase="Shared" />
+  </ItemGroup>
+
+</Project>
