@@ -78,5 +78,25 @@ public class RthLandeplatzViewModelTests
         Assert.Contains(nameof(vm.IsNacht), changed);
         Assert.Contains(nameof(vm.IsTag), changed);
         Assert.Contains(nameof(vm.Sections), changed);
+        Assert.Contains(nameof(vm.ModeHeading), changed);
+        Assert.Contains(nameof(vm.ModeDefinition), changed);
+    }
+
+    [Fact]
+    public void By_day_the_heading_and_the_timeframe_name_the_day()
+    {
+        var vm = new RthLandeplatzViewModel(_settings);
+
+        Assert.Equal("TAG", vm.ModeHeading);
+        Assert.Equal(Landeplatzvorgaben.DayDefinition, vm.ModeDefinition);
+    }
+
+    [Fact]
+    public void By_night_the_heading_and_the_timeframe_name_the_night()
+    {
+        var vm = new RthLandeplatzViewModel(_settings) { IsNacht = true };
+
+        Assert.Equal("NACHT", vm.ModeHeading);
+        Assert.Equal(Landeplatzvorgaben.NightDefinition, vm.ModeDefinition);
     }
 }

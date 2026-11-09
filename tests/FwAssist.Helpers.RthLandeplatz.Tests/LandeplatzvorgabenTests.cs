@@ -140,4 +140,18 @@ public class LandeplatzvorgabenTests
     [Fact]
     public void The_abort_rule_says_to_turn_the_light_off() =>
         Assert.EndsWith("Licht am Landeplatz aus!", Landeplatzvorgaben.AbortRule, StringComparison.Ordinal);
+
+    [Fact]
+    public void The_night_runs_from_after_sunset_to_before_sunrise() =>
+        Assert.Contains(
+            "30 Minuten nach Sonnenuntergang bis 30 Minuten vor Sonnenaufgang",
+            Landeplatzvorgaben.NightDefinition,
+            StringComparison.Ordinal);
+
+    [Fact]
+    public void The_day_runs_from_before_sunrise_to_after_sunset() =>
+        Assert.Contains(
+            "30 Minuten vor Sonnenaufgang bis 30 Minuten nach Sonnenuntergang",
+            Landeplatzvorgaben.DayDefinition,
+            StringComparison.Ordinal);
 }
