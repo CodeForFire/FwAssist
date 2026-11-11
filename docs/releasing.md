@@ -194,7 +194,10 @@ gets decided once, at the first upload, and cannot be changed afterwards:
   key → Export and upload a key from Java keystore*, with Google's PEPK tool).
   Both channels carry the same certificate, so either one updates the other.
   But the key in the `google-play` Environment then signs what Play users
-  install too, and losing it cannot be fixed through Play support.
+  install too, so a leak reaches Play users as well. Losing it is half
+  recoverable: Play keeps its own copy, so an upload-key reset through Play
+  support keeps Play updates going. The GitHub APK, however, cannot be signed
+  compatibly again, and every sideloaded install has to be uninstalled once.
 
 Choose before step 3 of *The first upload, by hand*. Then record the choice
 here, and in the README's install section if users have to uninstall to switch.
