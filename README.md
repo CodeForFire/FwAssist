@@ -53,7 +53,8 @@ im Play Store ist in Vorbereitung.
 
 Bis Version 0.1.0 war jede APK mit einem anderen Schlüssel signiert. Wer eine
 solche Version installiert hat, deinstalliert sie einmalig vor dem nächsten
-Update; danach installieren sich neue Versionen einfach darüber.
+Update. Das löscht die gespeicherten Einstellungen und Schaummittel-Eingaben.
+Danach installieren sich neue Versionen einfach darüber.
 
 ### Downloads prüfen
 

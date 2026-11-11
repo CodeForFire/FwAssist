@@ -295,7 +295,8 @@ jobs:
 
           **Update von 0.1.0 oder älter.** Bis 0.1.0 war jede APK mit einem anderen Schlüssel
           signiert. Ab dieser Version ist der Schlüssel fest, deshalb die alte App einmalig
-          deinstallieren und diese APK neu installieren. Danach installieren sich Updates
+          deinstallieren und diese APK neu installieren. Das löscht die gespeicherten
+          Einstellungen und Schaummittel-Eingaben. Danach installieren sich Updates
           einfach darüber.
           EOF
       # `gh release create` could do this too (zizmor's superfluous-actions); swapping a working
