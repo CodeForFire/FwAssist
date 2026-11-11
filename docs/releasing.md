@@ -3,10 +3,9 @@
 Pushing a version tag triggers the release workflow
 ([`.github/workflows/release.yml`](../.github/workflows/release.yml)), which
 builds `fwassist-<version>.apk` and publishes it as a GitHub release, with
-`SHA256SUMS.txt`, a CycloneDX SBOM and Sigstore attestations. It also builds a
-`.aab`, kept as a build artefact for inspection only: it is signed with the CI
-debug key. The bundle Google Play gets is built on a laptop with the upload
-key, see [Google Play](#google-play).
+`SHA256SUMS.txt`, a CycloneDX SBOM and Sigstore attestations. It signs the
+`.apk` and the `.aab` with the Google Play upload key and hands the bundle to
+Play as a draft, see [Google Play](#google-play).
 
 ## Cutting a release
 
@@ -81,6 +80,11 @@ assembled.
 - [ ] `gh attestation verify fwassist-<version>.apk --repo CodeForFire/FwAssist`
       passes, and again with `--predicate-type https://cyclonedx.org/bom`.
 - [ ] The release is marked pre-release if and only if the tag carries a suffix.
+- [ ] The APK is signed with the upload key, not a debug key:
+      `apksigner verify --print-certs fwassist-<version>.apk` names
+      `CN=CodeForFire`.
+- [ ] The Play Console shows a draft on the expected track — closed testing for
+      a prerelease, production for a final release.
 - [ ] The APK installs over the previous release on a phone, every helper's
       launcher icon opens its helper, and Back and relaunch work. The headless
       tests cannot see the Activity lifecycle.
@@ -112,8 +116,8 @@ source of truth, shared with Lagebuch; `--self-test` covers every row. A
 prerelease sorts below its final release. An unrecognised suffix fails the
 build: a scheme nobody can order is worse than a rejected tag.
 
-The APK is **not code-signed** beyond Android's own APK signature; the README
-explains the first install.
+The APK is **not code-signed** beyond Android's own APK signature, made with
+the Play upload key; the README explains the first install.
 
 ## Google Play
 
@@ -121,22 +125,39 @@ Google Play has not accepted an APK for a new app since 2021, so the upload is a
 **Android App Bundle**. The build produces one: `AndroidPackageFormats` is
 `aab;apk` in
 [`FwAssist.App.Android.csproj`](../src/FwAssist.App.Android/FwAssist.App.Android.csproj),
-and the SDK then runs bundletool over that same signed bundle to extract a
-universal `.apk`. The `.apk` that `make aab` leaves beside the bundle is
-therefore a render of the exact bytes Play receives, and installing it on a
-phone is the check on the bundle. The GitHub release's `.apk` is not that
-check: CI builds it separately from the same tag, signed with another key.
+and the SDK then runs bundletool over that same signed bundle to extract the
+universal `.apk` the GitHub release carries. The sideload APK is therefore a
+render of the exact bytes Play receives, not a second, independently built
+artefact.
 
-**Submitting is a manual step at release time, and deliberately so.**
-Automating it would mean keeping the upload keystore and its password in this
-repository's secrets; a credential that can publish to every installed device is
-not worth saving a few minutes a handful of times a year.
+**A tag uploads the bundle itself.** The release workflow signs it with the
+upload key and its `play` job hands it to Play as a **draft**. Rolling it out
+stays a person's decision, taken in the Console. The credentials are contained:
+
+- The keystore and its password are secrets of the **`google-play`
+  Environment**, not of the repository. A job sees them only after a maintainer
+  approves that run, and only for `v*` tags. A tag push therefore stops twice
+  for approval: once at `android`, which signs, and once at `play`, which
+  uploads.
+- Play is reached through **Workload Identity Federation**. The job swaps
+  GitHub's OIDC token for a Google credential that lives for an hour. No
+  service-account key exists anywhere, so none can leak.
+- What CI can publish is a draft. Even with both credentials, a release does not
+  reach a single device until someone rolls it out in the Console.
+
+Because the sideload `.apk` is extracted from the same signed bundle, it carries
+the upload key's certificate too. Up to v0.1.0 every CI build was signed with a
+debug key the runner generated fresh, so each APK had a different certificate
+and Android refused to install one over the other. From the first release
+signed with the upload key on, a sideloaded install updates in place. The last
+debug-signed APK has to be uninstalled once; the release body says so.
 
 ### One-time setup
 
 The upload key is generated once, on a laptop, and never committed
 (`.gitignore` carries `*.p12`, `*.jks`, `*.keystore`, `*.pass` as defence in
-depth — the mechanism is that it lives outside the tree):
+depth — the mechanism is that it lives outside the tree). Its path and alias
+keep the `helfer` name, like the applicationId:
 
 ```bash
 mkdir -p ~/.config/helfer && chmod 700 ~/.config/helfer
@@ -159,23 +180,102 @@ project with one maintainer — but recovery is a support round-trip, not a
 convenience.
 
 Three things can never be changed after the first upload: the package name
-(`de.codeforfire.helfer`), the app signing key, and the account type. **The
-package name has to be final before that first upload** — while the app's name
-is still a working title, so is this one.
+(`de.codeforfire.helfer`), the app signing key, and the account type. **Confirm
+the package name is final before that first upload.** It stays `helfer` although
+the app is now FwAssist, because it already identifies every sideloaded install
+(see `AGENTS.md`, *Helpers*).
+
+#### Handing the key and Play access to CI
+
+Do this once, before the first tag that should reach Play. FwAssist shares
+Lagebuch's Google Cloud project and its `github` workload identity pool, but has
+its own provider and its own service account, so neither app's credential can
+publish the other.
+
+1. **Environment.** Under *Settings → Environments*, create `google-play`. Add
+   yourself as a *required reviewer*. Under *Deployment branches and tags*, allow
+   only the tag pattern `v*`.
+2. **Keystore secrets** in that Environment, not in the repository:
+   ```bash
+   base64 -w0 ~/.config/helfer/helfer-upload.p12 \
+     | gh secret set ANDROID_UPLOAD_KEYSTORE_B64 --env google-play --repo CodeForFire/FwAssist
+   gh secret set ANDROID_UPLOAD_KEYSTORE_PASS --env google-play --repo CodeForFire/FwAssist \
+     < ~/.config/helfer/helfer-upload.pass
+   ```
+3. **Workload Identity Federation**, in the project that already has the *Google
+   Play Android Developer API* enabled for Lagebuch:
+   ```bash
+   gcloud iam workload-identity-pools providers create-oidc fwassist \
+     --location=global --workload-identity-pool=github \
+     --issuer-uri=https://token.actions.githubusercontent.com \
+     --attribute-mapping=google.subject=assertion.sub,attribute.repository=assertion.repository,attribute.environment=assertion.environment \
+     --attribute-condition="assertion.repository == 'CodeForFire/FwAssist' && assertion.environment == 'google-play'"
+   gcloud iam service-accounts create fwassist-play
+   gcloud iam service-accounts add-iam-policy-binding \
+     fwassist-play@<project>.iam.gserviceaccount.com \
+     --role=roles/iam.workloadIdentityUser \
+     --member="principalSet://iam.googleapis.com/projects/<number>/locations/global/workloadIdentityPools/github/attribute.repository/CodeForFire/FwAssist"
+   ```
+   The attribute condition is the lock. Only a job of this repository that runs
+   in the approved `google-play` Environment gets a token at all.
+4. **Play Console** → *Users and permissions* → invite
+   `fwassist-play@<project>.iam.gserviceaccount.com`. Give it access to FwAssist
+   only, with *Release apps to testing tracks* and *Release to production*.
+5. **Environment variables** (*variables*, not secrets, because both are names):
+   ```bash
+   gh variable set GCP_WIF_PROVIDER --env google-play --repo CodeForFire/FwAssist \
+     --body projects/<number>/locations/global/workloadIdentityPools/github/providers/fwassist
+   gh variable set GCP_PLAY_SERVICE_ACCOUNT --env google-play --repo CodeForFire/FwAssist \
+     --body fwassist-play@<project>.iam.gserviceaccount.com
+   ```
+
+#### The first upload, by hand
+
+The Play Developer API only updates an app that already has a bundle; the very
+first one goes through the Console.
+
+1. Create the app in the Play Console (default language German, app, free).
+2. Fill in the listing and the declarations below — the privacy policy has to be
+   live first.
+3. Build the first release candidate locally, from its tag, and upload it to
+   **internal testing**, accepting Play App Signing when asked:
+   ```bash
+   git checkout v0.1.1-rc.1
+   make aab VERSION=0.1.1-rc.1
+   ```
+4. From then on, CI uploads. Do not tag that same version again — Play has
+   burned its `versionCode`.
 
 ### Per release
 
-Build from the tag, not from `main`, so the bundle is the code that was released:
+Push the tag as usual. Approve the `google-play` deployment twice: first for
+`android`, then for `play` once the GitHub release exists. A prerelease tag lands
+as a draft on closed testing (the API calls that track `alpha`). A final tag
+lands as a draft on production. In the Play Console, open the draft, add the
+German release notes and roll it out.
+
+Until the app has production access (see *Which track takes what*), a final
+tag's `play` job fails: the API refuses production for that app. That is
+expected. The GitHub release is already published at that point; promote the
+matching closed-testing release in the Console, or tag a release candidate for
+the same version first.
+
+The `versionCode` is **derived, not typed** —
+[`scripts/android-version-code.sh`](../scripts/android-version-code.sh) computes
+it in the release workflow's `version` job, and `make aab` calls the same script,
+so the two cannot disagree.
+
+#### By hand, when CI cannot
+
+`make aab` builds the same bundle on a laptop. Build it from the tag, not from
+`main`, so the bundle is the code that was released:
 
 ```bash
 git checkout v0.6.1
 make aab VERSION=0.6.1
 ```
 
-The `versionCode` is **derived, not typed** —
-[`scripts/android-version-code.sh`](../scripts/android-version-code.sh) computes
-it from `VERSION`, and the release workflow calls the same script, so the two
-cannot disagree. The target prints the number before it builds:
+The target prints the `versionCode` before it builds:
 
 ```
 versionCode 601999   (0.6.1)
@@ -190,7 +290,9 @@ The keystore path, password file and alias are overridable (`KEYSTORE=`,
 refuses to run without a keystore and a password file.
 
 Then, in the Play Console: pick the track → *Create new release* → upload
-`de.codeforfire.helfer-Signed.aab` → German release notes → roll out.
+`de.codeforfire.helfer-Signed.aab` → German release notes → roll out. Never
+upload by hand a version the workflow already uploaded: Play refuses the
+`versionCode` a second time.
 
 **Which track takes what**
 
@@ -230,9 +332,8 @@ These are answered once and must be answered the same way every time;
 re-deciding them per release is how a Data-safety section drifts away from what
 the app does.
 
-- **Privacy policy**: still to be written, and Play requires one. It belongs on
-  codeforfire.github.io next to Lagebuch's, and says what this app does: nothing
-  leaves the device.
+- **Privacy policy**: <https://codeforfire.github.io/fwassist/datenschutz/>,
+  next to Lagebuch's. It says what this app does: nothing leaves the device.
 - **Data safety — no data collected, no data shared.** No account, no server, no
   network permission, no telemetry, no crash reporting, no ads or analytics
   SDKs. *Data deletion: everything is app-private and removed on uninstall.*

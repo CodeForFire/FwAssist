@@ -51,6 +51,10 @@ Die APK für Android 7.0 und neuer liegt bei den
 Dateimanager *Installation aus unbekannten Quellen* erlaubt werden. Ein Eintrag
 im Play Store ist in Vorbereitung.
 
+Bis Version 0.1.0 war jede APK mit einem anderen Schlüssel signiert. Wer eine
+solche Version installiert hat, deinstalliert sie einmalig vor dem nächsten
+Update; danach installieren sich neue Versionen einfach darüber.
+
 ### Downloads prüfen
 
 Jedem Release liegt `SHA256SUMS.txt` bei, und die APK trägt einen
