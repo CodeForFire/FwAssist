@@ -179,6 +179,26 @@ support, which is precisely why Play App Signing is the right choice for a
 project with one maintainer — but recovery is a support round-trip, not a
 convenience.
 
+#### Play installs and sideloaded installs
+
+Android installs an update only when it is signed with the same key as the
+installed app. The sideload APK on the GitHub release carries the **upload
+key**. What Play delivers carries the **app signing key**. Which one that is
+gets decided once, at the first upload, and cannot be changed afterwards:
+
+- **Google generates the app signing key** (the Console's default). The two
+  keys differ, so a phone cannot move between the GitHub APK and the Play Store
+  in place. Switching means uninstalling, which deletes the app's settings and
+  the Schaummittel inputs. A leaked upload key cannot sign a Play update.
+- **The upload key is also the app signing key** (*Use a different app signing
+  key → Export and upload a key from Java keystore*, with Google's PEPK tool).
+  Both channels carry the same certificate, so either one updates the other.
+  But the key in the `google-play` Environment then signs what Play users
+  install too, and losing it cannot be fixed through Play support.
+
+Choose before step 3 of *The first upload, by hand*. Then record the choice
+here, and in the README's install section if users have to uninstall to switch.
+
 Three things can never be changed after the first upload: the package name
 (`de.codeforfire.helfer`), the app signing key, and the account type. **Confirm
 the package name is final before that first upload.** It stays `helfer` although
@@ -238,7 +258,8 @@ first one goes through the Console.
 2. Fill in the listing and the declarations below — the privacy policy has to be
    live first.
 3. Build the first release candidate locally, from its tag, and upload it to
-   **internal testing**, accepting Play App Signing when asked:
+   **internal testing**. When Play App Signing asks for the key, answer as
+   decided in *Play installs and sideloaded installs* above:
    ```bash
    git checkout v0.1.1-rc.1
    make aab VERSION=0.1.1-rc.1
@@ -256,9 +277,13 @@ German release notes and roll it out.
 
 Until the app has production access (see *Which track takes what*), a final
 tag's `play` job fails: the API refuses production for that app. That is
-expected. The GitHub release is already published at that point; promote the
-matching closed-testing release in the Console, or tag a release candidate for
-the same version first.
+expected. The GitHub release is already published at that point. Do **not**
+promote a closed-testing release instead: that publishes the release
+candidate's bundle under its own `versionCode`, not the bundle built from the
+final tag. Once production access is granted, re-run the failed `play` job
+(*Actions → the run → Re-run failed jobs*). The job uploads the very bundle the
+tag built. GitHub allows a re-run for 30 days; after that, build the tag with
+`make aab` and upload it by hand (*By hand, when CI cannot*).
 
 The `versionCode` is **derived, not typed** —
 [`scripts/android-version-code.sh`](../scripts/android-version-code.sh) computes
