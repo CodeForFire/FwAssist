@@ -64,7 +64,7 @@ Quelltext (MIT): https://github.com/CodeForFire/FwAssist
 | Kategorie | Tools |
 | Kontakt-E-Mail | *(vom Play-Konto)* |
 | Website | `https://codeforfire.github.io/` |
-| Datenschutzerklärung | *(noch anzulegen)* |
+| Datenschutzerklärung | `https://codeforfire.github.io/fwassist/datenschutz/` |
 
 ## Hinweise für die Prüfung (App-Zugriff → Anleitung)
 
