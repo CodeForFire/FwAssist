@@ -117,6 +117,20 @@ public class DemoFlowRenderTests
         phone.Capture("03-einstellungen.png");
     }
 
+    // Google Play wants the privacy policy reachable inside the app, not only on the listing.
+    [AvaloniaFact]
+    public void Settings_show_where_the_privacy_policy_is()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Home.OpenSettingsCommand.Execute(null);
+        PhoneRender.Settle();
+
+        var url = phone.Window.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Name == "PrivacyPolicyUrl");
+        Assert.True(url.IsEffectivelyVisible);
+        Assert.Equal("codeforfire.github.io/fwassist/datenschutz", url.Text);
+        Assert.Contains("DATENSCHUTZ", Texts(phone.Window));
+    }
+
     [AvaloniaFact]
     public void The_funkalphabet_spells_what_is_typed_and_switches_to_the_din_table()
     {
