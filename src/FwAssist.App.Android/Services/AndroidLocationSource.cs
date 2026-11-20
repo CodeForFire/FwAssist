@@ -3,6 +3,8 @@ using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Locations;
+using Android.OS;
+using Android.Runtime;
 using FwAssist.AppLogic.Services.Location;
 using FwAssist.Core.Map;
 using Location = Android.Locations.Location;
@@ -148,6 +150,22 @@ internal sealed class AndroidLocationSource : Java.Lang.Object, ILocationSource,
         var fix = new GeoFix(position, accuracy, now);
         Last = fix;
         FixChanged?.Invoke(this, new GeoFixEventArgs(fix));
+    }
+
+    public void OnProviderDisabled(string provider)
+    {
+        // Nothing to do: the other provider, if any, keeps sending fixes, and with none the
+        // Richtungspfeil reports the signal lost once the last fix is old.
+    }
+
+    public void OnProviderEnabled(string provider)
+    {
+        // Nothing to do: RequestLocationUpdates was made for every provider enabled at the start.
+    }
+
+    public void OnStatusChanged(string? provider, [GeneratedEnum] Availability status, Bundle? extras)
+    {
+        // Deprecated by Android and never called from API 29 on; a fix's age says the same.
     }
 
     private bool HasPermission() =>
