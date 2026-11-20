@@ -28,6 +28,9 @@ public class MapCanvasControlTests
     // The 1.600–3.199 l/min class.
     private static readonly Color Green = Color.FromRgb(0x2E, 0x7D, 0x46);
 
+    // The arrow over the water point whose card is open: the app's signal red.
+    private static readonly Color Signal = Color.FromRgb(0xFF, 0x3D, 0x2E);
+
     // A pixel inside a flag's coloured field at zoom 16, off its glyph: the body is 20 px high and
     // stands on an 8 px mast above the point at (200, 150).
     private static readonly PixelPoint MediumField = new(203, 125);
@@ -309,6 +312,44 @@ public class MapCanvasControlTests
 
         using var after = window.CaptureRenderedFrame()!;
         Assert.True(Has(after, frameTop, Color.FromRgb(0x21, 0x21, 0x21)));
+    }
+
+    // The flag's body is 20 px high on an 8 px mast above (200, 150); its coloured field is 18 px wide,
+    // so the arrow stands over x = 209 and ends a few pixels above the body's top at y = 122 (#69).
+    [AvaloniaFact]
+    public void A_red_arrow_above_the_open_card_s_flag_points_down_at_it()
+    {
+        var hydrant = Hydrant(1600);
+        var (window, control, _) = ShowWaterPoints(WaterPointLayer.MediumMinZoom, hydrant);
+        var arrow = new PixelRect(204, 95, 10, 15);
+        using (var before = window.CaptureRenderedFrame()!)
+        {
+            Assert.False(Has(before, arrow, Signal));
+        }
+
+        control.SelectedWaterPoint = hydrant;
+        Dispatcher.UIThread.RunJobs();
+
+        using var after = window.CaptureRenderedFrame()!;
+        Assert.True(Has(after, arrow, Signal));
+    }
+
+    [AvaloniaFact]
+    public void Further_out_than_zoom_15_the_open_card_s_water_point_is_still_drawn_with_its_arrow()
+    {
+        var chosen = Hydrant(1600);
+        var other = new WaterPoint(new GeoPoint(Fuerstenfeldbruck.Latitude, Fuerstenfeldbruck.Longitude + 0.002), WaterPointKind.Hydrant, "UH 80") { FlowLitresPerMinute = 1600 };
+        var (window, control, _) = ShowWaterPoints(WaterPointLayer.MinZoom - 1, chosen, other);
+        control.SelectedWaterPoint = chosen;
+        Dispatcher.UIThread.RunJobs();
+
+        using var frame = window.CaptureRenderedFrame()!;
+
+        AssertNear(Green, PixelAt(frame, 200, 150));
+        Assert.True(Has(frame, new PixelRect(196, 110, 8, 15), Signal));
+        var (x, _) = WebMercator.ToWorldPixel(other.Position, WaterPointLayer.MinZoom - 1);
+        var (centreX, _) = WebMercator.ToWorldPixel(Fuerstenfeldbruck, WaterPointLayer.MinZoom - 1);
+        Assert.Equal(Land, PixelAt(frame, 200 + (int)Math.Round(x - centreX), 150));
     }
 
     [AvaloniaFact]
