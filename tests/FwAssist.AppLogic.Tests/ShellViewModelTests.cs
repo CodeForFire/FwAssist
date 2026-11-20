@@ -1,4 +1,5 @@
 using FwAssist.AppLogic.Helpers;
+using FwAssist.AppLogic.Services;
 using FwAssist.AppLogic.ViewModels;
 using FwAssist.Testing;
 
@@ -24,6 +25,43 @@ public class ShellViewModelTests
         Assert.True(shell.IsHome);
         Assert.Equal(ShellViewModel.HomeTitle, shell.Title);
         Assert.Equal(["Stoppuhr", "Anderes"], shell.Home.Tiles.Select(t => t.Title));
+    }
+
+    [Fact]
+    public void Moving_a_helper_in_einstellungen_reorders_the_overview_at_once()
+    {
+        var shell = Shell();
+        shell.Home.OpenSettingsCommand.Execute(null);
+        var settings = Assert.IsType<SettingsViewModel>(shell.Current);
+        Assert.NotNull(settings.Order);
+
+        settings.Order.Move(1, 0);
+        shell.GoHome();
+
+        Assert.Equal(["Anderes", "Stoppuhr"], shell.Home.Tiles.Select(t => t.Title));
+    }
+
+    [Fact]
+    public void The_order_from_einstellungen_survives_the_process_and_the_launcher_switches_keep_the_shipped_order()
+    {
+        var stored = new InMemoryHelperSettings();
+        ShellViewModel Started() => new(
+            [_stoppuhr, _other],
+            new HelperServices(new FakeTimeProvider(), new ManualTicker(), stored),
+            new FakeLauncherIcons(),
+            new FakeExternalLinks(),
+            "1.2.3");
+        var first = Started();
+        first.Home.OpenSettingsCommand.Execute(null);
+        var order = Assert.IsType<SettingsViewModel>(first.Current).Order;
+        Assert.NotNull(order);
+        order.Move(0, 1);
+
+        var restarted = Started();
+        restarted.Home.OpenSettingsCommand.Execute(null);
+
+        Assert.Equal(["Anderes", "Stoppuhr"], restarted.Home.Tiles.Select(t => t.Title));
+        Assert.Equal(["Stoppuhr", "Anderes"], Assert.IsType<SettingsViewModel>(restarted.Current).LauncherIcons.Select(t => t.Title));
     }
 
     [Fact]

@@ -25,6 +25,35 @@
         </ItemsControl.ItemTemplate>
       </ItemsControl>
 
+      <!-- The order of the helpers on the overview. The grip at the right of each row picks it up,
+           and the row follows the finger until it is let go; the rest of the row scrolls the page as
+           usual. The drag itself lives in the code-behind, the move in HelperOrderSection.Move. -->
+      <Panel IsVisible="{Binding Order, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel x:Name="HelperOrder" Spacing="12" Margin="0,12,0,0" DataContext="{Binding Order}"
+                    x:DataType="vm:HelperOrderSection">
+          <TextBlock Classes="overline" Text="REIHENFOLGE IN DER ÜBERSICHT" TextWrapping="Wrap" />
+          <TextBlock Classes="secondary" TextWrapping="Wrap"
+                     Text="Am Griff rechts festhalten und an die neue Stelle ziehen." />
+          <ItemsControl x:Name="HelperOrderRows" ItemsSource="{Binding Rows}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:HelperOrderRow">
+                <Border Classes="order-row" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,0,1"
+                        Padding="0,4">
+                  <Grid ColumnDefinitions="*,Auto" MinHeight="{StaticResource ControlHeight}">
+                    <TextBlock Grid.Column="0" Text="{Binding Title}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Border Grid.Column="1" Classes="drag-handle" AutomationProperties.Name="{Binding DragName}">
+                      <PathIcon Data="M8,5 H11 V8 H8 Z M13,5 H16 V8 H13 Z M8,10.5 H11 V13.5 H8 Z M13,10.5 H16 V13.5 H13 Z M8,16 H11 V19 H8 Z M13,16 H16 V19 H13 Z" />
+                    </Border>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button x:Name="ResetOrder" HorizontalAlignment="Stretch" Content="REIHENFOLGE ZURÜCKSETZEN"
+                  Command="{Binding ResetCommand}" />
+        </StackPanel>
+      </Panel>
+
       <!-- The Kartenpakete: on this device, and on offer once the user asks for the list. -->
       <Panel IsVisible="{Binding Maps, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel x:Name="MapPacks" Spacing="12" Margin="0,12,0,0" DataContext="{Binding Maps}"

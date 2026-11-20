@@ -1,7 +1,9 @@
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input;
 using Avalonia.VisualTree;
 using FwAssist.AppLogic.ViewModels;
 using FwAssist.Composition;
@@ -117,6 +119,99 @@ public class DemoFlowRenderTests
         Assert.All(toggles, t => Assert.True(t.IsChecked));
 
         phone.Capture("03-einstellungen.png");
+    }
+
+    [AvaloniaFact]
+    public void Dragging_a_helper_by_its_grip_in_einstellungen_moves_it_on_the_overview()
+    {
+        var phone = new PhoneRender();
+        var first = CompositionRoot.Modules[0].Title;
+        var third = CompositionRoot.Modules[2].Title;
+        phone.Shell.Home.OpenSettingsCommand.Execute(null);
+        PhoneRender.Settle();
+        Named(phone, "ResetOrder").BringIntoView();
+        PhoneRender.Settle();
+        var grip = phone.Window.GetVisualDescendants().OfType<Border>()
+            .Single(b => AutomationProperties.GetName(b) == third + " verschieben");
+        var rowHeight = grip.GetVisualAncestors().OfType<Border>().First(b => b.Classes.Contains("order-row")).Bounds.Height;
+        var start = grip.TranslatePoint(new Point(grip.Bounds.Width / 2, grip.Bounds.Height / 2), phone.Window);
+        Assert.NotNull(start);
+        Assert.True(rowHeight > 0);
+
+        // Up by two rows, in small steps as a finger moves, and let go above the first helper.
+        phone.Window.MouseDown(start.Value, MouseButton.Left);
+        for (var step = 1; step <= 10; step++)
+        {
+            phone.Window.MouseMove(start.Value - new Point(0, rowHeight * 2.2 * step / 10));
+        }
+
+        phone.Window.MouseUp(start.Value - new Point(0, rowHeight * 2.2), MouseButton.Left);
+        phone.Shell.GoHome();
+        PhoneRender.Settle();
+
+        var tiles = Named(phone, "Tiles").GetVisualDescendants().OfType<Button>().Select(AutomationProperties.GetName).ToList();
+        Assert.Equal([third, first], tiles.Take(2));
+    }
+
+    // A drag in Einstellungen, picked up at the grip of the helper at index, and moved up by rows.
+    private static (HelperOrderSection Order, Point At) StartDrag(PhoneRender phone, int index, double rows)
+    {
+        phone.Shell.Home.OpenSettingsCommand.Execute(null);
+        PhoneRender.Settle();
+        Named(phone, "ResetOrder").BringIntoView();
+        PhoneRender.Settle();
+        var order = Assert.IsType<SettingsViewModel>(phone.Shell.Current).Order;
+        Assert.NotNull(order);
+        var grip = phone.Window.GetVisualDescendants().OfType<Border>()
+            .Single(b => AutomationProperties.GetName(b) == CompositionRoot.Modules[index].Title + " verschieben");
+        var rowHeight = grip.GetVisualAncestors().OfType<Border>().First(b => b.Classes.Contains("order-row")).Bounds.Height;
+        var start = grip.TranslatePoint(new Point(grip.Bounds.Width / 2, grip.Bounds.Height / 2), phone.Window);
+        Assert.NotNull(start);
+        phone.Window.MouseDown(start.Value, MouseButton.Left);
+        for (var step = 1; step <= 10; step++)
+        {
+            phone.Window.MouseMove(start.Value - new Point(0, rowHeight * rows * step / 10));
+        }
+
+        return (order, start.Value - new Point(0, rowHeight * rows));
+    }
+
+    [AvaloniaFact]
+    public void While_a_helper_is_dragged_the_order_cannot_be_reset()
+    {
+        var phone = new PhoneRender();
+        var (order, at) = StartDrag(phone, 2, 2.2);
+
+        Assert.True(order.IsDragging);
+        Assert.False(Named(phone, "ResetOrder").IsEffectivelyEnabled);
+
+        phone.Window.MouseUp(at, MouseButton.Left);
+        PhoneRender.Settle();
+        Assert.False(order.IsDragging);
+        Assert.True(Named(phone, "ResetOrder").IsEffectivelyEnabled);
+        Assert.Equal(CompositionRoot.Modules[2].Id, order.Ids[0]);
+    }
+
+    [AvaloniaFact]
+    public void A_second_finger_let_go_elsewhere_does_not_end_the_first_fingers_drag()
+    {
+        var phone = new PhoneRender();
+        var before = CompositionRoot.Modules.Select(m => m.Id).ToList();
+        var (order, at) = StartDrag(phone, 2, 2.2);
+        var rows = Named(phone, "HelperOrderRows");
+
+        // Another finger, touching and letting go of another row while the first still drags.
+        var other = new Pointer(Pointer.GetNextFreeId(), PointerType.Touch, isPrimary: false);
+        rows.RaiseEvent(new PointerReleasedEventArgs(
+            rows, other, phone.Window, new Point(10, 10), 0, new PointerPointProperties(), KeyModifiers.None, MouseButton.Left));
+        PhoneRender.Settle();
+
+        Assert.Equal(before, order.Ids);
+        Assert.True(order.IsDragging);
+
+        phone.Window.MouseUp(at, MouseButton.Left);
+        PhoneRender.Settle();
+        Assert.Equal(CompositionRoot.Modules[2].Id, order.Ids[0]);
     }
 
     [AvaloniaFact]
