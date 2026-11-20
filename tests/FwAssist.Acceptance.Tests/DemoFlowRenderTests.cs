@@ -311,6 +311,8 @@ public class DemoFlowRenderTests
         phone.Shell.Open(RthLandeplatzModule.HelperId);
         PhoneRender.Settle();
 
+        Assert.Equal("TAG", ((TextBlock)Named(phone, "ModeHeading")).Text);
+        Assert.Equal(Landeplatzvorgaben.DayDefinition, ((TextBlock)Named(phone, "ModeDefinition")).Text);
         Assert.Contains(Landeplatzvorgaben.PilotDecides, VisibleTexts(phone.Window));
         Assert.DoesNotContain(Landeplatzvorgaben.AbortRule, VisibleTexts(phone.Window));
         Assert.Contains("Fläche: 30 m x 30 m oder größer", VisibleTexts(phone.Window));
@@ -321,6 +323,8 @@ public class DemoFlowRenderTests
         ((RadioButton)Named(phone, "NachtMode")).IsChecked = true;
         PhoneRender.Settle();
 
+        Assert.Equal("NACHT", ((TextBlock)Named(phone, "ModeHeading")).Text);
+        Assert.Equal(Landeplatzvorgaben.NightDefinition, ((TextBlock)Named(phone, "ModeDefinition")).Text);
         Assert.Contains(Landeplatzvorgaben.PilotDecides, VisibleTexts(phone.Window));
         Assert.Contains(Landeplatzvorgaben.AbortRule, VisibleTexts(phone.Window));
         Assert.Contains("Fläche: 35 m x 70 m oder größer", VisibleTexts(phone.Window));
@@ -330,7 +334,7 @@ public class DemoFlowRenderTests
     }
 
     [AvaloniaFact]
-    public void The_pilot_line_and_the_abort_rule_stay_outside_the_scrolling_steps()
+    public void The_mode_its_timeframe_the_pilot_line_and_the_abort_rule_stay_outside_the_scrolling_steps()
     {
         var phone = new PhoneRender();
         phone.Shell.Open(RthLandeplatzModule.HelperId);
@@ -338,6 +342,8 @@ public class DemoFlowRenderTests
 
         var scroller = Named(phone, "Sections").GetVisualAncestors().OfType<ScrollViewer>().First();
 
+        Assert.False(scroller.IsVisualAncestorOf(Named(phone, "ModeHeading")));
+        Assert.False(scroller.IsVisualAncestorOf(Named(phone, "ModeDefinition")));
         Assert.False(scroller.IsVisualAncestorOf(Named(phone, "PilotDecides")));
         Assert.False(scroller.IsVisualAncestorOf(Named(phone, "AbortRule")));
     }

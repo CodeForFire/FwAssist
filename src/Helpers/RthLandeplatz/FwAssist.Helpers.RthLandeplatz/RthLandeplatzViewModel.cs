@@ -25,6 +25,8 @@ public sealed partial class RthLandeplatzViewModel : ObservableObject
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(IsTag))]
     [NotifyPropertyChangedFor(nameof(Sections))]
+    [NotifyPropertyChangedFor(nameof(ModeHeading))]
+    [NotifyPropertyChangedFor(nameof(ModeDefinition))]
     private bool _isNacht;
 
     public bool IsTag
@@ -35,6 +37,10 @@ public sealed partial class RthLandeplatzViewModel : ObservableObject
 
     /// <summary>Only this mode's values: a night size can never be read as a day size.</summary>
     public IReadOnlyList<Section> Sections => IsNacht ? Landeplatzvorgaben.Nacht : Landeplatzvorgaben.Tag;
+
+    public string ModeHeading => IsNacht ? "NACHT" : "TAG";
+
+    public string ModeDefinition => IsNacht ? Landeplatzvorgaben.NightDefinition : Landeplatzvorgaben.DayDefinition;
 
     partial void OnIsNachtChanged(bool value) =>
         _settings.Set(NachtKey, value.ToString(CultureInfo.InvariantCulture));

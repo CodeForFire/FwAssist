@@ -28,6 +28,10 @@ public static class Landeplatzvorgaben
     public const string NightDefinition =
         "Als Nacht gilt die Zeit von 30 Minuten nach Sonnenuntergang bis 30 Minuten vor Sonnenaufgang.";
 
+    // The complement of Folie 8's night, confirmed in #44.
+    public const string DayDefinition =
+        "Als Tag gilt die Zeit von 30 Minuten vor Sonnenaufgang bis 30 Minuten nach Sonnenuntergang.";
+
     public const string SourceNote =
         "Zusammengestellt aus diesen Unterlagen. Keine dieser Stellen hat diese App geprüft oder herausgegeben.";
 
