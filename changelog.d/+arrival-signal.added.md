@@ -1,0 +1,1 @@
+At the hydrant the Richtungspfeil plays a short tone and vibrates once, as the phone's silent setting allows, and shows AM HYDRANTEN in large letters above a smaller arrow that still guides the last metres (#70).

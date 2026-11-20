@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using FwAssist.AppLogic.Services;
 using FwAssist.AppLogic.Services.Location;
 using FwAssist.AppLogic.Services.Map;
 using FwAssist.Core;
@@ -14,8 +15,14 @@ namespace FwAssist.Helpers.Hydranten;
 /// </summary>
 public sealed partial class RichtungspfeilViewModel : ObservableObject
 {
-    /// <summary>Closer than this, in metres, the hydrant is reached and the arrow gives way.</summary>
+    /// <summary>Closer than this, in metres, the hydrant is reached: the phone signals it once and says so in large letters.</summary>
     public const double AngekommenMetres = 10;
+
+    /// <summary>
+    /// Only further than this, in metres, does a reached hydrant count as left again, so a GPS fix
+    /// that wanders around <see cref="AngekommenMetres"/> does not signal the arrival over and over.
+    /// </summary>
+    public const double VerlassenMetres = 20;
 
     public const string SuchtText = "Suche GPS-Signal …";
 
@@ -25,8 +32,6 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
 
     public const string VerlorenText = "GPS-Signal verloren. Die Richtung kann veraltet sein.";
 
-    public const string AngekommenText = "Am Hydranten.";
-
     public const string OhneKompassText = "Dieses Handy hat keinen Kompass. Richtung nach Himmelsrichtung gehen.";
 
     /// <summary>A fix older than this no longer counts as where the phone is.</summary>
@@ -35,8 +40,9 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
     private readonly ILocationSource _location;
     private readonly ICompass? _compass;
     private readonly TimeProvider _time;
+    private readonly IAttentionSignal? _signal;
 
-    public RichtungspfeilViewModel(WaterPoint target, ILocationSource location, ICompass? compass = null, TimeProvider? time = null)
+    public RichtungspfeilViewModel(WaterPoint target, ILocationSource location, ICompass? compass = null, TimeProvider? time = null, IAttentionSignal? signal = null)
     {
         ArgumentNullException.ThrowIfNull(target);
         ArgumentNullException.ThrowIfNull(location);
@@ -44,6 +50,7 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
         _location = location;
         _compass = compass;
         _time = time ?? TimeProvider.System;
+        _signal = signal;
     }
 
     /// <summary>The hydrant the arrow points to.</summary>
@@ -58,7 +65,6 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(DistanceText))]
     [NotifyPropertyChangedFor(nameof(DirectionText))]
     [NotifyPropertyChangedFor(nameof(AccuracyText))]
-    [NotifyPropertyChangedFor(nameof(IsArrived))]
     [NotifyPropertyChangedFor(nameof(IsLost))]
     [NotifyPropertyChangedFor(nameof(Status))]
     private GeoFix? _fix;
@@ -84,6 +90,13 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(Status))]
     private bool _isRunning;
 
+    /// <summary>
+    /// The hydrant is reached: the phone came within <see cref="AngekommenMetres"/> and has not
+    /// since gone further than <see cref="VerlassenMetres"/>. The arrow stays, smaller, for the last metres.
+    /// </summary>
+    [ObservableProperty]
+    private bool _isArrived;
+
     /// <summary>The distance from the phone to the hydrant, in metres; null without a fix.</summary>
     public double? Metres => Fix is { } fix ? Schlauchbedarf.Metres(fix.Position, Target.Position) : null;
 
@@ -94,13 +107,10 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
     public double ArrowAngle => Bearing is { } bearing && Heading is { } heading ? Peilung.Normalize(bearing - heading) : 0;
 
     /// <summary>
-    /// The arrow is drawn: there is a fresh fix and a heading, and the hydrant is not reached yet.
-    /// A heading only ever comes from a compass that started, so it also means there is one.
+    /// The arrow is drawn: there is a fresh fix and a heading. It stays at the hydrant too, for the
+    /// last metres. A heading only ever comes from a compass that started, so it also means there is one.
     /// </summary>
-    public bool ShowsArrow => Bearing is not null && Heading is not null && !IsLost && !IsArrived;
-
-    // Stryker disable once Equality : exactly 10.000 m is not a distance a GPS fix lands on.
-    public bool IsArrived => Metres <= AngekommenMetres;
+    public bool ShowsArrow => Bearing is not null && Heading is not null && !IsLost;
 
     /// <summary>The last fix is older than <see cref="VerlorenNach"/>; checked whenever a reading arrives.</summary>
     public bool IsLost => Fix is { } fix && _time.GetUtcNow() - fix.Time > VerlorenNach;
@@ -122,7 +132,6 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
         LocationAccess.Denied => VerweigertText,
         LocationAccess.SwitchedOff => AusgeschaltetText,
         _ when Fix is null => IsRunning ? SuchtText : null,
-        _ when IsArrived => AngekommenText,
         _ when IsLost => VerlorenText,
         _ when !HasCompass => OhneKompassText,
         _ => null,
@@ -190,6 +199,26 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
     }
 
     private void OnFix(object? sender, GeoFixEventArgs e) => Fix = e.Fix;
+
+    // Arriving signals once; only leaving clearly, past VerlassenMetres, lets the next arrival signal again.
+    partial void OnFixChanged(GeoFix? value)
+    {
+        if (Metres is not { } metres)
+        {
+            return;
+        }
+
+        // Stryker disable once Equality : exactly 10.000 or 20.000 m is not a distance a GPS fix lands on.
+        if (!IsArrived && metres <= AngekommenMetres)
+        {
+            IsArrived = true;
+            _signal?.Play();
+        }
+        else if (IsArrived && metres > VerlassenMetres)
+        {
+            IsArrived = false;
+        }
+    }
 
     // A compass reads many times a second, so a heading is also when a fix is found out to be old.
     private void OnHeading(object? sender, HeadingEventArgs e)

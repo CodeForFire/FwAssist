@@ -45,6 +45,7 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
     private readonly ILocationSource? _location;
     private readonly ICompass? _compass;
     private readonly TimeProvider _time;
+    private readonly IAttentionSignal? _signal;
     private IReadOnlyList<InstalledRegionPack> _packs = [];
 
     // Counts the loads, so a slow one that finishes after a newer one does not overwrite it.
@@ -63,13 +64,15 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
         IHelperSettings? settings = null,
         ILocationSource? location = null,
         ICompass? compass = null,
-        TimeProvider? time = null)
+        TimeProvider? time = null,
+        IAttentionSignal? signal = null)
     {
         _maps = maps;
         _settings = settings;
         _location = location;
         _compass = compass;
         _time = time ?? TimeProvider.System;
+        _signal = signal;
         _einsatzstelle = Rehydrate(settings?.Get(EinsatzstelleKey));
         _isPlacing = _einsatzstelle is null;
         if (maps is not null)
@@ -289,7 +292,7 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
 
         // The arrow takes the one position source over; a locate still waiting gives it up.
         CancelLocate(stop: false);
-        var pfeil = new RichtungspfeilViewModel(target, _location, _compass, _time);
+        var pfeil = new RichtungspfeilViewModel(target, _location, _compass, _time, _signal);
         Pfeil = pfeil;
         await pfeil.StartAsync();
     }

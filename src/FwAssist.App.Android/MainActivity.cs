@@ -30,6 +30,7 @@ public class MainActivity : AvaloniaMainActivity
     // screen rotation of is set again on every create.
     private static AndroidLocationSource? _location;
     private static AndroidCompass? _compass;
+    private static AndroidAttentionSignal? _signal;
 
     protected override void OnCreate(global::Android.OS.Bundle? savedInstanceState)
     {
@@ -41,6 +42,7 @@ public class MainActivity : AvaloniaMainActivity
         _location ??= new AndroidLocationSource(context, time);
         var location = _location;
         _compass ??= new AndroidCompass(context, () => location.Last);
+        _signal ??= new AndroidAttentionSignal(context);
         _location.Activity = this;
         _compass.Activity = this;
         _shell ??= CompositionRoot.CreateShell(
@@ -50,7 +52,8 @@ public class MainActivity : AvaloniaMainActivity
                 new AndroidHelperSettings(context),
                 new RegionPackLibrary(Http, Path.Join(files, "maps")),
                 _location,
-                _compass),
+                _compass,
+                _signal),
             new AndroidLauncherIcons(context),
             new AndroidExternalLinks(context),
             AppVersionText.Of(typeof(MainActivity).Assembly));

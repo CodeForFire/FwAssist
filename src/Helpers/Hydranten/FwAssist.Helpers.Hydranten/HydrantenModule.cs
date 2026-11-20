@@ -20,6 +20,6 @@ public sealed class HydrantenModule : IHelperModule
     public ObservableObject CreateViewModel(HelperServices services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        return new HydrantenkarteViewModel(services.Maps, services.Settings, services.Location, services.Compass, services.Time);
+        return new HydrantenkarteViewModel(services.Maps, services.Settings, services.Location, services.Compass, services.Time, services.Signal);
     }
 }

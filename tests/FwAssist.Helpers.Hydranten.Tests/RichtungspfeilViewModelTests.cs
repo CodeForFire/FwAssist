@@ -16,8 +16,10 @@ public class RichtungspfeilViewModelTests
     private readonly FakeCompass _compass = new();
     private readonly FakeTimeProvider _time = new();
 
+    private readonly FakeAttentionSignal _signal = new();
+
     private RichtungspfeilViewModel Pfeil(ICompass? compass = null) =>
-        new(Hydrant, _location, compass ?? _compass, _time);
+        new(Hydrant, _location, compass ?? _compass, _time, _signal);
 
     private async Task<RichtungspfeilViewModel> Running()
     {
@@ -85,16 +87,60 @@ public class RichtungspfeilViewModelTests
     }
 
     [Fact]
-    public async Task Within_ten_metres_the_hydrant_is_reached_and_the_arrow_gives_way()
+    public async Task Within_ten_metres_the_hydrant_is_reached_signalled_once_and_the_arrow_stays_for_the_last_metres()
     {
         var pfeil = await Running();
         _compass.Turn(0);
+        _location.Move(Phone, _time.GetUtcNow());
+        Assert.False(pfeil.IsArrived);
+        Assert.Equal(0, _signal.Played);
 
-        _location.Move(new GeoPoint(48.17945, 11.2555), _time.GetUtcNow());
+        _location.Move(Toward(8), _time.GetUtcNow());
 
         Assert.True(pfeil.IsArrived);
-        Assert.False(pfeil.ShowsArrow);
-        Assert.Equal(RichtungspfeilViewModel.AngekommenText, pfeil.Status);
+        Assert.Equal(1, _signal.Played);
+        Assert.True(pfeil.ShowsArrow);
+        Assert.Null(pfeil.Status);
+    }
+
+    // A fix wanders by metres while the phone stands still; at the 10 m line that must not beep over and over (#70).
+    [Fact]
+    public async Task A_fix_wandering_around_ten_metres_signals_the_arrival_only_once()
+    {
+        var pfeil = await Running();
+
+        foreach (var metres in new[] { 9.0, 12, 8, 15, 19, 9 })
+        {
+            _location.Move(Toward(metres), _time.GetUtcNow());
+            Assert.True(pfeil.IsArrived);
+        }
+
+        Assert.Equal(1, _signal.Played);
+    }
+
+    [Fact]
+    public async Task Leaving_past_twenty_metres_and_coming_back_signals_the_arrival_again()
+    {
+        var pfeil = await Running();
+        _location.Move(Toward(5), _time.GetUtcNow());
+
+        _location.Move(Toward(25), _time.GetUtcNow());
+        Assert.False(pfeil.IsArrived);
+
+        _location.Move(Toward(6), _time.GetUtcNow());
+        Assert.True(pfeil.IsArrived);
+        Assert.Equal(2, _signal.Played);
+    }
+
+    [Fact]
+    public async Task Without_a_signal_the_arrival_is_still_shown()
+    {
+        var pfeil = new RichtungspfeilViewModel(Hydrant, _location, _compass, _time);
+        await pfeil.StartAsync();
+
+        _location.Move(Toward(5), _time.GetUtcNow());
+
+        Assert.True(pfeil.IsArrived);
     }
 
     [Fact]
@@ -219,4 +265,8 @@ public class RichtungspfeilViewModelTests
 
         Assert.Equal(1, _location.Starts);
     }
+
+    // A point this many metres due south of the hydrant: a degree of latitude is about 111.195 m.
+    private static GeoPoint Toward(double metres) =>
+        new(Hydrant.Position.Latitude - (metres / 111_195.0), Hydrant.Position.Longitude);
 }

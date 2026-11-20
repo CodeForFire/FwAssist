@@ -37,7 +37,7 @@ internal sealed class PhoneRender
     {
         Maps = new RegionPackLibrary(Http, MapRoot.Value);
         Shell = CompositionRoot.CreateShell(
-            new HelperServices(Time, Ticker, Maps: Maps, Location: Location, Compass: Compass),
+            new HelperServices(Time, Ticker, Maps: Maps, Location: Location, Compass: Compass, Signal: Signal),
             Icons,
             new FakeExternalLinks(),
             "0.1.0");
@@ -62,6 +62,8 @@ internal sealed class PhoneRender
     public FakeLocationSource Location { get; } = new();
 
     public FakeCompass Compass { get; } = new();
+
+    public FakeAttentionSignal Signal { get; } = new();
 
     public ShellViewModel Shell { get; }
 

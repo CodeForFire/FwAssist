@@ -654,6 +654,39 @@ public class DemoFlowRenderTests
         Assert.False(Named(phone, "Richtungspfeil").IsEffectivelyVisible);
     }
 
+    // At the hydrant: once the signal, AM HYDRANTEN in large letters, and the arrow, smaller, still showing the way (#70).
+    [AvaloniaFact]
+    public async Task At_the_hydrant_the_phone_signals_once_and_says_so_over_a_smaller_arrow()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        vm.TapCommand.Execute(FictionalRegionPack.Musterstrasse1);
+        vm.NaechsteHydrantenCommand.Execute(null);
+        vm.WaehleCommand.Execute(vm.Nearest[0]);
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+        phone.Location.Move(FictionalRegionPack.Musterstrasse1, phone.Time.GetUtcNow());
+        phone.Compass.Turn(0);
+        PhoneRender.Settle();
+        var before = Named(phone, "ArrowBox").Bounds.Height;
+        Assert.False(Named(phone, "Angekommen").IsVisible);
+        Assert.Equal(0, phone.Signal.Played);
+
+        // About 4 m south of the hydrant.
+        Assert.NotNull(vm.Selected);
+        var target = vm.Selected.Position;
+        phone.Location.Move(new Core.Map.GeoPoint(target.Latitude - 0.00004, target.Longitude), phone.Time.GetUtcNow());
+        PhoneRender.Settle();
+
+        Assert.Equal(1, phone.Signal.Played);
+        Assert.True(Named(phone, "Angekommen").IsEffectivelyVisible);
+        Assert.Equal("AM HYDRANTEN", ((TextBlock)Named(phone, "Angekommen")).Text);
+        Assert.True(Named(phone, "Arrow").IsEffectivelyVisible);
+        Assert.True(Named(phone, "ArrowBox").Bounds.Height < before, "The arrow shrinks at the hydrant.");
+        Assert.True(Named(phone, "Angekommen").Bounds.Bottom <= Named(phone, "ArrowBox").Bounds.Top, "AM HYDRANTEN stands above the arrow.");
+
+        phone.Capture("angekommen.png");
+    }
+
     [AvaloniaFact]
     public async Task Leaving_the_hydrantenkarte_switches_the_gps_off()
     {

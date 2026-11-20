@@ -14,10 +14,12 @@ namespace FwAssist.AppLogic.Helpers;
 /// <param name="Maps">The Kartenpakete on this device; null where there are none to be had.</param>
 /// <param name="Location">The phone's live position; null where the platform offers none.</param>
 /// <param name="Compass">Which way the phone points; null where the platform offers none.</param>
+/// <param name="Signal">A tone and vibration for something the user must notice; null stays quiet.</param>
 public sealed record HelperServices(
     TimeProvider Time,
     ITicker Ticker,
     IHelperSettings? Settings = null,
     IRegionPackLibrary? Maps = null,
     ILocationSource? Location = null,
-    ICompass? Compass = null);
+    ICompass? Compass = null,
+    IAttentionSignal? Signal = null);

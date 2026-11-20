@@ -22,6 +22,12 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <!-- The Richtungspfeil's arrival at the hydrant: a short vibration with the tone, so a crew
+         member walking with eyes on the street notices it, and still notices it on a phone set to
+         vibrate. Nothing else vibrates. A normal permission: Android grants it at install, with no
+         dialog, and it reads or sends nothing. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <!-- None is required: without GPS the network position serves, without a compass the arrow
          gives the Himmelsrichtung instead, and without any location only the Richtungspfeil is
          missing. The location permissions imply android.hardware.location and its .gps, so both are
