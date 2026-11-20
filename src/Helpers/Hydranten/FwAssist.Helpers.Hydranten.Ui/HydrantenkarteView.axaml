@@ -1,0 +1,177 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.Helpers.Hydranten;assembly=FwAssist.Helpers.Hydranten"
+             xmlns:geo="clr-namespace:FwAssist.Core.Map;assembly=FwAssist.Core"
+             xmlns:wp="clr-namespace:FwAssist.AppLogic.Services.Map;assembly=FwAssist.AppLogic"
+             xmlns:map="clr-namespace:FwAssist.Ui.Map;assembly=FwAssist.Ui"
+             x:Class="FwAssist.Helpers.Hydranten.Ui.HydrantenkarteView"
+             x:DataType="vm:HydrantenkarteViewModel">
+  <UserControl.Styles>
+    <!-- The Einsatzstelle, as in Lagebuch: a pin whose head reads "ESt" and whose tip is the spot.
+         The panel is twice the pin's height with the tip at its centre, because MapMarkerPanel
+         centres a mark on its spot. Taps go through it to the map. -->
+    <Style Selector="Panel.est-pin">
+      <Setter Property="Width" Value="40" />
+      <Setter Property="Height" Value="96" />
+      <Setter Property="IsHitTestVisible" Value="False" />
+    </Style>
+    <Style Selector="Panel.est-pin > Path">
+      <Setter Property="Fill" Value="{StaticResource SignalBrush}" />
+      <Setter Property="Stroke" Value="White" />
+      <Setter Property="StrokeThickness" Value="2.5" />
+      <Setter Property="StrokeJoin" Value="Round" />
+      <Setter Property="HorizontalAlignment" Value="Left" />
+      <Setter Property="VerticalAlignment" Value="Top" />
+    </Style>
+    <Style Selector="Panel.est-pin > TextBlock">
+      <Setter Property="Foreground" Value="White" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="FontSize" Value="13" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Top" />
+      <Setter Property="Margin" Value="0,8,0,0" />
+    </Style>
+    <!-- What floats over the light day map keeps the map's colours, not the app's dark ones. -->
+    <Style Selector="Border#Attribution">
+      <Setter Property="Background" Value="#CCFFFFFF" />
+    </Style>
+    <Style Selector="Border#Attribution TextBlock">
+      <Setter Property="Foreground" Value="#FF333333" />
+      <Setter Property="FontSize" Value="10" />
+    </Style>
+    <Style Selector="Border.map-banner">
+      <Setter Property="Background" Value="{StaticResource SurfaceRaisedBrush}" />
+      <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+      <Setter Property="BorderThickness" Value="1" />
+      <Setter Property="CornerRadius" Value="6" />
+      <Setter Property="Padding" Value="12,8" />
+      <Setter Property="Margin" Value="8" />
+    </Style>
+    <Style Selector="Button.zoom">
+      <Setter Property="Width" Value="{StaticResource ControlHeight}" />
+      <Setter Property="FontSize" Value="22" />
+      <Setter Property="Padding" Value="0" />
+    </Style>
+  </UserControl.Styles>
+
+  <!-- The map fills the page; what the user taps sits at the bottom, in thumb reach. -->
+  <Grid RowDefinitions="*,Auto">
+    <Grid x:Name="MapArea" Grid.Row="0" ClipToBounds="True">
+      <map:MapCanvasControl x:Name="Map"
+                            AutomationProperties.Name="Hydrantenkarte"
+                            TileSource="{Binding Map.TileSource}"
+                            WaterPoints="{Binding Hydranten}"
+                            SelectedWaterPoint="{Binding Selected}"
+                            Center="{Binding Map.Center}"
+                            Zoom="{Binding Map.Zoom}"
+                            Rotation="{Binding Map.Rotation}"
+                            ViewChangedCommand="{Binding Map.ChangeViewCommand}"
+                            TappedCommand="{Binding TapCommand}" />
+
+      <ItemsControl x:Name="EinsatzstellePin" ItemsSource="{Binding EinsatzstelleMarks}" IsHitTestVisible="False">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate x:DataType="vm:HydrantenkarteViewModel">
+            <map:MapMarkerPanel Center="{Binding Map.Center}" Zoom="{Binding Map.Zoom}" Rotation="{Binding Map.Rotation}" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.Styles>
+          <Style Selector="ItemsControl#EinsatzstellePin > ContentPresenter" x:DataType="geo:GeoPoint">
+            <Setter Property="map:MapMarkerPanel.Position" Value="{Binding}" />
+          </Style>
+        </ItemsControl.Styles>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="geo:GeoPoint">
+            <Panel Classes="est-pin">
+              <Path Data="M20,48 L5.8,26.3 A17,17 0 1 1 34.2,26.3 Z" />
+              <TextBlock Text="ESt" />
+            </Panel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <Border x:Name="StatusBanner" Classes="map-banner" VerticalAlignment="Top" HorizontalAlignment="Stretch"
+              IsVisible="{Binding Status, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <TextBlock x:Name="StatusText" Text="{Binding Status}" TextWrapping="Wrap" />
+      </Border>
+
+      <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8,8,8,28" Spacing="8">
+        <Button x:Name="ZoomIn" Classes="zoom" Content="+" Command="{Binding Map.ZoomInCommand}"
+                AutomationProperties.Name="Vergrößern" />
+        <Button x:Name="ZoomOut" Classes="zoom" Content="−" Command="{Binding Map.ZoomOutCommand}"
+                AutomationProperties.Name="Verkleinern" />
+      </StackPanel>
+
+      <Border x:Name="Attribution" VerticalAlignment="Bottom" HorizontalAlignment="Left" Padding="4,1"
+              IsVisible="{Binding Map.Attribution, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <TextBlock Text="{Binding Map.Attribution}" TextWrapping="Wrap" />
+      </Border>
+    </Grid>
+
+    <StackPanel Grid.Row="1" Margin="12" Spacing="8">
+      <!-- The open hydrant's card. -->
+      <Border x:Name="HydrantCard" Classes="map-banner" Margin="0" IsVisible="{Binding HasSelected}">
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+          <TextBlock Grid.Column="0" Classes="overline" Text="{Binding Selected.Title, FallbackValue=''}"
+                     VerticalAlignment="Center" />
+          <Button Grid.Column="1" Classes="ghost" Content="SCHLIESSEN" Command="{Binding KarteSchliessenCommand}" />
+          <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Selected.Details, FallbackValue={x:Null}}"
+                        Grid.IsSharedSizeScope="True">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="wp:WaterPointDetail">
+                <Grid>
+                  <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" SharedSizeGroup="DetailLabel" />
+                    <ColumnDefinition Width="*" />
+                  </Grid.ColumnDefinitions>
+                  <TextBlock Grid.Column="0" Classes="secondary" Text="{Binding Label}" Margin="0,0,12,0" />
+                  <TextBlock Grid.Column="1" Text="{Binding Value}" TextWrapping="Wrap" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </Grid>
+      </Border>
+
+      <!-- The nearest hydrants: tapping one is the user's choice. -->
+      <StackPanel x:Name="NearestList" Spacing="6" IsVisible="{Binding HasNearest}">
+        <Grid ColumnDefinitions="*,Auto">
+          <TextBlock Classes="overline" Text="WELCHEN HYDRANTEN NEHMEN?" VerticalAlignment="Center" />
+          <Button Grid.Column="1" Classes="ghost" Content="SCHLIESSEN" Command="{Binding ListeSchliessenCommand}" />
+        </Grid>
+        <ItemsControl x:Name="NearestRows" ItemsSource="{Binding Nearest}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="6" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:HydrantRow">
+              <Button HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                      Command="{Binding $parent[ItemsControl].((vm:HydrantenkarteViewModel)DataContext).WaehleCommand}"
+                      CommandParameter="{Binding}">
+                <StackPanel>
+                  <TextBlock Text="{Binding Bauart}" FontWeight="SemiBold" />
+                  <TextBlock Classes="secondary" Text="{Binding Text}" />
+                </StackPanel>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </StackPanel>
+
+      <Button x:Name="CancelMove" HorizontalAlignment="Stretch" Content="ABBRECHEN"
+              Command="{Binding VerschiebenAbbrechenCommand}"
+              IsVisible="{Binding IsMoving}" />
+      <StackPanel Spacing="8" IsVisible="{Binding !IsPlacing}">
+        <Button x:Name="Nearest" Classes="signal" HorizontalAlignment="Stretch" Content="NÄCHSTE HYDRANTEN"
+                Command="{Binding NaechsteHydrantenCommand}" />
+        <Grid ColumnDefinitions="*,12,*">
+          <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="ESt VERSCHIEBEN"
+                  Command="{Binding EinsatzstelleVerschiebenCommand}" />
+          <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="ESt LÖSCHEN"
+                  Command="{Binding EinsatzstelleLoeschenCommand}" />
+        </Grid>
+      </StackPanel>
+    </StackPanel>
+  </Grid>
+</UserControl>

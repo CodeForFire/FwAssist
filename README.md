@@ -28,6 +28,7 @@ deshalb auch so aus.
 | **Schaummittel** | Rechnet in beide Richtungen: wie viel Schaum der Vorrat ergibt und wie viel Wasser und Schaummittel ein Raum braucht. |
 | **RTH-Landeplatz** | Vorgaben und Ablauf, wenn die Feuerwehr einen Landeplatz für den Rettungshubschrauber vorbereitet, getrennt für Tag und Nacht. |
 | **Dekon-Platz** | Dekon-Stufen I bis III: Sofortmaßnahmen, Aufbau und Plan für Stufe II, Technik und Ablauf für Stufe III. |
+| **Hydrantenkarte** | Hydranten rund um die Einsatzstelle auf einer Offline-Karte aus OpenStreetMap: die nächsten mit Entfernung (Luftlinie) und Zahl der B-Schläuche. Kartenpakete gibt es bisher für Landkreise in Bayern. |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
 [Ideen](https://github.com/CodeForFire/FwAssist/discussions/categories/ideen).
@@ -42,7 +43,10 @@ erreichbar.
 ## Datenschutz
 
 Kein Konto, keine Anmeldung, keine Cloud, kein Server. Keine Telemetrie, keine
-Werbung. Die App fordert keine Berechtigungen an und hat keinen Netzzugriff.
+Werbung. Die App fordert eine einzige Berechtigung an, den Internetzugriff, und
+nutzt ihn nur, wenn unter **Einstellungen** Kartenpakete für die Hydrantenkarte
+geladen werden. Dabei wird nichts über euch oder einen Einsatz gesendet; die
+Karte funktioniert danach ohne Netz.
 
 ## Installation
 
@@ -84,6 +88,10 @@ weiteren Helfer.
 | Dekon-Stufe I | Dekon-Stufe II | Dekon-Stufe III |
 |---|---|---|
 | ![Dekon-Stufe I](docs/screenshots/08-dekon-stufe-1.png) | ![Dekon-Stufe II](docs/screenshots/09-dekon-stufe-2.png) | ![Dekon-Stufe III](docs/screenshots/10-dekon-stufe-3.png) |
+
+| Hydrantenkarte: die nächsten Hydranten | Hydrantenkarte: ein Hydrant |
+|---|---|
+| ![Hydrantenkarte: die nächsten Hydranten](docs/screenshots/12-hydrantenkarte-naechste.png) | ![Hydrantenkarte: ein Hydrant](docs/screenshots/13-hydrantenkarte-hydrant.png) |
 
 ## Mitmachen & Kontakt
 

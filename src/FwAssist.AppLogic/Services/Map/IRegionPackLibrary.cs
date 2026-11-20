@@ -5,6 +5,12 @@ namespace FwAssist.AppLogic.Services.Map;
 /// </summary>
 public interface IRegionPackLibrary
 {
+    /// <summary>
+    /// A pack was installed or removed. Raised on the caller's context once the change is on disk,
+    /// so a map open elsewhere in the app can show the new set of packs.
+    /// </summary>
+    event EventHandler? InstalledChanged;
+
     /// <summary>The packs the catalogue offers.</summary>
     /// <exception cref="RegionPackException">The catalogue could not be fetched or read.</exception>
     Task<IReadOnlyList<RegionPackInfo>> GetCatalogAsync(CancellationToken cancellationToken = default);

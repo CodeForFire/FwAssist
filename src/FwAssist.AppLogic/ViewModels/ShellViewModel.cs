@@ -41,7 +41,7 @@ public sealed partial class ShellViewModel : ObservableObject
         _modules = modules.ToDictionary(m => m.Id, StringComparer.Ordinal);
         _services = services;
         Home = new HomeViewModel(modules, Open, OpenSettings, OpenAbout);
-        _settings = new SettingsViewModel(modules, launcherIcons);
+        _settings = new SettingsViewModel(modules, launcherIcons, services.Maps);
         _about = new AboutViewModel(externalLinks, appVersion);
         _current = Home;
         _title = HomeTitle;

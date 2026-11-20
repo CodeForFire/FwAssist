@@ -8,6 +8,11 @@
      end of <application>. The C# class carries [Register] with the same Java name. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-sdk android:targetSdkVersion="36" />
+
+    <!-- The one permission, and only for the Hydrantenkarte's Kartenpakete: the list of packs and
+         a pack are fetched over https when the user asks for them under Einstellungen. Nothing
+         else goes online, and nothing about the user or an Einsatz is sent. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application android:label="FwAssist" android:icon="@drawable/ic_launcher"
                  android:theme="@style/MyTheme.NoActionBar" android:usesCleartextTraffic="false">
 
@@ -81,6 +86,18 @@
                         android:targetActivity="de.codeforfire.helfer.MainActivity"
                         android:label="Dekon-Platz"
                         android:icon="@drawable/ic_helper_dekonplatz"
+                        android:exported="true"
+                        android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias android:name="de.codeforfire.helfer.launcher.hydranten"
+                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+                        android:label="Hydrantenkarte"
+                        android:icon="@drawable/ic_helper_hydranten"
                         android:exported="true"
                         android:enabled="true">
             <intent-filter>

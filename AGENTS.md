@@ -352,16 +352,19 @@ memory. The rules below are the ones this app has learned the hard way.
 
 ## Security
 
-**Threat model.** Today nothing crosses a trust boundary: the app declares no
-permission, reads no file and receives no intent beyond its own launcher
-icons. That changes the moment a helper imports a file, shares data or talks to
-the network, and a helper that does so brings the rules below with it. Treat
-any such input as hostile. Data a helper records about people at an Einsatz is
-personal data, so confidentiality is a requirement, not a nice-to-have.
+**Threat model.** One input crosses a trust boundary today: the Hydrantenkarte's
+Kartenpakete, downloaded on request through the app's only permission,
+`INTERNET`, and checked by `RegionPackLibrary` (https only, size caps, SHA-256,
+fixed file names). Beyond that the app reads no file and receives no intent
+except its own launcher icons. A helper that imports a file, shares data or
+talks to the network brings the rules below with it. Treat any such input as
+hostile. Data a helper records about people at an Einsatz is personal data, so
+confidentiality is a requirement, not a nice-to-have.
 
 - **Permissions.** Every `<uses-permission>` in the manifest needs a reason in
-  the PR and a line in the Play listing's data-safety answers. "Keine
-  Berechtigungen" is part of what the listing promises today.
+  the PR and a line in the Play listing's data-safety answers. "Die einzige
+  Berechtigung ist der Internetzugriff" is part of what the listing promises
+  today.
 - **SQL.**
   - Values are always bound as `$name` parameters.
   - An identifier may be interpolated only from a compile-time schema

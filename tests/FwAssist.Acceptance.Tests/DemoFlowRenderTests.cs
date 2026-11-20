@@ -3,9 +3,11 @@ using Avalonia.Automation;
 using Avalonia.Controls;
 using Avalonia.Headless.XUnit;
 using Avalonia.VisualTree;
+using FwAssist.AppLogic.ViewModels;
 using FwAssist.Composition;
 using FwAssist.Helpers.DekonPlatz;
 using FwAssist.Helpers.Funkalphabet;
+using FwAssist.Helpers.Hydranten;
 using FwAssist.Helpers.RthLandeplatz;
 using FwAssist.Helpers.Schaummittel;
 
@@ -455,5 +457,76 @@ public class DemoFlowRenderTests
 
         Assert.All(Dekonvorgaben.Sources, source => Assert.Contains(source, texts));
         Assert.Contains(Dekonvorgaben.SourceNote, texts);
+    }
+
+    private static HydrantenkarteViewModel OpenHydrantenkarte(PhoneRender phone)
+    {
+        phone.Shell.Open(HydrantenModule.HelperId);
+        var vm = Assert.IsType<HydrantenkarteViewModel>(phone.Shell.Current);
+        PhoneRender.SettleUntil(() => vm.Hydranten.Count > 0);
+        return vm;
+    }
+
+    [AvaloniaFact]
+    public void The_hydrantenkarte_shows_the_pack_and_asks_for_the_einsatzstelle_first()
+    {
+        var phone = new PhoneRender();
+
+        var vm = OpenHydrantenkarte(phone);
+
+        Assert.Equal(3, vm.Hydranten.Count);
+        Assert.True(Named(phone, "StatusBanner").IsVisible);
+        Assert.Equal(HydrantenkarteViewModel.PlacingText, ((TextBlock)Named(phone, "StatusText")).Text);
+        Assert.Equal(FictionalRegionPack.Attribution, vm.Map.Attribution);
+        Assert.False(Named(phone, "Nearest").IsEffectivelyVisible);
+    }
+
+    [AvaloniaFact]
+    public void A_tapped_einsatzstelle_lists_the_nearest_hydranten_with_their_b_schlaeuche()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+
+        vm.TapCommand.Execute(FictionalRegionPack.Musterstrasse1);
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "Nearest").IsEffectivelyVisible);
+        vm.NaechsteHydrantenCommand.Execute(null);
+        PhoneRender.Settle();
+
+        Assert.False(Named(phone, "StatusBanner").IsVisible);
+        Assert.Equal(1, Named(phone, "EinsatzstellePin").GetVisualDescendants().OfType<TextBlock>().Count(t => t.Text == "ESt"));
+        var rows = VisibleTexts(Named(phone, "NearestRows"));
+        Assert.Equal(
+            ["Unterflurhydrant", "56 m Luftlinie · 3 B-Schläuche", "Überflurhydrant", "93 m Luftlinie · 5 B-Schläuche", "Unterflurhydrant", "167 m Luftlinie · 9 B-Schläuche"],
+            rows);
+
+        phone.Capture("12-hydrantenkarte-naechste.png");
+
+        vm.WaehleCommand.Execute(vm.Nearest[0]);
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "HydrantCard").IsVisible);
+        Assert.Contains("DN 100", VisibleTexts(Named(phone, "HydrantCard")));
+
+        phone.Capture("13-hydrantenkarte-hydrant.png");
+    }
+
+    [AvaloniaFact]
+    public async Task Einstellungen_list_the_kartenpakete_and_fetch_the_offer_only_on_request()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Home.OpenSettingsCommand.Execute(null);
+        PhoneRender.Settle();
+
+        Assert.Equal("1 installiert", ((TextBlock)Named(phone, "MapPacksSummary")).Text);
+        Assert.Equal(["Landkreis Fürstenfeldbruck"], VisibleTexts(Named(phone, "MapPackRows")).Take(1));
+
+        var settings = Assert.IsType<SettingsViewModel>(phone.Shell.Current);
+        Assert.NotNull(settings.Maps);
+        await settings.Maps.LoadCatalogCommand.ExecuteAsync(null);
+        PhoneRender.Settle();
+
+        var rows = VisibleTexts(Named(phone, "MapPackRows"));
+        Assert.Contains("Landkreis Musterkreis", rows);
+        Assert.Contains("HERUNTERLADEN", rows);
     }
 }

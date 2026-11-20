@@ -83,4 +83,22 @@ public class SettingsViewModelTests
 
         Assert.Equal(0, _icons.Writes);
     }
+
+    [Fact]
+    public void Without_a_map_library_there_is_no_kartenpakete_section() =>
+        Assert.Null(Settings().Maps);
+
+    [Fact]
+    public void With_a_map_library_the_kartenpakete_list_the_installed_packs_and_fetch_nothing()
+    {
+        var library = new FakeRegionPackLibrary { CatalogGate = new TaskCompletionSource() };
+        library.Preinstall(FakeRegionPackLibrary.Pack("ffb", "Landkreis Fürstenfeldbruck"));
+        var settings = new SettingsViewModel([new TestModule("stoppuhr", "Stoppuhr")], _icons, library);
+
+        settings.Refresh();
+
+        var maps = Assert.IsType<MapPacksSection>(settings.Maps);
+        Assert.Equal("ffb", Assert.Single(maps.Packs).Slug);
+        Assert.False(maps.IsCatalogLoading);
+    }
 }

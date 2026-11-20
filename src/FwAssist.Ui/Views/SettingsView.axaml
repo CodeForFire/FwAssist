@@ -24,6 +24,65 @@
           </DataTemplate>
         </ItemsControl.ItemTemplate>
       </ItemsControl>
+
+      <!-- The Kartenpakete: on this device, and on offer once the user asks for the list. -->
+      <Panel IsVisible="{Binding Maps, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel x:Name="MapPacks" Spacing="12" Margin="0,12,0,0" DataContext="{Binding Maps}"
+                    x:DataType="vm:MapPacksSection">
+          <TextBlock Classes="overline" Text="KARTENPAKETE" />
+          <TextBlock Classes="secondary" TextWrapping="Wrap"
+                     Text="Für die Hydrantenkarte. Ein Paket je Landkreis, etwa 100 MB – am besten im WLAN laden. Bisher nur Bayern." />
+          <TextBlock x:Name="MapPacksSummary" Text="{Binding Summary}" />
+          <Button x:Name="LoadCatalog" HorizontalAlignment="Stretch" Content="LISTE LADEN"
+                  Command="{Binding LoadCatalogCommand}" />
+          <TextBlock x:Name="MapPacksStatus" Classes="secondary" TextWrapping="Wrap" Text="{Binding Status}"
+                     IsVisible="{Binding Status, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+          <Border x:Name="ConfirmRemove" BorderBrush="{StaticResource BorderStrongBrush}" BorderThickness="1" Padding="12"
+                  IsVisible="{Binding Removing, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Spacing="8">
+              <TextBlock TextWrapping="Wrap" Text="{Binding Removing.Name, StringFormat='„{0}“ vom Gerät löschen?'}" />
+              <Grid ColumnDefinitions="*,12,*">
+                <Button Grid.Column="0" Classes="signal" HorizontalAlignment="Stretch" Content="WIRKLICH LÖSCHEN"
+                        Command="{Binding ConfirmRemoveCommand}" />
+                <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="BEHALTEN"
+                        Command="{Binding CancelRemoveCommand}" />
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <ItemsControl x:Name="MapPackRows" ItemsSource="{Binding Packs}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:MapPackRow">
+                <Border BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock Classes="secondary" Text="{Binding Detail}" IsVisible="{Binding ShowsDetail}" TextWrapping="Wrap" />
+                    <TextBlock Classes="secondary" Text="{Binding UpdateReason}" TextWrapping="Wrap"
+                               IsVisible="{Binding UpdateReason, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                    <StackPanel Spacing="6" IsVisible="{Binding IsDownloading}">
+                      <ProgressBar Minimum="0" Maximum="1" Value="{Binding Progress}" AutomationProperties.Name="{Binding ProgressText}" />
+                      <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Content="ABBRECHEN"
+                                Command="{Binding $parent[ItemsControl].((vm:MapPacksSection)DataContext).CancelInstallCommand}" />
+                      </Grid>
+                    </StackPanel>
+                    <Grid ColumnDefinitions="*,12,*">
+                      <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="{Binding ActionLabel}" IsVisible="{Binding ShowsAction}"
+                              Command="{Binding $parent[ItemsControl].((vm:MapPacksSection)DataContext).InstallCommand}"
+                              CommandParameter="{Binding}" />
+                      <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="LÖSCHEN" IsVisible="{Binding ShowsRemove}"
+                              Command="{Binding $parent[ItemsControl].((vm:MapPacksSection)DataContext).RemoveCommand}"
+                              CommandParameter="{Binding}" />
+                    </Grid>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Panel>
     </StackPanel>
   </ScrollViewer>
 </UserControl>

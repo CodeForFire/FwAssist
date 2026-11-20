@@ -81,6 +81,8 @@ public sealed class RegionPackLibrary : IRegionPackLibrary
         _catalogUrl = catalogUrl ?? DefaultCatalogUrl;
     }
 
+    public event EventHandler? InstalledChanged;
+
     public async Task<IReadOnlyList<RegionPackInfo>> GetCatalogAsync(CancellationToken cancellationToken = default)
     {
         using var buffer = new MemoryStream();
@@ -179,6 +181,7 @@ public sealed class RegionPackLibrary : IRegionPackLibrary
             Directory.Move(staging, folder);
             DeleteDirectory(previous);
             progress?.Report(1);
+            InstalledChanged?.Invoke(this, EventArgs.Empty);
             return new InstalledRegionPack(pack, folder);
         }
         catch (Exception e) when (e is IOException or UnauthorizedAccessException)
@@ -237,6 +240,8 @@ public sealed class RegionPackLibrary : IRegionPackLibrary
         {
             throw new RegionPackException($"„{pack.Info.Name}“ konnte nicht gelöscht werden. Wird die Karte gerade angezeigt?", e);
         }
+
+        InstalledChanged?.Invoke(this, EventArgs.Empty);
     }
 
     // The slug was checked when the catalogue was read, but a pack can reach here from a pack.json
