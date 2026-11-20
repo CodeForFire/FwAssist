@@ -77,7 +77,6 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
     private LocationAccess? _access;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(ShowsArrow))]
     [NotifyPropertyChangedFor(nameof(Status))]
     private bool _hasCompass = true;
 
@@ -94,9 +93,13 @@ public sealed partial class RichtungspfeilViewModel : ObservableObject
     /// <summary>How far the arrow turns clockwise from the top of the screen.</summary>
     public double ArrowAngle => Bearing is { } bearing && Heading is { } heading ? Peilung.Normalize(bearing - heading) : 0;
 
-    /// <summary>The arrow is drawn: there is a fresh fix and a heading, and the hydrant is not reached yet.</summary>
-    public bool ShowsArrow => Bearing is not null && HasCompass && Heading is not null && !IsLost && !IsArrived;
+    /// <summary>
+    /// The arrow is drawn: there is a fresh fix and a heading, and the hydrant is not reached yet.
+    /// A heading only ever comes from a compass that started, so it also means there is one.
+    /// </summary>
+    public bool ShowsArrow => Bearing is not null && Heading is not null && !IsLost && !IsArrived;
 
+    // Stryker disable once Equality : exactly 10.000 m is not a distance a GPS fix lands on.
     public bool IsArrived => Metres <= AngekommenMetres;
 
     /// <summary>The last fix is older than <see cref="VerlorenNach"/>; checked whenever a reading arrives.</summary>

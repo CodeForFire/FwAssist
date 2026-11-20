@@ -71,6 +71,20 @@ public class RichtungspfeilViewModelTests
     }
 
     [Fact]
+    public async Task The_arrow_needs_both_a_fix_and_a_heading()
+    {
+        var pfeil = await Running();
+
+        _compass.Turn(90);
+        Assert.False(pfeil.ShowsArrow);
+
+        var other = await Running();
+        _location.Move(Phone, _time.GetUtcNow());
+        Assert.Null(other.Heading);
+        Assert.False(other.ShowsArrow);
+    }
+
+    [Fact]
     public async Task Within_ten_metres_the_hydrant_is_reached_and_the_arrow_gives_way()
     {
         var pfeil = await Running();
@@ -102,6 +116,7 @@ public class RichtungspfeilViewModelTests
         Assert.True(pfeil.IsLost);
         Assert.False(pfeil.ShowsArrow);
         Assert.Equal(RichtungspfeilViewModel.VerlorenText, pfeil.Status);
+        Assert.Contains(nameof(RichtungspfeilViewModel.IsLost), changed);
         Assert.Contains(nameof(RichtungspfeilViewModel.Status), changed);
         Assert.Contains(nameof(RichtungspfeilViewModel.ShowsArrow), changed);
     }
@@ -141,6 +156,7 @@ public class RichtungspfeilViewModelTests
         _compass.Turn(90);
 
         Assert.False(pfeil.HasCompass);
+        Assert.Null(pfeil.Heading);
         Assert.False(pfeil.ShowsArrow);
         Assert.Equal("Richtung N (0°)", pfeil.DirectionText);
         Assert.Equal(RichtungspfeilViewModel.OhneKompassText, pfeil.Status);
@@ -190,6 +206,8 @@ public class RichtungspfeilViewModelTests
         Assert.False(_location.IsRunning);
         Assert.False(_compass.IsRunning);
         Assert.False(pfeil.IsRunning);
+        _location.Move(Phone, _time.GetUtcNow());
+        Assert.Null(pfeil.Fix);
     }
 
     [Fact]
