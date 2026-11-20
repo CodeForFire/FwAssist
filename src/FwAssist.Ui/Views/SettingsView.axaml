@@ -25,6 +25,37 @@
         </ItemsControl.ItemTemplate>
       </ItemsControl>
 
+      <!-- The order of the helpers on the overview: arrows, not drag and drop, so it works with gloves. -->
+      <Panel IsVisible="{Binding Order, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel x:Name="HelperOrder" Spacing="12" Margin="0,12,0,0" DataContext="{Binding Order}"
+                    x:DataType="vm:HelperOrderSection">
+          <TextBlock Classes="overline" Text="REIHENFOLGE IN DER ÜBERSICHT" TextWrapping="Wrap" />
+          <TextBlock Classes="secondary" TextWrapping="Wrap"
+                     Text="Mit den Pfeilen nach oben oder unten schieben." />
+          <ItemsControl x:Name="HelperOrderRows" ItemsSource="{Binding Rows}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:HelperOrderRow">
+                <Border BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,0,1" Padding="0,4">
+                  <Grid ColumnDefinitions="*,Auto,8,Auto" MinHeight="{StaticResource ControlHeight}">
+                    <TextBlock Grid.Column="0" Text="{Binding Title}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Button Grid.Column="1" Classes="icon-btn" Command="{Binding MoveUpCommand}"
+                            AutomationProperties.Name="{Binding MoveUpName}">
+                      <PathIcon Data="M12,7 L19,14 L17.6,15.4 L12,9.8 L6.4,15.4 L5,14 Z" />
+                    </Button>
+                    <Button Grid.Column="3" Classes="icon-btn" Command="{Binding MoveDownCommand}"
+                            AutomationProperties.Name="{Binding MoveDownName}">
+                      <PathIcon Data="M12,17 L5,10 L6.4,8.6 L12,14.2 L17.6,8.6 L19,10 Z" />
+                    </Button>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button x:Name="ResetOrder" HorizontalAlignment="Stretch" Content="REIHENFOLGE ZURÜCKSETZEN"
+                  Command="{Binding ResetCommand}" />
+        </StackPanel>
+      </Panel>
+
       <!-- The Kartenpakete: on this device, and on offer once the user asks for the list. -->
       <Panel IsVisible="{Binding Maps, Converter={x:Static ObjectConverters.IsNotNull}}">
         <StackPanel x:Name="MapPacks" Spacing="12" Margin="0,12,0,0" DataContext="{Binding Maps}"

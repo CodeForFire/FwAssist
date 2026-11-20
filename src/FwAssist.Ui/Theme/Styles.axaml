@@ -161,6 +161,11 @@
     <Setter Property="Background" Value="#1C2531" />
     <Setter Property="BorderBrush" Value="Transparent" />
   </Style>
+  <!-- A disabled icon button only fades (Button:disabled); the theme's grey box would read as pressed. -->
+  <Style Selector="Button.icon-btn:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+  </Style>
   <Style Selector="Button.icon-btn PathIcon">
     <Setter Property="Width" Value="20" />
     <Setter Property="Height" Value="20" />

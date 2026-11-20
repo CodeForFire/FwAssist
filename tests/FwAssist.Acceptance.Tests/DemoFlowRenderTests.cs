@@ -120,6 +120,26 @@ public class DemoFlowRenderTests
     }
 
     [AvaloniaFact]
+    public void The_up_arrow_in_einstellungen_moves_a_helper_up_on_the_overview()
+    {
+        var phone = new PhoneRender();
+        var second = CompositionRoot.Modules[1].Title;
+        phone.Shell.Home.OpenSettingsCommand.Execute(null);
+        PhoneRender.Settle();
+        var up = phone.Window.GetVisualDescendants().OfType<Button>()
+            .Single(b => AutomationProperties.GetName(b) == second + " nach oben");
+
+        Assert.True(up.IsEffectivelyVisible);
+        Assert.True(up.IsEffectivelyEnabled);
+        up.Command?.Execute(up.CommandParameter);
+        phone.Shell.GoHome();
+        PhoneRender.Settle();
+
+        var tiles = Named(phone, "Tiles").GetVisualDescendants().OfType<Button>().Select(AutomationProperties.GetName).ToList();
+        Assert.Equal([second, CompositionRoot.Modules[0].Title], tiles.Take(2));
+    }
+
+    [AvaloniaFact]
     public void The_funkalphabet_spells_what_is_typed_and_switches_to_the_din_table()
     {
         var phone = new PhoneRender();
