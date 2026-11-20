@@ -21,9 +21,12 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
-    <!-- Neither is required: without GPS the network position serves, without a compass the
-         arrow gives the Himmelsrichtung instead. Declared, so Google Play does not hide the app
-         from phones that lack them. -->
+    <!-- None is required: without GPS the network position serves, without a compass the arrow
+         gives the Himmelsrichtung instead, and without any location only the Richtungspfeil is
+         missing. The location permissions imply android.hardware.location and its .gps, so both are
+         declared here; otherwise Google Play hides the app from devices that lack them, such as
+         Wi-Fi-only tablets. ManifestFeatureTests holds the line. -->
+    <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
     <uses-feature android:name="android.hardware.sensor.compass" android:required="false" />
     <application android:label="FwAssist" android:icon="@drawable/ic_launcher"
