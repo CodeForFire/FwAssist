@@ -174,6 +174,25 @@ public class MapCanvasControlTests
     public void A_pinch_to_twice_the_size_is_one_zoom_level(double scale, int delta) =>
         Assert.Equal(delta, MapCanvasControl.PinchScaleToZoomDelta(scale));
 
+    // Avalonia reports a pinch's origin in the control's own pixels, halfway between the fingers (#68).
+    [AvaloniaTheory]
+    [InlineData(2.0, 14)]
+    [InlineData(0.5, 12)]
+    public void A_pinch_zooms_a_level_and_keeps_the_spot_between_the_fingers_in_place(double scale, int zoom)
+    {
+        var (_, control, viewport) = Show(new SolidTiles());
+        var fingers = new Point(300, 100);
+        var before = GeoUnder(control, viewport, fingers);
+
+        control.RaiseEvent(new PinchEventArgs(scale, fingers, 0, 0));
+        control.RaiseEvent(new PinchEndedEventArgs());
+
+        Assert.Equal(zoom, viewport.Zoom);
+        var after = GeoUnder(control, viewport, fingers);
+        Assert.Equal(before.Latitude, after.Latitude, precision: 5);
+        Assert.Equal(before.Longitude, after.Longitude, precision: 5);
+    }
+
     // Each pack's tiles are cut to its area, so the packs are simply drawn in order, the later on top.
     [AvaloniaFact]
     public void Several_packs_are_drawn_one_over_the_other_in_their_order()

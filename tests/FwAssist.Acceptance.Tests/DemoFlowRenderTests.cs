@@ -696,4 +696,28 @@ public class DemoFlowRenderTests
 
         phone.Capture("standort.png");
     }
+
+    // Tapped where they are drawn, so nothing laid over the map may catch the tap instead (#68).
+    [AvaloniaFact]
+    public void Tapping_plus_and_minus_zooms_the_map_in_and_out()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        var before = vm.Map.Zoom;
+
+        Tap(phone, Named(phone, "ZoomIn"));
+        Assert.Equal(before + 1, vm.Map.Zoom);
+
+        Tap(phone, Named(phone, "ZoomOut"));
+        Assert.Equal(before, vm.Map.Zoom);
+    }
+
+    private static void Tap(PhoneRender phone, Control control)
+    {
+        var middle = control.TranslatePoint(new Point(control.Bounds.Width / 2, control.Bounds.Height / 2), phone.Window)
+            ?? throw new InvalidOperationException($"{control.Name} is not in the window.");
+        phone.Window.MouseDown(middle, MouseButton.Left);
+        phone.Window.MouseUp(middle, MouseButton.Left);
+        PhoneRender.Settle();
+    }
 }

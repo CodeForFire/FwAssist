@@ -379,8 +379,8 @@ public sealed class MapCanvasControl : Control
             _pinchStartAngle = e.Angle;
         }
 
-        var origin = new Point(e.ScaleOrigin.X * Bounds.Width, e.ScaleOrigin.Y * Bounds.Height);
-        ZoomAt(origin, _pinchStartZoom.Value + PinchScaleToZoomDelta(e.Scale));
+        // Avalonia gives the origin in this control's pixels, halfway between the fingers.
+        ZoomAt(e.ScaleOrigin, _pinchStartZoom.Value + PinchScaleToZoomDelta(e.Scale));
 
         // The map turns once the fingers have clearly twisted, and from there on follows them, without
         // a jump by the slop it took to get going.
