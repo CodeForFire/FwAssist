@@ -56,15 +56,12 @@ public sealed partial class HelperOrderSection : ObservableObject
         }
 
         var byId = modules.ToDictionary(m => m.Id, StringComparer.Ordinal);
-        var arranged = new List<IHelperModule>(modules.Count);
-        foreach (var id in stored.Split(','))
-        {
-            if (byId.Remove(id, out var module))
-            {
-                arranged.Add(module);
-            }
-        }
 
+        // Each id takes its helper out of byId, so a repeated id finds nothing the second time.
+        var arranged = stored.Split(',')
+            .Select(id => byId.Remove(id, out var module) ? module : null)
+            .OfType<IHelperModule>()
+            .ToList();
         arranged.AddRange(modules.Where(m => byId.ContainsKey(m.Id)));
         return arranged;
     }

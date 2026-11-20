@@ -36,14 +36,10 @@ public sealed partial class HomeViewModel : ObservableObject
     {
         ArgumentNullException.ThrowIfNull(ids);
         var place = 0;
-        foreach (var id in ids)
-        {
-            var from = IndexOf(id);
-            if (from < 0)
-            {
-                continue;
-            }
 
+        // Lazy, so each id is looked up after the moves before it, as the tiles stand then.
+        foreach (var from in ids.Select(IndexOf).Where(from => from >= 0))
+        {
             if (from != place)
             {
                 _tiles.Move(from, place);
