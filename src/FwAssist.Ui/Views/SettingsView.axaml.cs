@@ -17,6 +17,10 @@ public partial class SettingsView : UserControl
     private double _startY;
     private double _rowHeight;
 
+    // The finger (or mouse) that picked the row up. A second finger touching another row must
+    // neither move nor drop it: every pointer event of another pointer is ignored.
+    private int? _pointerId;
+
     public SettingsView()
     {
         InitializeComponent();
@@ -25,7 +29,13 @@ public partial class SettingsView : UserControl
         HelperOrderRows.AddHandler(PointerPressedEvent, OnOrderPressed, RoutingStrategies.Tunnel);
         HelperOrderRows.PointerMoved += OnOrderMoved;
         HelperOrderRows.PointerReleased += OnOrderReleased;
-        HelperOrderRows.PointerCaptureLost += (_, _) => EndDrag();
+        HelperOrderRows.PointerCaptureLost += (_, e) =>
+        {
+            if (IsDragPointer(e.Pointer))
+            {
+                EndDrag();
+            }
+        };
     }
 
     private void OnOrderPressed(object? sender, PointerPressedEventArgs e)
@@ -43,6 +53,12 @@ public partial class SettingsView : UserControl
         }
 
         _from = _to = index;
+        _pointerId = e.Pointer.Id;
+        if (HelperOrderRows.DataContext is HelperOrderSection order)
+        {
+            order.IsDragging = true;
+        }
+
         _startY = e.GetPosition(HelperOrderRows).Y;
         _rowHeight = container.Bounds.Height;
         container.ZIndex = 1;
@@ -54,7 +70,7 @@ public partial class SettingsView : UserControl
 
     private void OnOrderMoved(object? sender, PointerEventArgs e)
     {
-        if (_from < 0)
+        if (_from < 0 || !IsDragPointer(e.Pointer))
         {
             return;
         }
@@ -83,7 +99,7 @@ public partial class SettingsView : UserControl
 
     private void OnOrderReleased(object? sender, PointerReleasedEventArgs e)
     {
-        if (_from < 0)
+        if (_from < 0 || !IsDragPointer(e.Pointer))
         {
             return;
         }
@@ -107,6 +123,12 @@ public partial class SettingsView : UserControl
         }
 
         _from = _to = -1;
+        _pointerId = null;
+        if (HelperOrderRows.DataContext is HelperOrderSection order)
+        {
+            order.IsDragging = false;
+        }
+
         for (var i = 0; i < HelperOrderRows.ItemCount; i++)
         {
             if (HelperOrderRows.ContainerFromIndex(i) is { } container)
@@ -117,6 +139,8 @@ public partial class SettingsView : UserControl
             }
         }
     }
+
+    private bool IsDragPointer(IPointer pointer) => pointer.Id == _pointerId;
 
     private static bool IsOnHandle(Visual source) =>
         source.GetSelfAndVisualAncestors().OfType<Border>().Any(b => b.Classes.Contains("drag-handle"));

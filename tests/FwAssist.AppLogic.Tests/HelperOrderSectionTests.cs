@@ -86,6 +86,26 @@ public class HelperOrderSectionTests
     }
 
     [Fact]
+    public void While_a_row_is_dragged_reset_is_neither_offered_nor_carried_out()
+    {
+        var section = Section();
+        section.Move(2, 0);
+        var raised = 0;
+        section.ResetCommand.CanExecuteChanged += (_, _) => raised++;
+
+        section.IsDragging = true;
+        Assert.False(section.ResetCommand.CanExecute(null));
+        section.ResetCommand.Execute(null);
+
+        Assert.Equal(["dekon", "stoppuhr", "funk"], section.Ids);
+        Assert.Equal("dekon,stoppuhr,funk", _settings.Get(HelperOrderSection.SettingsKey));
+        Assert.True(raised > 0);
+
+        section.IsDragging = false;
+        Assert.True(section.ResetCommand.CanExecute(null));
+    }
+
+    [Fact]
     public void A_helper_new_in_an_update_goes_at_the_end() =>
         Assert.Equal(["dekon", "stoppuhr", "funk"], Ids(HelperOrderSection.Arrange(_modules, "dekon,stoppuhr")));
 

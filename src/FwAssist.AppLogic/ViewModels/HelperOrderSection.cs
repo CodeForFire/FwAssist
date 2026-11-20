@@ -40,6 +40,14 @@ public sealed partial class HelperOrderSection : ObservableObject
 
     public ReadOnlyObservableCollection<HelperOrderRow> Rows { get; }
 
+    /// <summary>
+    /// A row is being dragged. The drag remembers rows by their places, so a reset in the middle of
+    /// it would make the drop move another helper: reset waits until the finger lets go.
+    /// </summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(ResetCommand))]
+    private bool _isDragging;
+
     /// <summary>The helpers' ids, in the order the user chose.</summary>
     public IReadOnlyList<string> Ids => _rows.Select(r => r.Id).ToList();
 
@@ -66,10 +74,17 @@ public sealed partial class HelperOrderSection : ObservableObject
         return arranged;
     }
 
+    private bool CanReset => !IsDragging;
+
     /// <summary>Back to the order the app ships with. Stores nothing, so a later new helper keeps its own place.</summary>
-    [RelayCommand]
+    [RelayCommand(CanExecute = nameof(CanReset))]
     private void Reset()
     {
+        if (IsDragging)
+        {
+            return;
+        }
+
         for (var i = 0; i < _defaults.Count; i++)
         {
             var from = IndexOf(_defaults[i].Id);
