@@ -197,4 +197,23 @@ public class ShellViewModelTests
         Assert.True(shell.HandleSystemBack());
         Assert.True(shell.IsHome);
     }
+
+    [Fact]
+    public void A_helper_page_hears_when_the_user_leaves_it_and_not_when_it_is_opened_again()
+    {
+        var shell = Shell();
+        shell.Open("stoppuhr");
+        var page = Assert.IsType<TestModule.Page>(shell.Current);
+        Assert.Equal(0, page.Left);
+
+        shell.Open("stoppuhr");
+        Assert.Equal(0, page.Left);
+
+        shell.GoHome();
+        Assert.Equal(1, page.Left);
+
+        shell.Open("stoppuhr");
+        shell.Open("other");
+        Assert.Equal(2, page.Left);
+    }
 }

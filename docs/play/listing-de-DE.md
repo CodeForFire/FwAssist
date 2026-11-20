@@ -39,13 +39,13 @@ DIE HELFER
 • Schaummittel — Schaum aus dem Vorrat und Bedarf für einen Raum berechnen
 • RTH-Landeplatz — Vorgaben und Ablauf für den Landeplatz, bei Tag und bei Nacht
 • Dekon-Platz — Sofortmaßnahmen, Aufbau und Technik für die Dekon-Stufen I bis III
-• Hydrantenkarte — Hydranten an der Einsatzstelle auf einer Offline-Karte, die nächsten mit Entfernung und B-Schläuchen
+• Hydrantenkarte — Hydranten an der Einsatzstelle auf einer Offline-Karte, die nächsten mit Entfernung und B-Schläuchen, und ein Richtungspfeil zum gewählten Hydranten
 
 Weitere Helfer folgen. Ideen dafür sammeln wir offen auf GitHub.
 
 DATENSCHUTZ
 
-Kein Konto, keine Anmeldung, keine Cloud, kein Server. Keine Telemetrie, keine Absturzberichte, keine Werbe- oder Analysebibliotheken. Die einzige Berechtigung ist der Internetzugriff: Er dient nur dazu, auf Wunsch Kartenpakete für die Hydrantenkarte zu laden. Dabei wird nichts über dich oder einen Einsatz gesendet, und die Karte funktioniert danach offline.
+Kein Konto, keine Anmeldung, keine Cloud, kein Server. Keine Telemetrie, keine Absturzberichte, keine Werbe- oder Analysebibliotheken. Zwei Berechtigungen: Der Internetzugriff dient nur dazu, auf Wunsch Kartenpakete für die Hydrantenkarte zu laden; dabei wird nichts über dich oder einen Einsatz gesendet, und die Karte funktioniert danach offline. Den Standort fragt die App erst, wenn du den Richtungspfeil zum ersten Mal öffnest, und nutzt ihn nur, solange er offen ist; er wird weder gespeichert noch gesendet.
 
 Der Hersteller erhält keinerlei Daten — CodeForFire betreibt keinen Dienst, an den etwas fließen könnte.
 
@@ -72,7 +72,7 @@ Quelltext (MIT): https://github.com/CodeForFire/FwAssist
 ```
 Die App benötigt kein Konto und keine Anmeldung. Sie startet auf einer Übersicht der Helfer; jeder lässt sich mit einem Tipp öffnen und sofort benutzen.
 
-Ins Internet geht die App nur, wenn unter "Einstellungen" → "Kartenpakete" die Liste geladen oder ein Kartenpaket heruntergeladen wird (von github.com, ohne Anmeldung). Danach zeigt der Helfer "Hydrantenkarte" die Karte offline; ein Tipp auf die Karte setzt die Einsatzstelle, "NÄCHSTE HYDRANTEN" listet die nächsten Hydranten.
+Ins Internet geht die App nur, wenn unter "Einstellungen" → "Kartenpakete" die Liste geladen oder ein Kartenpaket heruntergeladen wird (von github.com, ohne Anmeldung). Danach zeigt der Helfer "Hydrantenkarte" die Karte offline; ein Tipp auf die Karte setzt die Einsatzstelle, "NÄCHSTE HYDRANTEN" listet die nächsten Hydranten. Nach Auswahl eines Hydranten öffnet "PFEIL ZUM HYDRANTEN" den Richtungspfeil; erst dann fragt die App nach dem Standort.
 
 Unter "Einstellungen" lässt sich für jeden Helfer ein eigenes Symbol auf dem Startbildschirm ein- und ausschalten.
 

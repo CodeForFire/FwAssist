@@ -529,4 +529,50 @@ public class DemoFlowRenderTests
         Assert.Contains("Landkreis Musterkreis", rows);
         Assert.Contains("HERUNTERLADEN", rows);
     }
+
+    [AvaloniaFact]
+    public async Task The_richtungspfeil_points_from_the_phone_to_the_chosen_hydrant()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        vm.TapCommand.Execute(FictionalRegionPack.Musterstrasse1);
+        vm.NaechsteHydrantenCommand.Execute(null);
+        vm.WaehleCommand.Execute(vm.Nearest[1]);
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "PfeilStarten").IsEffectivelyVisible);
+
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+        phone.Location.Move(FictionalRegionPack.Musterstrasse1, phone.Time.GetUtcNow(), accuracy: 6);
+        phone.Compass.Turn(30);
+        PhoneRender.Settle();
+
+        Assert.True(Named(phone, "Arrow").IsEffectivelyVisible);
+        Assert.Equal("93 m", ((TextBlock)Named(phone, "Distance")).Text);
+        Assert.Equal("Richtung SO (119°)", ((TextBlock)Named(phone, "Direction")).Text);
+        Assert.Equal("Richtung SO (119°)", AutomationProperties.GetName(Named(phone, "Arrow")));
+
+        phone.Capture("14-hydrantenkarte-pfeil.png");
+
+        ((Button)Named(phone, "PfeilBeenden")).Command?.Execute(null);
+        PhoneRender.Settle();
+        Assert.False(phone.Location.IsRunning);
+        Assert.False(Named(phone, "Richtungspfeil").IsEffectivelyVisible);
+    }
+
+    [AvaloniaFact]
+    public async Task Leaving_the_hydrantenkarte_switches_the_gps_off()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        vm.TapCommand.Execute(FictionalRegionPack.Musterstrasse1);
+        vm.NaechsteHydrantenCommand.Execute(null);
+        vm.WaehleCommand.Execute(vm.Nearest[0]);
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+        Assert.True(phone.Location.IsRunning);
+
+        phone.Shell.GoHome();
+
+        Assert.False(phone.Location.IsRunning);
+        Assert.False(phone.Compass.IsRunning);
+    }
 }

@@ -1,7 +1,9 @@
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using FwAssist.AppLogic.Helpers;
 using FwAssist.AppLogic.Services;
+using FwAssist.AppLogic.Services.Location;
 using FwAssist.AppLogic.Services.Map;
 using FwAssist.AppLogic.ViewModels;
 using FwAssist.Core.Map;
@@ -12,9 +14,10 @@ namespace FwAssist.Helpers.Hydranten;
 /// The Hydranten on the offline map, the Einsatzstelle the user pins on it, and the hydrants
 /// nearest to that pin with the B-Schläuche each takes. Every distance starts at the Einsatzstelle,
 /// never at the phone. The pin is kept in <see cref="IHelperSettings"/>, so it survives the process
-/// being killed during an Einsatz.
+/// being killed during an Einsatz. The one exception is the <see cref="RichtungspfeilViewModel"/>,
+/// which guides from the phone's live position to the chosen hydrant.
 /// </summary>
-public sealed partial class HydrantenkarteViewModel : ObservableObject
+public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperPage
 {
     /// <summary>Where the Einsatzstelle is kept, as "lat,lon" in invariant culture; empty for none.</summary>
     public const string EinsatzstelleKey = HydrantenModule.HelperId + ".einsatzstelle";
@@ -33,15 +36,26 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject
 
     private readonly IRegionPackLibrary? _maps;
     private readonly IHelperSettings? _settings;
+    private readonly ILocationSource? _location;
+    private readonly ICompass? _compass;
+    private readonly TimeProvider _time;
     private IReadOnlyList<InstalledRegionPack> _packs = [];
 
     // Counts the loads, so a slow one that finishes after a newer one does not overwrite it.
     private int _generation;
 
-    public HydrantenkarteViewModel(IRegionPackLibrary? maps, IHelperSettings? settings = null)
+    public HydrantenkarteViewModel(
+        IRegionPackLibrary? maps,
+        IHelperSettings? settings = null,
+        ILocationSource? location = null,
+        ICompass? compass = null,
+        TimeProvider? time = null)
     {
         _maps = maps;
         _settings = settings;
+        _location = location;
+        _compass = compass;
+        _time = time ?? TimeProvider.System;
         _einsatzstelle = Rehydrate(settings?.Get(EinsatzstelleKey));
         _isPlacing = _einsatzstelle is null;
         if (maps is not null)
@@ -86,7 +100,14 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject
     /// <summary>The hydrant whose card is open; null for none.</summary>
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasSelected))]
+    [NotifyCanExecuteChangedFor(nameof(PfeilStartenCommand))]
     private WaterPoint? _selected;
+
+    /// <summary>The Richtungspfeil while it guides to a hydrant; null otherwise.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(HasPfeil))]
+    [NotifyCanExecuteChangedFor(nameof(PfeilStartenCommand))]
+    private RichtungspfeilViewModel? _pfeil;
 
     /// <summary>The hydrants nearest the Einsatzstelle, closest first; empty until asked for.</summary>
     [ObservableProperty]
@@ -107,6 +128,11 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject
     public IReadOnlyList<GeoPoint> EinsatzstelleMarks => Einsatzstelle is { } e ? [e] : [];
 
     public bool HasSelected => Selected is not null;
+
+    public bool HasPfeil => Pfeil is not null;
+
+    /// <summary>The platform can tell where the phone is, so the Richtungspfeil can be offered.</summary>
+    public bool CanGuide => _location is not null;
 
     public bool HasNearest => Nearest.Count > 0;
 
@@ -215,6 +241,33 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject
         Nearest = [];
         Map.ChangeViewCommand.Execute(new MapViewChange(row.Point.Position, Math.Max(Map.Zoom, CloseZoom)));
     }
+
+    private bool CanPfeilStarten => _location is not null && Selected is not null && Pfeil is null;
+
+    /// <summary>Opens the Richtungspfeil to the open hydrant; asks for the location permission the first time.</summary>
+    [RelayCommand(CanExecute = nameof(CanPfeilStarten))]
+    private async Task PfeilStarten()
+    {
+        if (_location is null || Selected is not { } target)
+        {
+            return;
+        }
+
+        var pfeil = new RichtungspfeilViewModel(target, _location, _compass, _time);
+        Pfeil = pfeil;
+        await pfeil.StartAsync();
+    }
+
+    /// <summary>Closes the Richtungspfeil and stops the GPS and the compass.</summary>
+    [RelayCommand]
+    private void PfeilBeenden()
+    {
+        Pfeil?.Stop();
+        Pfeil = null;
+    }
+
+    /// <summary>Leaving the page stops the GPS and the compass: they must not run on unseen.</summary>
+    public void Leave() => PfeilBeenden();
 
     [RelayCommand]
     private void ListeSchliessen() => Nearest = [];

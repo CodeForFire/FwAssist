@@ -21,8 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <!-- The handwritten Kartenpaket library the AppLogic tests use. -->
+    <!-- The handwritten Kartenpaket library the AppLogic tests use, and the shared clock. -->
     <Compile Include="..\FwAssist.AppLogic.Tests\FakeRegionPackLibrary.cs" Link="Shared\FakeRegionPackLibrary.cs" />
+    <Compile Include="..\Shared\FakeTimeProvider.cs" Link="Shared\FakeTimeProvider.cs" />
   </ItemGroup>
 
 </Project>

@@ -1,0 +1,1 @@
+The Hydrantenkarte gains a Richtungspfeil that points from the phone's live position to the chosen hydrant, turned by the compass and with the distance still to go, asking for the location permission only when it is first opened (#60).

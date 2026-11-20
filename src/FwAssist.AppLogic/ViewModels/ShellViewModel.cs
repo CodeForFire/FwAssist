@@ -61,6 +61,15 @@ public sealed partial class ShellViewModel : ObservableObject
 
     public bool IsHome => ReferenceEquals(Current, Home);
 
+    // A helper that runs something only while it is on screen hears when the user leaves it.
+    partial void OnCurrentChanged(ObservableObject? oldValue, ObservableObject newValue)
+    {
+        if (!ReferenceEquals(oldValue, newValue) && oldValue is IHelperPage page)
+        {
+            page.Leave();
+        }
+    }
+
     /// <summary>Opens a helper from its tile on the home screen.</summary>
     public void Open(string helperId)
     {
