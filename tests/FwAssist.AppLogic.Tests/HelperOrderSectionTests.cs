@@ -25,55 +25,48 @@ public class HelperOrderSectionTests
         Assert.Equal(["Stoppuhr", "Funkalphabet", "Dekon-Platz"], Section().Rows.Select(r => r.Title));
 
     [Fact]
-    public void Moving_a_helper_up_stores_the_new_order_and_tells_the_overview()
+    public void Dropping_the_last_helper_at_the_top_stores_the_new_order_and_tells_the_overview()
     {
         var section = Section();
 
-        section.Rows[2].MoveUpCommand.Execute(null);
+        section.Move(2, 0);
 
-        Assert.Equal(["stoppuhr", "dekon", "funk"], section.Ids);
-        Assert.Equal("stoppuhr,dekon,funk", _settings.Get(HelperOrderSection.SettingsKey));
-        Assert.Equal(["stoppuhr", "dekon", "funk"], Assert.Single(_heard));
+        Assert.Equal(["dekon", "stoppuhr", "funk"], section.Ids);
+        Assert.Equal("dekon,stoppuhr,funk", _settings.Get(HelperOrderSection.SettingsKey));
+        Assert.Equal(["dekon", "stoppuhr", "funk"], Assert.Single(_heard));
     }
 
     [Fact]
-    public void Moving_a_helper_down_swaps_it_with_the_next_one()
+    public void Dropping_the_first_helper_at_the_bottom_moves_the_others_up()
     {
         var section = Section();
 
-        section.Rows[0].MoveDownCommand.Execute(null);
+        section.Move(0, 2);
 
-        Assert.Equal(["funk", "stoppuhr", "dekon"], section.Ids);
+        Assert.Equal(["funk", "dekon", "stoppuhr"], section.Ids);
     }
 
-    [Fact]
-    public void The_first_helper_cannot_move_up_and_the_last_cannot_move_down()
+    [Theory]
+    [InlineData(1, 1)]
+    [InlineData(-1, 0)]
+    [InlineData(0, -1)]
+    [InlineData(3, 0)]
+    [InlineData(0, 3)]
+    public void A_drop_on_the_same_place_or_outside_the_list_changes_and_stores_nothing(int from, int to)
     {
         var section = Section();
 
-        Assert.False(section.Rows[0].MoveUpCommand.CanExecute(null));
-        Assert.True(section.Rows[0].MoveDownCommand.CanExecute(null));
-        Assert.True(section.Rows[2].MoveUpCommand.CanExecute(null));
-        Assert.False(section.Rows[2].MoveDownCommand.CanExecute(null));
-    }
+        section.Move(from, to);
 
-    [Fact]
-    public void A_helper_moved_to_the_top_can_no_longer_move_up_and_the_one_it_passed_can()
-    {
-        var section = Section();
-        var funk = section.Rows[1];
-        var stoppuhr = section.Rows[0];
-
-        funk.MoveUpCommand.Execute(null);
-
-        Assert.False(funk.MoveUpCommand.CanExecute(null));
-        Assert.True(stoppuhr.MoveUpCommand.CanExecute(null));
+        Assert.Equal(["stoppuhr", "funk", "dekon"], section.Ids);
+        Assert.Null(_settings.Get(HelperOrderSection.SettingsKey));
+        Assert.Empty(_heard);
     }
 
     [Fact]
     public void A_stored_order_comes_back_after_the_process_died()
     {
-        Section().Rows[2].MoveUpCommand.Execute(null);
+        Section().Move(2, 1);
 
         Assert.Equal(["stoppuhr", "dekon", "funk"], Section().Ids);
     }
@@ -82,15 +75,14 @@ public class HelperOrderSectionTests
     public void Reset_restores_the_shipped_order_and_stores_none()
     {
         var section = Section();
-        section.Rows[2].MoveUpCommand.Execute(null);
-        section.Rows[1].MoveUpCommand.Execute(null);
+        section.Move(2, 0);
+        section.Move(2, 1);
 
         section.ResetCommand.Execute(null);
 
         Assert.Equal(["stoppuhr", "funk", "dekon"], section.Ids);
         Assert.Equal(string.Empty, _settings.Get(HelperOrderSection.SettingsKey));
         Assert.Equal(["stoppuhr", "funk", "dekon"], _heard[^1]);
-        Assert.False(section.Rows[0].MoveUpCommand.CanExecute(null));
     }
 
     [Fact]
@@ -105,12 +97,32 @@ public class HelperOrderSectionTests
     public void A_stored_id_given_twice_counts_once() =>
         Assert.Equal(["dekon", "stoppuhr", "funk"], Ids(HelperOrderSection.Arrange(_modules, "dekon,dekon,stoppuhr")));
 
-    [Fact]
-    public void The_buttons_are_named_for_a_screen_reader()
-    {
-        var row = Section().Rows[0];
+    [Theory]
+    [InlineData(2, 0.0, 2)]
+    [InlineData(2, 29.0, 2)]
+    [InlineData(2, 30.0, 3)]
+    [InlineData(2, -30.0, 1)]
+    [InlineData(2, -31.0, 1)]
+    [InlineData(2, -90.0, 0)]
+    [InlineData(2, 119.0, 4)]
+    [InlineData(2, -600.0, 0)]
+    [InlineData(2, 600.0, 4)]
+    [InlineData(4, 1e12, 4)]
+    public void A_dragged_row_lands_one_place_per_row_height_passed_and_stays_in_the_list(int from, double offset, int expected) =>
+        Assert.Equal(expected, HelperOrderSection.DropPlace(from, offset, rowHeight: 60, count: 5));
 
-        Assert.Equal("Stoppuhr nach oben", row.MoveUpName);
-        Assert.Equal("Stoppuhr nach unten", row.MoveDownName);
-    }
+    [Theory]
+    [InlineData(0.0, 5)]
+    [InlineData(-1.0, 5)]
+    [InlineData(60.0, 0)]
+    public void A_row_of_no_height_or_an_empty_list_stays_put(double rowHeight, int count) =>
+        Assert.Equal(2, HelperOrderSection.DropPlace(2, 200, rowHeight, count));
+
+    [Fact]
+    public void A_lost_finger_position_stays_put() =>
+        Assert.Equal(2, HelperOrderSection.DropPlace(2, double.NaN, 60, 5));
+
+    [Fact]
+    public void The_handle_is_named_for_a_screen_reader() =>
+        Assert.Equal("Stoppuhr verschieben", Section().Rows[0].DragName);
 }

@@ -35,7 +35,7 @@ public class ShellViewModelTests
         var settings = Assert.IsType<SettingsViewModel>(shell.Current);
         Assert.NotNull(settings.Order);
 
-        settings.Order.Rows[1].MoveUpCommand.Execute(null);
+        settings.Order.Move(1, 0);
         shell.GoHome();
 
         Assert.Equal(["Anderes", "Stoppuhr"], shell.Home.Tiles.Select(t => t.Title));
@@ -55,7 +55,7 @@ public class ShellViewModelTests
         first.Home.OpenSettingsCommand.Execute(null);
         var order = Assert.IsType<SettingsViewModel>(first.Current).Order;
         Assert.NotNull(order);
-        order.Rows[0].MoveDownCommand.Execute(null);
+        order.Move(0, 1);
 
         var restarted = Started();
         restarted.Home.OpenSettingsCommand.Execute(null);

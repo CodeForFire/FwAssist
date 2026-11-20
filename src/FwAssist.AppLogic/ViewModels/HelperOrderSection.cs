@@ -34,9 +34,8 @@ public sealed partial class HelperOrderSection : ObservableObject
         _defaults = modules;
         _settings = settings;
         _changed = changed;
-        _rows = new(Arrange(modules, settings.Get(SettingsKey)).Select(m => new HelperOrderRow(m.Id, m.Title, this)));
+        _rows = new(Arrange(modules, settings.Get(SettingsKey)).Select(m => new HelperOrderRow(m.Id, m.Title)));
         Rows = new(_rows);
-        UpdateEnds();
     }
 
     public ReadOnlyObservableCollection<HelperOrderRow> Rows { get; }
@@ -87,11 +86,13 @@ public sealed partial class HelperOrderSection : ObservableObject
         Changed();
     }
 
-    internal void Move(HelperOrderRow row, int by)
+    /// <summary>
+    /// Moves the helper at <paramref name="from"/> to <paramref name="to"/>, where the user dropped
+    /// it. A place outside the list, or the same place, changes nothing.
+    /// </summary>
+    public void Move(int from, int to)
     {
-        var from = _rows.IndexOf(row);
-        var to = from + by;
-        if (from < 0 || to < 0 || to >= _rows.Count)
+        if (from == to || from < 0 || to < 0 || from >= _rows.Count || to >= _rows.Count)
         {
             return;
         }
@@ -101,11 +102,23 @@ public sealed partial class HelperOrderSection : ObservableObject
         Changed();
     }
 
-    private void Changed()
+    /// <summary>
+    /// Where a row picked up at <paramref name="from"/> lands after the finger moved it by
+    /// <paramref name="offset"/>: one place per row height passed, rounded to the nearest, never
+    /// outside the list of <paramref name="count"/> rows. A row of no height stays put.
+    /// </summary>
+    public static int DropPlace(int from, double offset, double rowHeight, int count)
     {
-        UpdateEnds();
-        _changed(Ids);
+        if (count <= 0 || rowHeight <= 0 || double.IsNaN(offset))
+        {
+            return from;
+        }
+
+        var places = Math.Round(Math.Clamp(offset / rowHeight, -count, count), MidpointRounding.AwayFromZero);
+        return Math.Clamp(from + (int)places, 0, count - 1);
     }
+
+    private void Changed() => _changed(Ids);
 
     private int IndexOf(string id)
     {
@@ -118,13 +131,5 @@ public sealed partial class HelperOrderSection : ObservableObject
         }
 
         return -1;
-    }
-
-    private void UpdateEnds()
-    {
-        for (var i = 0; i < _rows.Count; i++)
-        {
-            _rows[i].SetPlace(isFirst: i == 0, isLast: i == _rows.Count - 1);
-        }
     }
 }
