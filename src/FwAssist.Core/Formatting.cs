@@ -11,8 +11,14 @@ public static class Formatting
 {
     private static readonly CultureInfo De = CultureInfo.GetCultureInfo("de-DE");
 
+    /// <summary>Names the user reads in a list, in German order whatever the phone is set to: "Ä" beside "A".</summary>
+    public static StringComparer NameOrder { get; } = StringComparer.Create(De, ignoreCase: true);
+
     /// <summary>A whole number the way the user reads it (de-DE grouping).</summary>
     public static string Number(int value) => value.ToString("N0", De);
+
+    /// <summary>A whole number without grouping, "1600", as a map marker labels it.</summary>
+    public static string UngroupedNumber(int value) => value.ToString("0", De);
 
     /// <summary>A number the way the user reads it, with a fixed count of decimals: "1.234,5".</summary>
     public static string Number(decimal value, int decimals) =>
@@ -34,6 +40,9 @@ public static class Formatting
     }
 
     public static string Timestamp(DateTimeOffset t) => t.ToString("dd.MM.yyyy HH:mm", De);
+
+    /// <summary>A day alone, "27.10.2026".</summary>
+    public static string Date(DateTimeOffset t) => t.ToString("dd.MM.yyyy", De);
 
     /// <summary>Clock time alone, "14:05".</summary>
     public static string TimeOfDay(DateTimeOffset t) => t.ToString("HH:mm", De);
