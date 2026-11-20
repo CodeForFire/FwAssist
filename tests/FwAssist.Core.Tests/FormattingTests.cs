@@ -65,4 +65,18 @@ public class FormattingTests
         Assert.Equal("03.11.2026 14:05", Formatting.Timestamp(t));
         Assert.Equal("14:05", Formatting.TimeOfDay(t));
     }
+
+    [Fact]
+    public void Date_shows_the_day_alone_in_german_order() =>
+        Assert.Equal("27.10.2026", Formatting.Date(new DateTimeOffset(2026, 10, 27, 20, 15, 0, TimeSpan.Zero)));
+
+    [Fact]
+    public void UngroupedNumber_leaves_out_the_thousands_separator() =>
+        Assert.Equal("1600", Formatting.UngroupedNumber(1600));
+
+    [Fact]
+    public void NameOrder_sorts_an_umlaut_beside_its_letter_and_ignores_case() =>
+        Assert.Equal(
+            ["Aichach", "ärger", "Bad Tölz", "Zorneding"],
+            new[] { "Zorneding", "Bad Tölz", "ärger", "Aichach" }.Order(Formatting.NameOrder));
 }
