@@ -29,6 +29,15 @@ public static class WaterPointMarkers
     private const double DiscRing = 5.5;
     private const double DiscReach = 7.5;
 
+    // How thick the outline of the chosen water point is, and how far its arrow keeps above it.
+    private const double SelectedOutline = 3.5;
+    private const double PointerGap = 3;
+
+    // The arrow over the chosen water point, its tip at the origin: a shaft and a head, so it reads as
+    // an arrow pointing at the marker and not as a second pin like the Einsatzstelle's.
+    private static readonly Geometry PointerShape = Geometry.Parse("M0,0 L-15,-16 L-6,-16 L-6,-32 L6,-32 L6,-16 L15,-16 Z");
+    private static readonly IPen PointerHalo = new ImmutablePen(Brushes.White, 3, lineJoin: PenLineJoin.Round);
+
     private static readonly CultureInfo De = CultureInfo.GetCultureInfo("de-DE");
     private static readonly IImmutableBrush Ink = new ImmutableSolidColorBrush(Color.FromRgb(0x21, 0x21, 0x21));
     private static readonly IImmutableBrush UnitInk = new ImmutableSolidColorBrush(Color.FromRgb(0x5F, 0x6B, 0x78));
@@ -58,6 +67,9 @@ public static class WaterPointMarkers
 
     /// <summary>Außer Betrieb: the colour gone, whatever the class.</summary>
     public static IImmutableBrush OutOfServiceBrush { get; } = Solid(0x8A, 0x91, 0x99);
+
+    /// <summary>The arrow over the chosen water point: the app's signal red, on a day and a night map alike.</summary>
+    public static IImmutableBrush PointerBrush { get; } = Solid(0xFF, 0x3D, 0x2E);
 
     /// <summary>UH: a lid with its key hole.</summary>
     public static Geometry UnterflurhydrantGlyph { get; } = Geometry.Parse(
@@ -115,15 +127,22 @@ public static class WaterPointMarkers
     /// <summary>
     /// The markers of the <paramref name="points"/> inside the visible map, in the order they are
     /// drawn: weakest first, so a strong source lies on top, and the one whose card is open last.
-    /// None below <see cref="WaterPointLayer.MinZoom"/>.
+    /// Below <see cref="WaterPointLayer.MinZoom"/> only the one whose card is open.
     /// </summary>
     internal static List<Marker> LayOut(IReadOnlyList<WaterPoint> points, GeoPoint center, int zoom, Size size, WaterPoint? selected, double rotation)
     {
         var markers = new List<Marker>();
-        if (WaterPointLayer.LevelAt(zoom) is not { } level)
+        if (WaterPointLayer.LevelAt(zoom) is null)
         {
-            return markers;
+            if (selected is null)
+            {
+                return markers;
+            }
+
+            points = [selected];
         }
+
+        var level = WaterPointLayer.SelectedLevelAt(zoom);
 
         // Compared in degrees first: thousands of points, a few dozen of them on screen. On a
         // turned map the screen's corners are no longer north-west and south-east, so take all four.
@@ -149,13 +168,14 @@ public static class WaterPointMarkers
     }
 
     /// <summary>
-    /// Paints <paramref name="marker"/>; the one whose card is open is outlined in
-    /// <paramref name="selection"/>, the map style's, so it shows on a day and a night map alike.
+    /// Paints <paramref name="marker"/>; the one whose card is open is outlined thick in
+    /// <paramref name="selection"/>, the map style's, so it shows on a day and a night map alike,
+    /// and a red arrow above points down at it, so it is found at a glance by its shape as well.
     /// The marker itself keeps its white body on either: its numbers are read on white.
     /// </summary>
     internal static void Draw(DrawingContext context, Marker marker, IImmutableBrush selection)
     {
-        var selected = new ImmutablePen(selection, 2.5);
+        var selected = new ImmutablePen(selection, SelectedOutline);
         if (marker.Level == WaterPointDetailLevel.Punkt)
         {
             DrawDisc(context, marker, selected);
@@ -163,6 +183,15 @@ public static class WaterPointMarkers
         else
         {
             DrawFlag(context, marker, selected);
+        }
+
+        if (marker.IsSelected)
+        {
+            using (context.PushTransform(Matrix.CreateTranslation(marker.PointerTip.X, marker.PointerTip.Y)))
+            {
+                context.DrawGeometry(null, PointerHalo, PointerShape);
+                context.DrawGeometry(PointerBrush, null, PointerShape);
+            }
         }
     }
 
@@ -309,20 +338,30 @@ public static class WaterPointMarkers
         /// <summary>Where the text starts, right of the coloured field.</summary>
         public double TextLeft => Body.Left + FieldWidth + 5;
 
-        /// <summary>Everything the marker covers, with its contour and selection.</summary>
+        /// <summary>
+        /// Where the tip of the chosen marker's arrow is: a little above the disc's outline, or above
+        /// the flag's coloured field, which stands right over the mast.
+        /// </summary>
+        public Point PointerTip => HasText
+            ? new Point(Body.Left + (FieldWidth / 2), Body.Top - 1 - (SelectedOutline / 2) - PointerGap)
+            : new Point(At.X, At.Y - SelectedReach - PointerGap);
+
+        /// <summary>Everything the marker covers, with its contour, and for the chosen one its outline and arrow.</summary>
         public Rect Bounds
         {
             get
             {
-                if (!HasText)
-                {
-                    var reach = DiscReach + (IsSelected ? 3.5 : 0);
-                    return new Rect(At.X - reach, At.Y - reach, 2 * reach, 2 * reach);
-                }
-
-                return Body.Union(new Rect(At.X, Body.Bottom, WaterPointLayer.MastWidth, At.Y - Body.Bottom)).Inflate(Halo);
+                var bounds = HasText
+                    ? Body.Union(new Rect(At.X, Body.Bottom, WaterPointLayer.MastWidth, At.Y - Body.Bottom)).Inflate(Halo)
+                    : new Rect(At.X - Reach, At.Y - Reach, 2 * Reach, 2 * Reach);
+                return IsSelected ? bounds.Union(PointerShape.Bounds.Translate((Vector)PointerTip).Inflate(PointerHalo.Thickness / 2)) : bounds;
             }
         }
+
+        // How far the disc reaches from its point, with the chosen one's outline.
+        private static double SelectedReach => DiscReach + 2 + (SelectedOutline / 2);
+
+        private double Reach => IsSelected ? SelectedReach : DiscReach;
 
         public static Marker For(WaterPoint point, WaterPointDetailLevel level, Point at, bool isSelected)
         {

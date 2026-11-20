@@ -38,6 +38,13 @@ public static class WaterPointLayer
         _ => WaterPointDetailLevel.Voll,
     };
 
+    /// <summary>
+    /// How much of the water point whose card is open shows at <paramref name="zoom"/>: as much as
+    /// of any other, and further out than <see cref="MinZoom"/>, where the others are hidden, still
+    /// the disc, so zooming out never loses the one the crew has chosen.
+    /// </summary>
+    public static WaterPointDetailLevel SelectedLevelAt(int zoom) => LevelAt(zoom) ?? WaterPointDetailLevel.Punkt;
+
     /// <summary>The flag a marker is drawn as at <paramref name="level"/>; null for the disc.</summary>
     public static WaterPointFlag? FlagFor(WaterPointDetailLevel level) => level switch
     {
@@ -64,18 +71,24 @@ public static class WaterPointLayer
     /// <paramref name="zoom"/> turned clockwise by <paramref name="rotation"/> degrees: within
     /// <see cref="HitRadiusPixels"/> of the point itself, or on its flag, which stays upright on a
     /// turned map. Of points on the same spot, the one drawn on top, by <see cref="StackRank"/>.
-    /// Null when none is that close, or the map is too far out to show any.
+    /// Null when none is that close. Further out than <see cref="MinZoom"/> only
+    /// <paramref name="selected"/> is drawn, so only it can be tapped there.
     /// </summary>
     public static WaterPoint? At(IReadOnlyList<WaterPoint> points, GeoPoint tap, int zoom, double rotation = 0, WaterPoint? selected = null)
     {
         ArgumentNullException.ThrowIfNull(points);
         ArgumentNullException.ThrowIfNull(tap);
-        if (LevelAt(zoom) is not { } level)
+        if (LevelAt(zoom) is null)
         {
-            return null;
+            if (selected is null)
+            {
+                return null;
+            }
+
+            points = [selected];
         }
 
-        var flag = FlagFor(level);
+        var flag = FlagFor(SelectedLevelAt(zoom));
         var turn = rotation * Math.PI / 180;
         var (cos, sin) = (Math.Cos(turn), Math.Sin(turn));
         var (tapX, tapY) = WebMercator.ToWorldPixel(tap, zoom);

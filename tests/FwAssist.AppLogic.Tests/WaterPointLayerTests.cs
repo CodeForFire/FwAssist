@@ -89,6 +89,28 @@ public class WaterPointLayerTests
         Assert.Null(WaterPointLayer.At([hydrant], Marktplatz, WaterPointLayer.MinZoom - 1));
     }
 
+    // Further out the chosen one is still drawn, as a disc, so it can still be tapped there (#69).
+    [Fact]
+    public void Where_only_the_chosen_point_is_drawn_only_it_can_be_tapped()
+    {
+        var chosen = new WaterPoint(Marktplatz, WaterPointKind.Hydrant, "UH 100");
+        var other = new WaterPoint(Offset(Marktplatz, WaterPointLayer.MinZoom - 1, 40), WaterPointKind.Hydrant, "UH 80");
+        var zoom = WaterPointLayer.MinZoom - 1;
+
+        Assert.Same(chosen, WaterPointLayer.At([chosen, other], Offset(Marktplatz, zoom, 10), zoom, selected: chosen));
+        Assert.Null(WaterPointLayer.At([chosen, other], other.Position, zoom, selected: chosen));
+        Assert.Null(WaterPointLayer.At([chosen, other], Offset(Marktplatz, zoom, WaterPointLayer.HitRadiusPixels + 2), zoom, selected: chosen));
+    }
+
+    [Theory]
+    [InlineData(14, WaterPointDetailLevel.Punkt)]
+    [InlineData(8, WaterPointDetailLevel.Punkt)]
+    [InlineData(15, WaterPointDetailLevel.Punkt)]
+    [InlineData(16, WaterPointDetailLevel.Mittel)]
+    [InlineData(18, WaterPointDetailLevel.Voll)]
+    public void The_chosen_point_shows_as_any_other_and_further_out_still_as_a_disc(int zoom, WaterPointDetailLevel level) =>
+        Assert.Equal(level, WaterPointLayer.SelectedLevelAt(zoom));
+
     [Theory]
     [InlineData(14, null)]
     [InlineData(15, WaterPointDetailLevel.Punkt)]
