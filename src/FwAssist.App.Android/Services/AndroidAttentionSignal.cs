@@ -15,6 +15,10 @@ internal sealed class AndroidAttentionSignal : IAttentionSignal, IDisposable
 {
     private const long VibrationMilliseconds = 400;
 
+    // Java's ToneGenerator.MAX_VOLUME: the tone at full strength of the notification stream, whose
+    // own volume the user sets. .NET Android binds the constant only through a deprecated enum.
+    private const int ToneVolume = 100;
+
     private readonly Context _context;
 
     // Made on the first signal and kept for the process, like the shell that plays it.
@@ -36,7 +40,7 @@ internal sealed class AndroidAttentionSignal : IAttentionSignal, IDisposable
 
         if (ringer == RingerMode.Normal)
         {
-            _tone ??= new ToneGenerator(global::Android.Media.Stream.Notification, Volume.Max);
+            _tone ??= new ToneGenerator(global::Android.Media.Stream.Notification, ToneVolume);
             _tone.StartTone(Tone.PropBeep2);
         }
 
