@@ -45,7 +45,7 @@ Weitere Helfer folgen. Ideen dafür sammeln wir offen auf GitHub.
 
 DATENSCHUTZ
 
-Kein Konto, keine Anmeldung, keine Cloud, kein Server. Keine Telemetrie, keine Absturzberichte, keine Werbe- oder Analysebibliotheken. Zwei Berechtigungen: Der Internetzugriff dient nur dazu, auf Wunsch Kartenpakete für die Hydrantenkarte zu laden; dabei wird nichts über dich oder einen Einsatz gesendet, und die Karte funktioniert danach offline. Den Standort fragt die App erst, wenn du in der Hydrantenkarte den Richtungspfeil oder "Mein Standort" zum ersten Mal benutzt, und nutzt ihn nur, solange der Pfeil offen ist oder die Karte dich sucht; er wird weder gespeichert noch gesendet.
+Kein Konto, keine Anmeldung, keine Cloud, kein Server. Keine Telemetrie, keine Absturzberichte, keine Werbe- oder Analysebibliotheken. Drei Berechtigungen: Der Internetzugriff dient nur dazu, auf Wunsch Kartenpakete für die Hydrantenkarte zu laden; dabei wird nichts über dich oder einen Einsatz gesendet, und die Karte funktioniert danach offline. Den Standort fragt die App erst, wenn du in der Hydrantenkarte den Richtungspfeil oder "Mein Standort" zum ersten Mal benutzt, und nutzt ihn nur, solange der Pfeil offen ist oder die Karte dich sucht; er wird weder gespeichert noch gesendet. Vibrieren darf die App nur, um dir die Ankunft am Hydranten zu melden, zusammen mit einem kurzen Ton; beides folgt der Lautlos-Einstellung deines Handys.
 
 Der Hersteller erhält keinerlei Daten — CodeForFire betreibt keinen Dienst, an den etwas fließen könnte.
 
