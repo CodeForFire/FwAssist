@@ -52,6 +52,18 @@
       <Setter Property="FontSize" Value="22" />
       <Setter Property="Padding" Value="0" />
     </Style>
+    <Style Selector="Button.zoom PathIcon">
+      <Setter Property="Width" Value="22" />
+      <Setter Property="Height" Value="22" />
+    </Style>
+    <!-- Where MEIN STANDORT found the phone: a blue dot, never taken for the red ESt pin. -->
+    <Style Selector="Ellipse.standort-dot">
+      <Setter Property="Width" Value="18" />
+      <Setter Property="Height" Value="18" />
+      <Setter Property="Fill" Value="{StaticResource IncomingBrush}" />
+      <Setter Property="Stroke" Value="White" />
+      <Setter Property="StrokeThickness" Value="3" />
+    </Style>
   </UserControl.Styles>
 
   <!-- The map fills the page; what the user taps sits at the bottom, in thumb reach. -->
@@ -67,6 +79,25 @@
                             Rotation="{Binding Map.Rotation}"
                             ViewChangedCommand="{Binding Map.ChangeViewCommand}"
                             TappedCommand="{Binding TapCommand}" />
+
+      <!-- Beneath the ESt pin, so the pin stays readable where the two meet. -->
+      <ItemsControl x:Name="StandortDot" ItemsSource="{Binding StandortMarks}" IsHitTestVisible="False">
+        <ItemsControl.ItemsPanel>
+          <ItemsPanelTemplate x:DataType="vm:HydrantenkarteViewModel">
+            <map:MapMarkerPanel Center="{Binding Map.Center}" Zoom="{Binding Map.Zoom}" Rotation="{Binding Map.Rotation}" />
+          </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.Styles>
+          <Style Selector="ItemsControl#StandortDot > ContentPresenter" x:DataType="geo:GeoPoint">
+            <Setter Property="map:MapMarkerPanel.Position" Value="{Binding}" />
+          </Style>
+        </ItemsControl.Styles>
+        <ItemsControl.ItemTemplate>
+          <DataTemplate x:DataType="geo:GeoPoint">
+            <Ellipse Classes="standort-dot" />
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
 
       <ItemsControl x:Name="EinsatzstellePin" ItemsSource="{Binding EinsatzstelleMarks}" IsHitTestVisible="False">
         <ItemsControl.ItemsPanel>
@@ -95,6 +126,11 @@
       </Border>
 
       <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8,8,8,28" Spacing="8">
+        <!-- Drawn for this app: a ring with four ticks and a centre dot, filled even-odd. -->
+        <Button x:Name="Standort" Classes="zoom" Command="{Binding StandortZeigenCommand}"
+                IsVisible="{Binding CanGuide}" AutomationProperties.Name="Mein Standort">
+          <PathIcon Data="F0 M12,5 A7,7 0 1 0 12,19 A7,7 0 1 0 12,5 Z M12,7 A5,5 0 1 1 12,17 A5,5 0 1 1 12,7 Z M11,1 H13 V5 H11 Z M11,19 H13 V23 H11 Z M1,11 H5 V13 H1 Z M19,11 H23 V13 H19 Z M12,10 A2,2 0 1 0 12,14 A2,2 0 1 0 12,10 Z" />
+        </Button>
         <Button x:Name="ZoomIn" Classes="zoom" Content="+" Command="{Binding Map.ZoomInCommand}"
                 AutomationProperties.Name="Vergrößern" />
         <Button x:Name="ZoomOut" Classes="zoom" Content="−" Command="{Binding Map.ZoomOutCommand}"

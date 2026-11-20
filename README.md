@@ -48,9 +48,10 @@ Werbung. Die App fordert zwei Berechtigungen an:
 - **Internetzugriff**, nur wenn unter **Einstellungen** Kartenpakete für die
   Hydrantenkarte geladen werden. Dabei wird nichts über euch oder einen Einsatz
   gesendet; die Karte funktioniert danach ohne Netz.
-- **Standort**, erst wenn der Richtungspfeil der Hydrantenkarte zum ersten Mal
-  geöffnet wird, und nur solange er offen ist. Der Standort wird weder
-  gespeichert noch gesendet.
+- **Standort**, erst wenn in der Hydrantenkarte der Richtungspfeil oder
+  **Mein Standort** zum ersten Mal benutzt wird, und nur solange der Pfeil offen
+  ist oder die Karte den Standort sucht. Der Standort wird weder gespeichert
+  noch gesendet.
 
 ## Installation
 

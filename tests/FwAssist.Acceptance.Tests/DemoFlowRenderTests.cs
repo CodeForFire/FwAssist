@@ -575,4 +575,30 @@ public class DemoFlowRenderTests
         Assert.False(phone.Location.IsRunning);
         Assert.False(phone.Compass.IsRunning);
     }
+
+    [AvaloniaFact]
+    public async Task Mein_standort_sits_above_the_zoom_buttons_and_marks_the_phone_on_the_map()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        var standort = Named(phone, "Standort");
+        var zoomIn = Named(phone, "ZoomIn");
+
+        Assert.True(standort.IsEffectivelyVisible);
+        Assert.Equal("Mein Standort", AutomationProperties.GetName(standort));
+        var standortBox = standort.Bounds;
+        var zoomBox = zoomIn.Bounds;
+        Assert.True(standortBox.Bottom <= zoomBox.Top, "MEIN STANDORT sits above +.");
+        Assert.True(Math.Abs(standortBox.Left - zoomBox.Left) <= 0.5, "MEIN STANDORT shares the zoom buttons' column.");
+
+        await vm.StandortZeigenCommand.ExecuteAsync(null);
+        phone.Location.Move(FictionalRegionPack.Musterstrasse1, phone.Time.GetUtcNow());
+        PhoneRender.Settle();
+
+        Assert.Equal(FictionalRegionPack.Musterstrasse1, vm.Map.Center);
+        Assert.Single(Named(phone, "StandortDot").GetVisualDescendants().OfType<Avalonia.Controls.Shapes.Ellipse>());
+        Assert.False(phone.Location.IsRunning);
+
+        phone.Capture("standort.png");
+    }
 }

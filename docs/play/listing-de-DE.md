@@ -45,7 +45,7 @@ Weitere Helfer folgen. Ideen dafür sammeln wir offen auf GitHub.
 
 DATENSCHUTZ
 
-Kein Konto, keine Anmeldung, keine Cloud, kein Server. Keine Telemetrie, keine Absturzberichte, keine Werbe- oder Analysebibliotheken. Zwei Berechtigungen: Der Internetzugriff dient nur dazu, auf Wunsch Kartenpakete für die Hydrantenkarte zu laden; dabei wird nichts über dich oder einen Einsatz gesendet, und die Karte funktioniert danach offline. Den Standort fragt die App erst, wenn du den Richtungspfeil zum ersten Mal öffnest, und nutzt ihn nur, solange er offen ist; er wird weder gespeichert noch gesendet.
+Kein Konto, keine Anmeldung, keine Cloud, kein Server. Keine Telemetrie, keine Absturzberichte, keine Werbe- oder Analysebibliotheken. Zwei Berechtigungen: Der Internetzugriff dient nur dazu, auf Wunsch Kartenpakete für die Hydrantenkarte zu laden; dabei wird nichts über dich oder einen Einsatz gesendet, und die Karte funktioniert danach offline. Den Standort fragt die App erst, wenn du in der Hydrantenkarte den Richtungspfeil oder "Mein Standort" zum ersten Mal benutzt, und nutzt ihn nur, solange der Pfeil offen ist oder die Karte dich sucht; er wird weder gespeichert noch gesendet.
 
 Der Hersteller erhält keinerlei Daten — CodeForFire betreibt keinen Dienst, an den etwas fließen könnte.
 
@@ -72,7 +72,7 @@ Quelltext (MIT): https://github.com/CodeForFire/FwAssist
 ```
 Die App benötigt kein Konto und keine Anmeldung. Sie startet auf einer Übersicht der Helfer; jeder lässt sich mit einem Tipp öffnen und sofort benutzen.
 
-Ins Internet geht die App nur, wenn unter "Einstellungen" → "Kartenpakete" die Liste geladen oder ein Kartenpaket heruntergeladen wird (von github.com, ohne Anmeldung). Danach zeigt der Helfer "Hydrantenkarte" die Karte offline; ein Tipp auf die Karte setzt die Einsatzstelle, "NÄCHSTE HYDRANTEN" listet die nächsten Hydranten. Nach Auswahl eines Hydranten öffnet "PFEIL ZUM HYDRANTEN" den Richtungspfeil; erst dann fragt die App nach dem Standort.
+Ins Internet geht die App nur, wenn unter "Einstellungen" → "Kartenpakete" die Liste geladen oder ein Kartenpaket heruntergeladen wird (von github.com, ohne Anmeldung). Danach zeigt der Helfer "Hydrantenkarte" die Karte offline; ein Tipp auf die Karte setzt die Einsatzstelle, "NÄCHSTE HYDRANTEN" listet die nächsten Hydranten. Nach Auswahl eines Hydranten öffnet "PFEIL ZUM HYDRANTEN" den Richtungspfeil; der Knopf mit dem Fadenkreuz über +/− zeigt den eigenen Standort auf der Karte. Erst bei einem von beiden fragt die App nach dem Standort.
 
 Unter "Einstellungen" lässt sich für jeden Helfer ein eigenes Symbol auf dem Startbildschirm ein- und ausschalten.
 
