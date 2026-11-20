@@ -31,7 +31,12 @@ address the issue before any public disclosure.
 
 ## Scope notes
 
-- **The app declares one Android permission, `INTERNET`.** It is used only to
+- **The app declares two Android permissions.** `ACCESS_FINE_LOCATION` (with
+  `ACCESS_COARSE_LOCATION`) is asked for only when the Hydrantenkarte's
+  Richtungspfeil is first opened. The position is used only while the arrow is
+  on screen and the app is in the foreground, and it is never stored or sent.
+  A way to make the app read or pass on the position otherwise is in scope.
+- **`INTERNET`** is used only to
   download the Hydrantenkarte's Kartenpakete from `CodeForFire/lagebuch-geodata`
   when the user asks for them under Einstellungen. A downloaded catalogue or
   pack is hostile input: only https is fetched, the catalogue and every pack are

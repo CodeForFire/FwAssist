@@ -110,10 +110,13 @@
     <StackPanel Grid.Row="1" Margin="12" Spacing="8">
       <!-- The open hydrant's card. -->
       <Border x:Name="HydrantCard" Classes="map-banner" Margin="0" IsVisible="{Binding HasSelected}">
-        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+        <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto,Auto">
           <TextBlock Grid.Column="0" Classes="overline" Text="{Binding Selected.Title, FallbackValue=''}"
                      VerticalAlignment="Center" />
           <Button Grid.Column="1" Classes="ghost" Content="SCHLIESSEN" Command="{Binding KarteSchliessenCommand}" />
+          <Button x:Name="PfeilStarten" Grid.Row="2" Grid.ColumnSpan="2" Classes="signal" Margin="0,8,0,0"
+                  HorizontalAlignment="Stretch" Content="PFEIL ZUM HYDRANTEN"
+                  Command="{Binding PfeilStartenCommand}" IsVisible="{Binding CanGuide}" />
           <ItemsControl Grid.Row="1" Grid.ColumnSpan="2" ItemsSource="{Binding Selected.Details, FallbackValue={x:Null}}"
                         Grid.IsSharedSizeScope="True">
             <ItemsControl.ItemTemplate>
@@ -173,5 +176,39 @@
         </Grid>
       </StackPanel>
     </StackPanel>
+
+    <!-- The Richtungspfeil covers the whole page while it guides: one large arrow from the phone to
+         the hydrant, the distance under it, and BEENDEN in thumb reach. The arrow turns with the
+         compass, so it points the right way however the phone is held. -->
+    <Panel Grid.RowSpan="2" IsVisible="{Binding HasPfeil}" Background="{StaticResource SurfaceBrush}">
+      <Grid x:Name="Richtungspfeil" DataContext="{Binding Pfeil}" x:DataType="vm:RichtungspfeilViewModel"
+            RowDefinitions="Auto,*,Auto,Auto,Auto,Auto" Margin="16">
+        <TextBlock Grid.Row="0" HorizontalAlignment="Center" FontSize="18" Text="{Binding Target.Title, StringFormat='Zum {0}'}" />
+        <Viewbox Grid.Row="1" Stretch="Uniform" MaxWidth="320" MaxHeight="320" Margin="0,16">
+          <Path x:Name="Arrow" Width="200" Height="200" Fill="{StaticResource SignalBrush}"
+                Stroke="White" StrokeThickness="4" StrokeJoin="Round"
+                Data="M100,8 L172,120 L122,120 L122,192 L78,192 L78,120 L28,120 Z"
+                IsVisible="{Binding ShowsArrow}"
+                AutomationProperties.Name="{Binding DirectionText}"
+                RenderTransformOrigin="50%,50%">
+            <Path.RenderTransform>
+              <RotateTransform Angle="{Binding ArrowAngle}" />
+            </Path.RenderTransform>
+          </Path>
+        </Viewbox>
+        <TextBlock x:Name="Distance" Grid.Row="2" Classes="metric" HorizontalAlignment="Center"
+                   Text="{Binding DistanceText}" IsVisible="{Binding DistanceText, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        <TextBlock x:Name="Direction" Grid.Row="3" HorizontalAlignment="Center" FontSize="20"
+                   Text="{Binding DirectionText}" IsVisible="{Binding DirectionText, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        <StackPanel Grid.Row="4" Spacing="4" Margin="0,8">
+          <TextBlock x:Name="PfeilStatus" HorizontalAlignment="Center" TextAlignment="Center" TextWrapping="Wrap" FontSize="18"
+                     Text="{Binding Status}" IsVisible="{Binding Status, Converter={x:Static ObjectConverters.IsNotNull}}" />
+          <TextBlock Classes="secondary" HorizontalAlignment="Center" Text="{Binding AccuracyText}"
+                     IsVisible="{Binding AccuracyText, Converter={x:Static ObjectConverters.IsNotNull}}" />
+        </StackPanel>
+        <Button x:Name="PfeilBeenden" Grid.Row="5" HorizontalAlignment="Stretch" Content="BEENDEN"
+                Command="{Binding $parent[UserControl].((vm:HydrantenkarteViewModel)DataContext).PfeilBeendenCommand}" />
+      </Grid>
+    </Panel>
   </Grid>
 </UserControl>

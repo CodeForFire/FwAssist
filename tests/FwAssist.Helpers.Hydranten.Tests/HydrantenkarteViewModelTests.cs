@@ -2,6 +2,7 @@ using FwAssist.AppLogic.Services;
 using FwAssist.AppLogic.Services.Map;
 using FwAssist.AppLogic.Tests;
 using FwAssist.Core.Map;
+using FwAssist.Testing;
 
 namespace FwAssist.Helpers.Hydranten.Tests;
 
@@ -351,6 +352,81 @@ public class HydrantenkarteViewModelTests
 
         Assert.Equal("Die installierten Kartenpakete sind nicht lesbar.", vm.Status);
         Assert.False(vm.HasMap);
+    }
+
+    [Fact]
+    public async Task Without_a_location_service_no_richtungspfeil_is_offered()
+    {
+        var vm = await Open(North(2));
+        vm.TapCommand.Execute(North(2).Position);
+
+        Assert.False(vm.CanGuide);
+        Assert.False(vm.PfeilStartenCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task The_richtungspfeil_opens_on_the_chosen_hydrant_and_closes_with_beenden()
+    {
+        var hydrant = North(30);
+        _library.Preinstall(Ffb);
+        _library.WaterPoints["ffb"] = [hydrant];
+        var location = new FakeLocationSource();
+        var compass = new FakeCompass();
+        var vm = new HydrantenkarteViewModel(_library, _settings, location, compass, new FakeTimeProvider());
+        await vm.Loading;
+        vm.TapCommand.Execute(Marktplatz);
+        Assert.True(vm.CanGuide);
+        Assert.False(vm.PfeilStartenCommand.CanExecute(null));
+        vm.NaechsteHydrantenCommand.Execute(null);
+        vm.WaehleCommand.Execute(vm.Nearest[0]);
+
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+
+        var pfeil = Assert.IsType<RichtungspfeilViewModel>(vm.Pfeil);
+        Assert.True(vm.HasPfeil);
+        Assert.Same(hydrant, pfeil.Target);
+        Assert.True(location.IsRunning);
+        Assert.True(compass.IsRunning);
+        Assert.False(vm.PfeilStartenCommand.CanExecute(null));
+
+        vm.PfeilBeendenCommand.Execute(null);
+
+        Assert.Null(vm.Pfeil);
+        Assert.False(location.IsRunning);
+        Assert.False(compass.IsRunning);
+    }
+
+    [Fact]
+    public async Task Leaving_the_page_stops_the_gps_and_the_compass()
+    {
+        var hydrant = North(30);
+        _library.Preinstall(Ffb);
+        _library.WaterPoints["ffb"] = [hydrant];
+        var location = new FakeLocationSource();
+        var compass = new FakeCompass();
+        var vm = new HydrantenkarteViewModel(_library, _settings, location, compass);
+        await vm.Loading;
+        vm.TapCommand.Execute(Marktplatz);
+        vm.TapCommand.Execute(hydrant.Position);
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+
+        vm.Leave();
+
+        Assert.Null(vm.Pfeil);
+        Assert.False(location.IsRunning);
+        Assert.False(compass.IsRunning);
+    }
+
+    [Fact]
+    public async Task Leaving_the_page_without_a_pfeil_changes_nothing()
+    {
+        var vm = await Open(North(2));
+        vm.TapCommand.Execute(Marktplatz);
+
+        vm.Leave();
+
+        Assert.Equal(Marktplatz, vm.Einsatzstelle);
+        Assert.Null(vm.Pfeil);
     }
 
     // The fake library, with the water points of a load held back until a test lets them go.

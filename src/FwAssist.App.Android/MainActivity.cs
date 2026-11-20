@@ -1,4 +1,5 @@
 using Android.Content;
+using Android.Content.PM;
 using Android.Runtime;
 using Avalonia.Android;
 using FwAssist.App.Android.Services;
@@ -25,18 +26,31 @@ public class MainActivity : AvaloniaMainActivity
     // does not handle (locale, font scale, split screen), and a running Stoppuhr must survive that.
     private static ShellViewModel? _shell;
 
+    // Per process like the shell, which holds them; the Activity they ask permissions and the
+    // screen rotation of is set again on every create.
+    private static AndroidLocationSource? _location;
+    private static AndroidCompass? _compass;
+
     protected override void OnCreate(global::Android.OS.Bundle? savedInstanceState)
     {
         var context = ApplicationContext
             ?? throw new InvalidOperationException("Android created the activity without an application context.");
         var files = context.FilesDir?.AbsolutePath
             ?? throw new InvalidOperationException("Android gave the app no files directory.");
+        var time = new BootClockTimeProvider();
+        _location ??= new AndroidLocationSource(context, time);
+        var location = _location;
+        _compass ??= new AndroidCompass(context, () => location.Last);
+        _location.Activity = this;
+        _compass.Activity = this;
         _shell ??= CompositionRoot.CreateShell(
             new HelperServices(
-                new BootClockTimeProvider(),
+                time,
                 new DispatcherTimerTicker(),
                 new AndroidHelperSettings(context),
-                new RegionPackLibrary(Http, Path.Join(files, "maps"))),
+                new RegionPackLibrary(Http, Path.Join(files, "maps")),
+                _location,
+                _compass),
             new AndroidLauncherIcons(context),
             new AndroidExternalLinks(context),
             AppVersionText.Of(typeof(MainActivity).Assembly));
@@ -53,6 +67,27 @@ public class MainActivity : AvaloniaMainActivity
         }
 
         base.OnCreate(savedInstanceState);
+    }
+
+    // The GPS and the compass run only while the app is in front, whatever the Richtungspfeil says.
+    protected override void OnPause()
+    {
+        _location?.Pause();
+        _compass?.Pause();
+        base.OnPause();
+    }
+
+    protected override void OnResume()
+    {
+        base.OnResume();
+        _location?.Resume();
+        _compass?.Resume();
+    }
+
+    public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Permission[] grantResults)
+    {
+        base.OnRequestPermissionsResult(requestCode, permissions, grantResults);
+        _location?.OnPermissionResult(requestCode, grantResults);
     }
 
     // An icon tapped while the app is already running (singleTask). Returning from the recent-apps

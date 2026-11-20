@@ -5,6 +5,7 @@ using FwAssist.AppLogic.Helpers;
 using FwAssist.AppLogic.Services.Map;
 using FwAssist.AppLogic.ViewModels;
 using FwAssist.Composition;
+using FwAssist.Helpers.Hydranten.Tests;
 using FwAssist.Testing;
 using FwAssist.Ui.Views;
 
@@ -35,7 +36,11 @@ internal sealed class PhoneRender
     public PhoneRender()
     {
         Maps = new RegionPackLibrary(Http, MapRoot.Value);
-        Shell = CompositionRoot.CreateShell(new HelperServices(Time, Ticker, Maps: Maps), Icons, new FakeExternalLinks(), "0.1.0");
+        Shell = CompositionRoot.CreateShell(
+            new HelperServices(Time, Ticker, Maps: Maps, Location: Location, Compass: Compass),
+            Icons,
+            new FakeExternalLinks(),
+            "0.1.0");
         Window = new Window
         {
             Content = new ShellView { DataContext = Shell },
@@ -53,6 +58,10 @@ internal sealed class PhoneRender
     public FakeLauncherIcons Icons { get; } = new();
 
     public RegionPackLibrary Maps { get; }
+
+    public FakeLocationSource Location { get; } = new();
+
+    public FakeCompass Compass { get; } = new();
 
     public ShellViewModel Shell { get; }
 
