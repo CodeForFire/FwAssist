@@ -28,9 +28,9 @@ public static class Schlauchbedarf
         return 2 * EarthRadius * Math.Asin(Math.Min(1, Math.Sqrt(h)));
     }
 
-    /// <summary>How many B-Schläuche cover <paramref name="metres"/>: every started length counts.</summary>
+    /// <summary>How many B-Schläuche cover <paramref name="metres"/>: every started length counts, and no distance is less than none.</summary>
     public static int BSchlaeuche(double metres) =>
-        metres <= 0 ? 0 : (int)Math.Ceiling(metres / BSchlauchLaenge);
+        (int)Math.Ceiling(Math.Max(0, metres) / BSchlauchLaenge);
 
     private static double Radians(double degrees) => degrees * Math.PI / 180;
 }

@@ -49,6 +49,7 @@ public class SchlauchbedarfTests
     [Theory]
     [InlineData(0, 0)]
     [InlineData(-5, 0)]
+    [InlineData(-25, 0)]
     [InlineData(0.1, 1)]
     [InlineData(20, 1)]
     [InlineData(20.01, 2)]
