@@ -36,7 +36,7 @@ internal sealed class AndroidAttentionSignal : IAttentionSignal, IDisposable
 
         if (ringer == RingerMode.Normal)
         {
-            _tone ??= new ToneGenerator(global::Android.Media.Stream.Notification, ToneGenerator.MaxVolume);
+            _tone ??= new ToneGenerator(global::Android.Media.Stream.Notification, Volume.Max);
             _tone.StartTone(Tone.PropBeep2);
         }
 
