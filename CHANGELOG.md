@@ -16,6 +16,27 @@ cut — see [CONTRIBUTING.md](CONTRIBUTING.md). For the commits themselves, see 
 
 <!-- towncrier release notes start -->
 
+## [0.2.0] - 2026-11-20
+
+The Hydrantenkarte: the Hydranten around the Einsatzstelle on an offline OpenStreetMap map, the nearest ones with their distance and B-Schläuche, a Richtungspfeil and a Mein Standort button, with the Kartenpakete downloaded under Einstellungen. FwAssist now asks for two permissions, Internet for the Kartenpakete and location for the arrow and the button. The helpers can also be sorted in Einstellungen.
+
+### Added
+
+- [#61](https://github.com/CodeForFire/FwAssist/pull/61) - FwAssist can now install Lagebuch's offline Kartenpakete and draw their OpenStreetMap map with its Hydranten and other Wasserentnahmestellen, the groundwork for the Hydrantenkarte (#60).
+- [#62](https://github.com/CodeForFire/FwAssist/pull/62) - The new Hydrantenkarte shows the Hydranten on an offline OpenStreetMap map, lets the user pin the Einsatzstelle, and lists the nearest Hydranten with their straight-line distance and the B-Schläuche each takes, with the Kartenpakete it needs downloaded under Einstellungen (#60).
+- [#63](https://github.com/CodeForFire/FwAssist/pull/63) - The Hydrantenkarte gains a Richtungspfeil that points from the phone's live position to the chosen hydrant, turned by the compass and with the distance still to go, asking for the location permission only when it is first opened (#60).
+- [#65](https://github.com/CodeForFire/FwAssist/pull/65) - The Hydrantenkarte gains a Mein Standort button above the zoom buttons that centres the map on the phone's position once, marks it with a blue dot and switches the GPS off again (#60).
+- [#66](https://github.com/CodeForFire/FwAssist/pull/66) - Einstellungen can sort the helpers by dragging each one by its grip to a new place, and the overview shows them in that order, kept across restarts (#39).
+
+### Changed
+
+- [#47](https://github.com/CodeForFire/FwAssist/pull/47) - The repository moved to CodeForFire/FwAssist and release downloads are now named `fwassist-<version>.apk`, while the Android package stays `de.codeforfire.helfer` so installed copies keep updating.
+
+### Fixed
+
+- [#46](https://github.com/CodeForFire/FwAssist/pull/46) - RTH-Landeplatz now shows TAG or NACHT with its timeframe at the top of the page, and both stay visible while scrolling (#44).
+- [#64](https://github.com/CodeForFire/FwAssist/pull/64) - Google Play no longer hides FwAssist from devices without location hardware, such as Wi-Fi-only tablets, which the location permission had made it require.
+
 ## [0.1.0] - 2026-11-08
 
 The first full release of FwAssist: one Android app with a Stoppuhr, a Buchstabieralphabet, a Schaummittel-Rechner, and references for the RTH-Landeplatz and the Dekon-Platz.
@@ -41,5 +62,6 @@ The first full release of FwAssist: one Android app with a Stoppuhr, a Buchstabi
 - [#11](https://github.com/CodeForFire/helfer/pull/11) - The Funkalphabet keeps the chosen spelling table when Android kills the app in the background (#10).
 
 
-[Unreleased]: https://github.com/CodeForFire/helfer/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/CodeForFire/FwAssist/compare/v0.2.0...HEAD
+[0.2.0]: https://github.com/CodeForFire/FwAssist/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/CodeForFire/helfer/releases/tag/v0.1.0
