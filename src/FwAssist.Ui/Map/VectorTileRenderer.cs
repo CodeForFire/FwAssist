@@ -125,12 +125,13 @@ public static class VectorTileRenderer
         if (Layer("landuse") is { } landuse)
         {
             var project = Projection(landuse.Extent, levels, subX, subY);
-            foreach (var group in landuse.Features.Where(f => f.Type == VectorGeometryType.Polygon).GroupBy(f => f.Get("kind") ?? string.Empty, StringComparer.Ordinal))
+            var styled = landuse.Features
+                .Where(f => f.Type == VectorGeometryType.Polygon)
+                .GroupBy(f => f.Get("kind") ?? string.Empty, StringComparer.Ordinal)
+                .Where(g => style.Landuse.ContainsKey(g.Key));
+            foreach (var group in styled)
             {
-                if (style.Landuse.TryGetValue(group.Key, out var brush))
-                {
-                    context.DrawGeometry(brush, null, Polygons(group, project));
-                }
+                context.DrawGeometry(style.Landuse[group.Key], null, Polygons(group, project));
             }
         }
 
@@ -297,12 +298,13 @@ public static class VectorTileRenderer
     private static void RoadNames(List<MapLabel> labels, VectorLayer roads, int zoom, Func<(int X, int Y), Point> project, MapStyle map)
     {
         var fontSize = zoom >= 17 ? 12.0 : 10.0;
-        foreach (var feature in roads.Features)
+        var named = roads.Features
+            .Where(f => f.Type == VectorGeometryType.LineString && RoadKinds.Contains(f.Get("kind_detail") ?? string.Empty))
+            .Select(f => (Feature: f, Name: f.Get("name") ?? string.Empty))
+            .Where(f => f.Name.Length > 0);
+        foreach (var (feature, name) in named)
         {
-            if (feature.Type == VectorGeometryType.LineString && feature.Get("name") is { Length: > 0 } name && RoadKinds.Contains(feature.Get("kind_detail") ?? string.Empty))
-            {
-                NameAlong(labels, feature, name, new LabelStyle(fontSize, map.LabelInk, StreetPriority), project, map);
-            }
+            NameAlong(labels, feature, name, new LabelStyle(fontSize, map.LabelInk, StreetPriority), project, map);
         }
     }
 
@@ -578,9 +580,8 @@ public static class VectorTileRenderer
     private static Point Centroid(IReadOnlyList<(int X, int Y)> ring, Func<(int X, int Y), Point> project)
     {
         double x = 0, y = 0;
-        foreach (var p in ring)
+        foreach (var s in ring.Select(project))
         {
-            var s = project(p);
             x += s.X;
             y += s.Y;
         }

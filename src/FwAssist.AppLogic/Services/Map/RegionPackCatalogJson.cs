@@ -53,18 +53,13 @@ public static partial class RegionPackCatalogJson
                 throw new RegionPackException("Die Kartenpakete brauchen eine neuere FwAssist-Version. FwAssist aktualisieren.");
             }
 
-            var packs = new List<RegionPackInfo>();
-            var slugs = new HashSet<string>(StringComparer.Ordinal);
-            foreach (var entry in entries.EnumerateArray().Take(MaxEntries))
-            {
-                // A slug names one folder on the device, so only its first entry counts.
-                if (TryParseEntry(entry, out var pack) && slugs.Add(pack.Slug))
-                {
-                    packs.Add(pack);
-                }
-            }
-
-            return packs;
+            // A slug names one folder on the device, so only its first entry counts.
+            return entries.EnumerateArray()
+                .Take(MaxEntries)
+                .Select(e => TryParseEntry(e, out var pack) ? pack : null)
+                .OfType<RegionPackInfo>()
+                .DistinctBy(p => p.Slug, StringComparer.Ordinal)
+                .ToList();
         }
         catch (JsonException)
         {

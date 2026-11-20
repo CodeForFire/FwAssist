@@ -39,16 +39,11 @@ public static partial class WaterPointsGeoJson
                 return null;
             }
 
-            var points = new List<WaterPoint>();
-            foreach (var feature in features.EnumerateArray().Take(MaxFeatures))
-            {
-                if (TryParseFeature(feature, out var point))
-                {
-                    points.Add(point);
-                }
-            }
-
-            return points;
+            return features.EnumerateArray()
+                .Take(MaxFeatures)
+                .Select(f => TryParseFeature(f, out var point) ? point : null)
+                .OfType<WaterPoint>()
+                .ToList();
         }
         catch (JsonException)
         {

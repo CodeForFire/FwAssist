@@ -8,12 +8,9 @@ public class JsonFileStoreTests : IDisposable
 
     public void Dispose()
     {
-        foreach (var path in new[] { _path, _path + ".tmp" })
+        foreach (var path in new[] { _path, _path + ".tmp" }.Where(File.Exists))
         {
-            if (File.Exists(path))
-            {
-                File.Delete(path);
-            }
+            File.Delete(path);
         }
 
         GC.SuppressFinalize(this);
