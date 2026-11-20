@@ -355,8 +355,9 @@ memory. The rules below are the ones this app has learned the hard way.
 **Threat model.** One input crosses a trust boundary today: the Hydrantenkarte's
 Kartenpakete, downloaded on request through the `INTERNET` permission and
 checked by `RegionPackLibrary` (https only, size caps, SHA-256, fixed file
-names). The other permission, location, feeds the Richtungspfeil only while it
-is on screen; the position is personal data and is never stored or sent. Beyond that the app reads no file and receives no intent
+names). The other permission, location, feeds the Richtungspfeil while it is on
+screen and the Mein Standort button until it has one fix; the position is
+personal data and is never stored or sent. Beyond that the app reads no file and receives no intent
 except its own launcher icons. A helper that imports a file, shares data or
 talks to the network brings the rules below with it. Treat any such input as
 hostile. Data a helper records about people at an Einsatz is personal data, so

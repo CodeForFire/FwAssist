@@ -14,9 +14,10 @@
          else goes online, and nothing about the user or an Einsatz is sent. -->
     <uses-permission android:name="android.permission.INTERNET" />
 
-    <!-- The Hydrantenkarte's Richtungspfeil: the arrow points from where the phone is to the
-         chosen hydrant. Asked for only when the arrow is first opened, used only while it is on
-         screen and the app is in front, never stored and never sent. Coarse is listed with fine
+    <!-- The Hydrantenkarte's Richtungspfeil, which points from where the phone is to the chosen
+         hydrant, and its Mein Standort button, which centres the map on the phone once. Asked for
+         only when one of them is first used, used only while the arrow is open or the button waits
+         for its fix and the app is in front, never stored and never sent. Coarse is listed with fine
          because Android 12 lets the user grant only the approximate position. -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />

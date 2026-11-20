@@ -34,6 +34,12 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
 
     public const string PlacingText = "Einsatzstelle setzen: tippe auf die Karte.";
 
+    public const string StandortSuchtText = "Suche Standort …";
+
+    public const string StandortVerweigertText = "Ohne Standortfreigabe kann die Karte den eigenen Standort nicht zeigen. Freigabe in den Android-Einstellungen erteilen.";
+
+    public const string StandortAusText = "Standort ist ausgeschaltet. In den Android-Einstellungen einschalten.";
+
     private readonly IRegionPackLibrary? _maps;
     private readonly IHelperSettings? _settings;
     private readonly ILocationSource? _location;
@@ -43,6 +49,14 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
 
     // Counts the loads, so a slow one that finishes after a newer one does not overwrite it.
     private int _generation;
+
+    // Counts the locates. One that ended while its start was still awaited (a fix arrived, the page
+    // was left, the Richtungspfeil took over) finds a newer count when the start returns.
+    private int _locateRun;
+
+    // Whether the source has to be stopped once a start that was still awaited returns: yes after a
+    // fix or leaving the page, no when the Richtungspfeil took the source over.
+    private bool _stopWhenStarted;
 
     public HydrantenkarteViewModel(
         IRegionPackLibrary? maps,
@@ -107,7 +121,23 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(HasPfeil))]
     [NotifyCanExecuteChangedFor(nameof(PfeilStartenCommand))]
+    [NotifyCanExecuteChangedFor(nameof(StandortZeigenCommand))]
     private RichtungspfeilViewModel? _pfeil;
+
+    /// <summary>Where the phone was when MEIN STANDORT last found it; null before that and after leaving the page.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(StandortMarks))]
+    private GeoPoint? _standort;
+
+    /// <summary>MEIN STANDORT waits for a fix.</summary>
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(StandortZeigenCommand))]
+    private bool _isLocating;
+
+    /// <summary>What MEIN STANDORT has to say, in German; null when it has nothing to say.</summary>
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(Status))]
+    private string? _standortMeldung;
 
     /// <summary>The hydrants nearest the Einsatzstelle, closest first; empty until asked for.</summary>
     [ObservableProperty]
@@ -129,6 +159,9 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
 
     public bool HasSelected => Selected is not null;
 
+    /// <summary>The phone's located position as a list of one, for the dot over the map; empty without one.</summary>
+    public IReadOnlyList<GeoPoint> StandortMarks => Standort is { } s ? [s] : [];
+
     public bool HasPfeil => Pfeil is not null;
 
     /// <summary>The platform can tell where the phone is, so the Richtungspfeil can be offered.</summary>
@@ -142,6 +175,7 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
     /// <summary>What the user has to do next, or what is missing, in German; null when all is well.</summary>
     public string? Status =>
         LoadError
+        ?? StandortMeldung
         ?? (!HasMap ? NoMapText
             : Einsatzstelle is { } e && !_packs.Any(p => p.Info.Covers(e)) ? NoPackForEinsatzstelleText
             : IsPlacing ? PlacingText
@@ -253,6 +287,8 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
             return;
         }
 
+        // The arrow takes the one position source over; a locate still waiting gives it up.
+        CancelLocate(stop: false);
         var pfeil = new RichtungspfeilViewModel(target, _location, _compass, _time);
         Pfeil = pfeil;
         await pfeil.StartAsync();
@@ -267,7 +303,80 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
     }
 
     /// <summary>Leaving the page stops the GPS and the compass: they must not run on unseen.</summary>
-    public void Leave() => PfeilBeenden();
+    public void Leave()
+    {
+        PfeilBeenden();
+        CancelLocate(stop: true);
+        Standort = null;
+    }
+
+    private bool CanStandortZeigen => _location is not null && !IsLocating && Pfeil is null;
+
+    /// <summary>
+    /// MEIN STANDORT: one fix, the map moves there and the dot marks it, and the GPS goes off again.
+    /// Asks for the location permission the first time.
+    /// </summary>
+    [RelayCommand(CanExecute = nameof(CanStandortZeigen))]
+    private async Task StandortZeigen()
+    {
+        if (_location is not { } location)
+        {
+            return;
+        }
+
+        var run = ++_locateRun;
+        _stopWhenStarted = false;
+        IsLocating = true;
+        StandortMeldung = StandortSuchtText;
+        location.FixChanged += OnStandortFix;
+        var access = await location.StartAsync();
+
+        if (run != _locateRun)
+        {
+            // Ended while the start was awaited. A source that started after it was told to stop
+            // would run on, so it is stopped now, unless the Richtungspfeil has it.
+            if (access == LocationAccess.Granted && _stopWhenStarted)
+            {
+                location.Stop();
+            }
+
+            return;
+        }
+
+        if (access != LocationAccess.Granted)
+        {
+            location.FixChanged -= OnStandortFix;
+            IsLocating = false;
+            StandortMeldung = access == LocationAccess.Denied ? StandortVerweigertText : StandortAusText;
+        }
+    }
+
+    private void OnStandortFix(object? sender, GeoFixEventArgs e)
+    {
+        Standort = e.Fix.Position;
+        Map.ChangeViewCommand.Execute(new MapViewChange(e.Fix.Position, Math.Max(Map.Zoom, CloseZoom)));
+        CancelLocate(stop: true);
+    }
+
+    // Ends a locate: no more fixes, no message. With stop the source is switched off, now and, if
+    // its start is still awaited, once that returns.
+    private void CancelLocate(bool stop)
+    {
+        if (!IsLocating || _location is not { } location)
+        {
+            return;
+        }
+
+        _locateRun++;
+        _stopWhenStarted = stop;
+        location.FixChanged -= OnStandortFix;
+        IsLocating = false;
+        StandortMeldung = null;
+        if (stop)
+        {
+            location.Stop();
+        }
+    }
 
     [RelayCommand]
     private void ListeSchliessen() => Nearest = [];

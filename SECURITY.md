@@ -33,8 +33,9 @@ address the issue before any public disclosure.
 
 - **The app declares two Android permissions.** `ACCESS_FINE_LOCATION` (with
   `ACCESS_COARSE_LOCATION`) is asked for only when the Hydrantenkarte's
-  Richtungspfeil is first opened. The position is used only while the arrow is
-  on screen and the app is in the foreground, and it is never stored or sent.
+  Richtungspfeil or its Mein Standort button is first used. The position is
+  used only while the arrow is on screen or the map waits for one fix, and only
+  while the app is in the foreground; it is never stored or sent.
   A way to make the app read or pass on the position otherwise is in scope.
 - **`INTERNET`** is used only to
   download the Hydrantenkarte's Kartenpakete from `CodeForFire/lagebuch-geodata`

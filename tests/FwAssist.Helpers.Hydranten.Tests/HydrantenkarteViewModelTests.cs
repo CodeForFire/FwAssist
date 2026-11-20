@@ -1,4 +1,5 @@
 using FwAssist.AppLogic.Services;
+using FwAssist.AppLogic.Services.Location;
 using FwAssist.AppLogic.Services.Map;
 using FwAssist.AppLogic.Tests;
 using FwAssist.Core.Map;
@@ -427,6 +428,154 @@ public class HydrantenkarteViewModelTests
 
         Assert.Equal(Marktplatz, vm.Einsatzstelle);
         Assert.Null(vm.Pfeil);
+    }
+
+    private async Task<(HydrantenkarteViewModel Vm, FakeLocationSource Location)> OpenWithLocation(params WaterPoint[] points)
+    {
+        _library.Preinstall(Ffb);
+        _library.WaterPoints["ffb"] = points;
+        var location = new FakeLocationSource();
+        var vm = new HydrantenkarteViewModel(_library, _settings, location, new FakeCompass(), new FakeTimeProvider());
+        await vm.Loading;
+        return (vm, location);
+    }
+
+    [Fact]
+    public async Task Mein_standort_centres_on_the_first_fix_marks_it_and_switches_the_gps_off()
+    {
+        var (vm, location) = await OpenWithLocation(North(2));
+        var here = new GeoPoint(48.20, 11.30);
+
+        var locating = vm.StandortZeigenCommand.ExecuteAsync(null);
+        await locating;
+        Assert.True(vm.IsLocating);
+        Assert.Equal(HydrantenkarteViewModel.StandortSuchtText, vm.Status);
+        Assert.False(vm.StandortZeigenCommand.CanExecute(null));
+        location.Move(here, DateTimeOffset.UnixEpoch);
+
+        Assert.Equal(here, vm.Standort);
+        Assert.Equal(here, Assert.Single(vm.StandortMarks));
+        Assert.Equal(here, vm.Map.Center);
+        Assert.True(vm.Map.Zoom >= HydrantenkarteViewModel.CloseZoom);
+        Assert.False(vm.IsLocating);
+        Assert.False(location.IsRunning);
+        Assert.Equal(1, location.Stops);
+        Assert.Equal(HydrantenkarteViewModel.PlacingText, vm.Status);
+        Assert.True(vm.StandortZeigenCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task A_later_fix_does_not_move_the_map_again()
+    {
+        var (vm, location) = await OpenWithLocation(North(2));
+        await vm.StandortZeigenCommand.ExecuteAsync(null);
+        location.Move(new GeoPoint(48.20, 11.30), DateTimeOffset.UnixEpoch);
+        vm.Map.ChangeViewCommand.Execute(new MapViewChange(Marktplatz, 14));
+
+        location.Move(new GeoPoint(48.21, 11.31), DateTimeOffset.UnixEpoch);
+
+        Assert.Equal(Marktplatz, vm.Map.Center);
+        Assert.Equal(new GeoPoint(48.20, 11.30), vm.Standort);
+    }
+
+    [Theory]
+    [InlineData(LocationAccess.Denied, HydrantenkarteViewModel.StandortVerweigertText)]
+    [InlineData(LocationAccess.SwitchedOff, HydrantenkarteViewModel.StandortAusText)]
+    public async Task Without_a_position_mein_standort_says_why_and_moves_nothing(LocationAccess access, string text)
+    {
+        var (vm, location) = await OpenWithLocation(North(2));
+        location.Access = access;
+        var centre = vm.Map.Center;
+
+        await vm.StandortZeigenCommand.ExecuteAsync(null);
+        location.Move(new GeoPoint(48.20, 11.30), DateTimeOffset.UnixEpoch);
+
+        Assert.Equal(text, vm.Status);
+        Assert.False(vm.IsLocating);
+        Assert.Null(vm.Standort);
+        Assert.Equal(centre, vm.Map.Center);
+        Assert.False(location.IsRunning);
+    }
+
+    [Fact]
+    public void Without_a_location_service_there_is_no_mein_standort() =>
+        Assert.False(new HydrantenkarteViewModel(_library, _settings).StandortZeigenCommand.CanExecute(null));
+
+    [Fact]
+    public async Task Leaving_the_page_while_locating_switches_the_gps_off_and_the_dot_goes_with_it()
+    {
+        var (vm, location) = await OpenWithLocation(North(2));
+        await vm.StandortZeigenCommand.ExecuteAsync(null);
+        location.Move(new GeoPoint(48.20, 11.30), DateTimeOffset.UnixEpoch);
+        await vm.StandortZeigenCommand.ExecuteAsync(null);
+        Assert.True(location.IsRunning);
+
+        vm.Leave();
+        location.Move(new GeoPoint(48.21, 11.31), DateTimeOffset.UnixEpoch);
+
+        Assert.False(location.IsRunning);
+        Assert.False(vm.IsLocating);
+        Assert.Null(vm.Standort);
+        Assert.Empty(vm.StandortMarks);
+        Assert.Null(vm.StandortMeldung);
+    }
+
+    [Fact]
+    public async Task Left_while_the_permission_dialog_is_open_the_gps_does_not_run_on()
+    {
+        var (vm, location) = await OpenWithLocation(North(2));
+        location.PermissionGate = new TaskCompletionSource();
+        var centre = vm.Map.Center;
+        var locating = vm.StandortZeigenCommand.ExecuteAsync(null);
+
+        vm.Leave();
+        location.PermissionGate.SetResult();
+        await locating;
+        location.Move(new GeoPoint(48.20, 11.30), DateTimeOffset.UnixEpoch);
+
+        Assert.False(location.IsRunning);
+        Assert.Equal(centre, vm.Map.Center);
+        Assert.Null(vm.Standort);
+    }
+
+    [Fact]
+    public async Task The_richtungspfeil_takes_the_gps_over_from_a_locate_still_waiting()
+    {
+        var hydrant = North(30);
+        var (vm, location) = await OpenWithLocation(hydrant);
+        vm.TapCommand.Execute(Marktplatz);
+        vm.TapCommand.Execute(hydrant.Position);
+        await vm.StandortZeigenCommand.ExecuteAsync(null);
+        var stops = location.Stops;
+
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+        location.Move(new GeoPoint(48.20, 11.30), DateTimeOffset.UnixEpoch);
+
+        Assert.False(vm.IsLocating);
+        Assert.Null(vm.Standort);
+        Assert.Equal(stops, location.Stops);
+        Assert.True(location.IsRunning);
+        Assert.NotNull(vm.Pfeil?.Fix);
+        Assert.False(vm.StandortZeigenCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task The_richtungspfeil_opened_during_the_permission_dialog_keeps_the_gps()
+    {
+        var hydrant = North(30);
+        var (vm, location) = await OpenWithLocation(hydrant);
+        vm.TapCommand.Execute(Marktplatz);
+        vm.TapCommand.Execute(hydrant.Position);
+        location.PermissionGate = new TaskCompletionSource();
+        var locating = vm.StandortZeigenCommand.ExecuteAsync(null);
+
+        var arrow = vm.PfeilStartenCommand.ExecuteAsync(null);
+        location.PermissionGate.SetResult();
+        await locating;
+        await arrow;
+
+        Assert.True(location.IsRunning);
+        Assert.Equal(0, location.Stops);
     }
 
     // The fake library, with the water points of a load held back until a test lets them go.
