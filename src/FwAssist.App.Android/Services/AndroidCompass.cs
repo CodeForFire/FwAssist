@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using Android.App;
 using Android.Content;
 using Android.Hardware;
 using Android.Runtime;

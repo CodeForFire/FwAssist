@@ -1,9 +1,7 @@
 using Android;
-using Android.App;
 using Android.Content;
 using Android.Content.PM;
 using Android.Locations;
-using Android.OS;
 using Android.Runtime;
 using FwAssist.AppLogic.Services.Location;
 using FwAssist.Core.Map;
