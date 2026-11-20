@@ -13,6 +13,7 @@
     <ProjectReference Include="..\Helpers\Schaummittel\FwAssist.Helpers.Schaummittel.Ui\FwAssist.Helpers.Schaummittel.Ui.csproj" />
     <ProjectReference Include="..\Helpers\RthLandeplatz\FwAssist.Helpers.RthLandeplatz.Ui\FwAssist.Helpers.RthLandeplatz.Ui.csproj" />
     <ProjectReference Include="..\Helpers\DekonPlatz\FwAssist.Helpers.DekonPlatz.Ui\FwAssist.Helpers.DekonPlatz.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\Hydranten\FwAssist.Helpers.Hydranten.Ui\FwAssist.Helpers.Hydranten.Ui.csproj" />
   </ItemGroup>
 
 </Project>

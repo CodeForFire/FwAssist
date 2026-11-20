@@ -1,0 +1,1 @@
+The new Hydrantenkarte shows the Hydranten on an offline OpenStreetMap map, lets the user pin the Einsatzstelle, and lists the nearest Hydranten with their straight-line distance and the B-Schläuche each takes, with the Kartenpakete it needs downloaded under Einstellungen (#60).

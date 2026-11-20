@@ -7,6 +7,8 @@ internal sealed class FakeRegionPackLibrary : IRegionPackLibrary
 {
     private readonly List<InstalledRegionPack> _installed = new();
 
+    public event EventHandler? InstalledChanged;
+
     public IReadOnlyList<RegionPackInfo> Catalogue { get; set; } = [];
 
     public RegionPackException? Failure { get; set; }
@@ -67,6 +69,7 @@ internal sealed class FakeRegionPackLibrary : IRegionPackLibrary
         _installed.RemoveAll(p => p.Info.Slug == pack.Slug);
         var installed = new InstalledRegionPack(pack, Path.Join("regions", pack.Slug));
         _installed.Add(installed);
+        InstalledChanged?.Invoke(this, EventArgs.Empty);
         return installed;
     }
 
@@ -84,5 +87,6 @@ internal sealed class FakeRegionPackLibrary : IRegionPackLibrary
         }
 
         _installed.RemoveAll(p => p.Info.Slug == pack.Info.Slug);
+        InstalledChanged?.Invoke(this, EventArgs.Empty);
     }
 }

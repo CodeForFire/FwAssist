@@ -4,6 +4,7 @@ using Avalonia.Android;
 using FwAssist.App.Android.Services;
 using FwAssist.AppLogic.Helpers;
 using FwAssist.AppLogic.Services;
+using FwAssist.AppLogic.Services.Map;
 using FwAssist.AppLogic.ViewModels;
 using FwAssist.Composition;
 using FwAssist.Ui.Services;
@@ -17,6 +18,9 @@ namespace FwAssist.App.Android;
 [Register("de/codeforfire/helfer/MainActivity")]
 public class MainActivity : AvaloniaMainActivity
 {
+    // One client for the app's life, as HttpClient is meant to be used: only the Kartenpakete use it.
+    private static readonly HttpClient Http = new();
+
     // Per process, not per Activity: Android recreates the Activity for a configuration change it
     // does not handle (locale, font scale, split screen), and a running Stoppuhr must survive that.
     private static ShellViewModel? _shell;
@@ -25,8 +29,14 @@ public class MainActivity : AvaloniaMainActivity
     {
         var context = ApplicationContext
             ?? throw new InvalidOperationException("Android created the activity without an application context.");
+        var files = context.FilesDir?.AbsolutePath
+            ?? throw new InvalidOperationException("Android gave the app no files directory.");
         _shell ??= CompositionRoot.CreateShell(
-            new HelperServices(new BootClockTimeProvider(), new DispatcherTimerTicker(), new AndroidHelperSettings(context)),
+            new HelperServices(
+                new BootClockTimeProvider(),
+                new DispatcherTimerTicker(),
+                new AndroidHelperSettings(context),
+                new RegionPackLibrary(Http, Path.Join(files, "maps"))),
             new AndroidLauncherIcons(context),
             new AndroidExternalLinks(context),
             AppVersionText.Of(typeof(MainActivity).Assembly));

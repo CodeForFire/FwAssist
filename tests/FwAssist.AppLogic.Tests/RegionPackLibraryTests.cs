@@ -125,6 +125,35 @@ public sealed class RegionPackLibraryTests : IDisposable
     }
 
     [Fact]
+    public async Task Installing_and_removing_a_pack_each_say_that_the_installed_packs_changed()
+    {
+        var zip = PackZip();
+        _handler.Respond(_ => Ok(zip));
+        var library = Library();
+        var changes = 0;
+        library.InstalledChanged += (_, _) => changes++;
+
+        var installed = await library.InstallAsync(Pack(zip));
+        Assert.Equal(1, changes);
+        library.Remove(installed);
+
+        Assert.Equal(2, changes);
+    }
+
+    [Fact]
+    public async Task A_failed_install_does_not_say_that_the_installed_packs_changed()
+    {
+        _handler.Respond(_ => new HttpResponseMessage(HttpStatusCode.NotFound));
+        var library = Library();
+        var changes = 0;
+        library.InstalledChanged += (_, _) => changes++;
+
+        await Assert.ThrowsAsync<RegionPackException>(() => library.InstallAsync(Pack(10)));
+
+        Assert.Equal(0, changes);
+    }
+
+    [Fact]
     public async Task A_newer_edition_replaces_the_old_one_and_leaves_none_of_its_files()
     {
         var v1 = PackZip("tiles-v1");
@@ -656,10 +685,13 @@ public sealed class RegionPackLibraryTests : IDisposable
         _handler.Respond(_ => Ok(zip));
         var library = Library();
         var installed = await library.InstallAsync(Pack(zip));
+        var changes = 0;
+        library.InstalledChanged += (_, _) => changes++;
 
         var e = WhileUndeletable(installed, () => Assert.Throws<RegionPackException>(() => library.Remove(installed)));
 
         Assert.Equal("„Landkreis Fürstenfeldbruck“ konnte nicht gelöscht werden. Wird die Karte gerade angezeigt?", e.Message);
+        Assert.Equal(0, changes);
     }
 
     [Fact]

@@ -1,22 +1,30 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using FwAssist.AppLogic.Helpers;
 using FwAssist.AppLogic.Services;
+using FwAssist.AppLogic.Services.Map;
 
 namespace FwAssist.AppLogic.ViewModels;
 
-/// <summary>Which helpers get an icon of their own on the phone's home screen.</summary>
+/// <summary>Which helpers get an icon of their own on the phone's home screen, and the Kartenpakete on the device.</summary>
 public sealed partial class SettingsViewModel : ObservableObject
 {
     public const string PageTitle = "Einstellungen";
 
-    public SettingsViewModel(IReadOnlyList<IHelperModule> modules, ILauncherIcons launcherIcons)
+    public SettingsViewModel(IReadOnlyList<IHelperModule> modules, ILauncherIcons launcherIcons, IRegionPackLibrary? maps = null)
     {
         ArgumentNullException.ThrowIfNull(modules);
         ArgumentNullException.ThrowIfNull(launcherIcons);
         LauncherIcons = modules.Select(m => new LauncherIconToggleViewModel(m.Id, m.Title, launcherIcons, this)).ToList();
+        Maps = maps is null ? null : new MapPacksSection(maps);
     }
 
     public IReadOnlyList<LauncherIconToggleViewModel> LauncherIcons { get; }
+
+    /// <summary>
+    /// The Kartenpakete, or null where the platform offers none. The list of packs on offer is
+    /// fetched only when the user asks for it, so opening Einstellungen never goes online.
+    /// </summary>
+    public MapPacksSection? Maps { get; }
 
     /// <summary>Why the last switch did not take, in German; <see langword="null"/> when it did.</summary>
     [ObservableProperty]
