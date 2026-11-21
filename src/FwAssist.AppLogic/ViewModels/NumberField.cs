@@ -3,7 +3,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using FwAssist.AppLogic.Services;
 using FwAssist.Core;
 
-namespace FwAssist.Helpers.Schaummittel;
+namespace FwAssist.AppLogic.ViewModels;
 
 /// <summary>
 /// One input: the text as typed, kept across a process death, and what it means. An empty field is
