@@ -1,0 +1,1 @@
+A new Kennzeichnungen helper shows orange Warntafeln, the ADR Gefahrzettel and the GHS-Piktogramme offline with picture, meaning and source, and reads the upper number of a Warntafel digit by digit, X included (#21).
