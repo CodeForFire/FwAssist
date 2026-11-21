@@ -16,6 +16,23 @@ cut — see [CONTRIBUTING.md](CONTRIBUTING.md). For the commits themselves, see 
 
 <!-- towncrier release notes start -->
 
+## [0.2.1] - 2026-11-21
+
+The Hydrantenkarte, sharpened after its first use: pinching zooms the map again, the chosen Hydrant carries a red arrow and stays on the map when zoomed out, and the Richtungspfeil announces the arrival with a tone, a vibration and AM HYDRANTEN in large letters. FwAssist now also asks for the vibration permission, which Android grants at install without a dialog.
+
+### Added
+
+- [#73](https://github.com/CodeForFire/FwAssist/pull/73) - At the hydrant the Richtungspfeil plays a short tone and vibrates once, as the phone's silent setting allows, and shows AM HYDRANTEN in large letters above a smaller arrow that still guides the last metres (#70).
+
+### Changed
+
+- [#72](https://github.com/CodeForFire/FwAssist/pull/72) - The Hydrantenkarte marks the chosen Hydrant with a red arrow and a thicker frame, and keeps it on the map when zoomed out too far to show the others (#69).
+
+### Fixed
+
+- [#71](https://github.com/CodeForFire/FwAssist/pull/71) - Pinching the Hydrantenkarte zooms in and out around the fingers instead of throwing the map far off the Kartenpaket (#68).
+
+
 ## [0.2.0] - 2026-11-20
 
 The Hydrantenkarte: the Hydranten around the Einsatzstelle on an offline OpenStreetMap map, the nearest ones with their distance and B-Schläuche, a Richtungspfeil and a Mein Standort button, with the Kartenpakete downloaded under Einstellungen. FwAssist now asks for two permissions, Internet for the Kartenpakete and location for the arrow and the button. The helpers can also be sorted in Einstellungen.
@@ -62,6 +79,7 @@ The first full release of FwAssist: one Android app with a Stoppuhr, a Buchstabi
 - [#11](https://github.com/CodeForFire/helfer/pull/11) - The Funkalphabet keeps the chosen spelling table when Android kills the app in the background (#10).
 
 
-[Unreleased]: https://github.com/CodeForFire/FwAssist/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/CodeForFire/FwAssist/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/CodeForFire/FwAssist/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/CodeForFire/FwAssist/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/CodeForFire/helfer/releases/tag/v0.1.0
