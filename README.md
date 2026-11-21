@@ -29,6 +29,7 @@ deshalb auch so aus.
 | **RTH-Landeplatz** | Vorgaben und Ablauf, wenn die Feuerwehr einen Landeplatz für den Rettungshubschrauber vorbereitet, getrennt für Tag und Nacht. |
 | **Dekon-Platz** | Dekon-Stufen I bis III: Sofortmaßnahmen, Aufbau und Plan für Stufe II, Technik und Ablauf für Stufe III. |
 | **Hydrantenkarte** | Hydranten rund um die Einsatzstelle auf einer Offline-Karte aus OpenStreetMap: die nächsten mit Entfernung (Luftlinie) und Zahl der B-Schläuche, und ein Richtungspfeil vom eigenen Standort zum gewählten Hydranten. Kartenpakete gibt es bisher für Landkreise in Bayern. |
+| **Strahlenschutz** | Richtwerte: die Dosisleistung aus der Transportkennzahl (TKZ) eines Versandstücks, die Dosisleistung in einem anderen Abstand und wo die Absperrgrenze liegt. Ersetzt keine Messung. |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
 [Ideen](https://github.com/CodeForFire/FwAssist/discussions/categories/ideen).
@@ -97,6 +98,10 @@ weiteren Helfer.
 | Hydrantenkarte: die nächsten Hydranten | Hydrantenkarte: ein Hydrant | Hydrantenkarte: Richtungspfeil |
 |---|---|---|
 | ![Hydrantenkarte: die nächsten Hydranten](docs/screenshots/12-hydrantenkarte-naechste.png) | ![Hydrantenkarte: ein Hydrant](docs/screenshots/13-hydrantenkarte-hydrant.png) | ![Hydrantenkarte: Richtungspfeil](docs/screenshots/14-hydrantenkarte-pfeil.png) |
+
+| Strahlenschutz |
+|---|
+| ![Strahlenschutz](docs/screenshots/15-strahlenschutz.png) |
 
 ## Mitmachen & Kontakt
 

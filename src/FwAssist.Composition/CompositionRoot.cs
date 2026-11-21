@@ -13,6 +13,8 @@ using FwAssist.Helpers.Schaummittel;
 using FwAssist.Helpers.Schaummittel.Ui;
 using FwAssist.Helpers.Stoppuhr;
 using FwAssist.Helpers.Stoppuhr.Ui;
+using FwAssist.Helpers.Strahlenschutz;
+using FwAssist.Helpers.Strahlenschutz.Ui;
 using FwAssist.Ui;
 
 namespace FwAssist.Composition;
@@ -32,6 +34,7 @@ public static class CompositionRoot
         new RthLandeplatzModule(),
         new DekonPlatzModule(),
         new HydrantenModule(),
+        new StrahlenschutzModule(),
     ];
 
     public static void RegisterViews(ViewRegistry views)
@@ -43,6 +46,7 @@ public static class CompositionRoot
         RthLandeplatzViews.Register(views);
         DekonPlatzViews.Register(views);
         HydrantenViews.Register(views);
+        StrahlenschutzViews.Register(views);
     }
 
     public static ShellViewModel CreateShell(

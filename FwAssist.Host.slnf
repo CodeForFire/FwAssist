@@ -18,6 +18,8 @@
       "src/Helpers/DekonPlatz/FwAssist.Helpers.DekonPlatz/FwAssist.Helpers.DekonPlatz.csproj",
       "src/Helpers/Hydranten/FwAssist.Helpers.Hydranten.Ui/FwAssist.Helpers.Hydranten.Ui.csproj",
       "src/Helpers/Hydranten/FwAssist.Helpers.Hydranten/FwAssist.Helpers.Hydranten.csproj",
+      "src/Helpers/Strahlenschutz/FwAssist.Helpers.Strahlenschutz.Ui/FwAssist.Helpers.Strahlenschutz.Ui.csproj",
+      "src/Helpers/Strahlenschutz/FwAssist.Helpers.Strahlenschutz/FwAssist.Helpers.Strahlenschutz.csproj",
       "tests/FwAssist.Acceptance.Tests/FwAssist.Acceptance.Tests.csproj",
       "tests/FwAssist.AppLogic.Tests/FwAssist.AppLogic.Tests.csproj",
       "tests/FwAssist.Core.Tests/FwAssist.Core.Tests.csproj",
@@ -26,7 +28,8 @@
       "tests/FwAssist.Helpers.Schaummittel.Tests/FwAssist.Helpers.Schaummittel.Tests.csproj",
       "tests/FwAssist.Helpers.RthLandeplatz.Tests/FwAssist.Helpers.RthLandeplatz.Tests.csproj",
       "tests/FwAssist.Helpers.DekonPlatz.Tests/FwAssist.Helpers.DekonPlatz.Tests.csproj",
-      "tests/FwAssist.Helpers.Hydranten.Tests/FwAssist.Helpers.Hydranten.Tests.csproj"
+      "tests/FwAssist.Helpers.Hydranten.Tests/FwAssist.Helpers.Hydranten.Tests.csproj",
+      "tests/FwAssist.Helpers.Strahlenschutz.Tests/FwAssist.Helpers.Strahlenschutz.Tests.csproj"
     ]
   }
 }

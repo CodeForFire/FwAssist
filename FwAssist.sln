@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
@@ -72,6 +72,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FwAssist.Helpers.Hydranten.Ui", "src\Helpers\Hydranten\FwAssist.Helpers.Hydranten.Ui\FwAssist.Helpers.Hydranten.Ui.csproj", "{B4D4CAA6-B620-4680-9282-40194A55B130}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FwAssist.Helpers.Hydranten.Tests", "tests\FwAssist.Helpers.Hydranten.Tests\FwAssist.Helpers.Hydranten.Tests.csproj", "{A0EC89DF-C981-41FB-81E6-BB3297BCE9C0}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Strahlenschutz", "Strahlenschutz", "{54392D78-8370-9314-5268-07DF37DB2E1B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FwAssist.Helpers.Strahlenschutz", "src\Helpers\Strahlenschutz\FwAssist.Helpers.Strahlenschutz\FwAssist.Helpers.Strahlenschutz.csproj", "{D9D98738-F9BF-4D6B-BC98-4958866291F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FwAssist.Helpers.Strahlenschutz.Ui", "src\Helpers\Strahlenschutz\FwAssist.Helpers.Strahlenschutz.Ui\FwAssist.Helpers.Strahlenschutz.Ui.csproj", "{A5CA600E-C117-41F0-8831-CDDBF23D369E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FwAssist.Helpers.Strahlenschutz.Tests", "tests\FwAssist.Helpers.Strahlenschutz.Tests\FwAssist.Helpers.Strahlenschutz.Tests.csproj", "{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -395,6 +403,42 @@ Global
 		{A0EC89DF-C981-41FB-81E6-BB3297BCE9C0}.Release|x64.Build.0 = Release|Any CPU
 		{A0EC89DF-C981-41FB-81E6-BB3297BCE9C0}.Release|x86.ActiveCfg = Release|Any CPU
 		{A0EC89DF-C981-41FB-81E6-BB3297BCE9C0}.Release|x86.Build.0 = Release|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Debug|x64.Build.0 = Debug|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Debug|x86.Build.0 = Debug|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Release|x64.ActiveCfg = Release|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Release|x64.Build.0 = Release|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Release|x86.ActiveCfg = Release|Any CPU
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7}.Release|x86.Build.0 = Release|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Debug|x64.Build.0 = Debug|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Debug|x86.Build.0 = Debug|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Release|x64.ActiveCfg = Release|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Release|x64.Build.0 = Release|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Release|x86.ActiveCfg = Release|Any CPU
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E}.Release|x86.Build.0 = Release|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Debug|x64.Build.0 = Debug|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Debug|x86.Build.0 = Debug|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Release|x64.ActiveCfg = Release|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Release|x64.Build.0 = Release|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Release|x86.ActiveCfg = Release|Any CPU
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -430,5 +474,9 @@ Global
 		{4CF9A1E3-A0B2-470E-9B2F-78D7968F80FE} = {157DBBC6-4E91-5F5D-E7C1-E67AB23A70A3}
 		{B4D4CAA6-B620-4680-9282-40194A55B130} = {157DBBC6-4E91-5F5D-E7C1-E67AB23A70A3}
 		{A0EC89DF-C981-41FB-81E6-BB3297BCE9C0} = {157DBBC6-4E91-5F5D-E7C1-E67AB23A70A3}
+		{54392D78-8370-9314-5268-07DF37DB2E1B} = {01DB3563-C70A-2833-124A-AA0E5BF3D48F}
+		{D9D98738-F9BF-4D6B-BC98-4958866291F7} = {54392D78-8370-9314-5268-07DF37DB2E1B}
+		{A5CA600E-C117-41F0-8831-CDDBF23D369E} = {54392D78-8370-9314-5268-07DF37DB2E1B}
+		{FBD5D6FE-7819-49B9-A155-54A0D3F56D9C} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 	EndGlobalSection
 EndGlobal

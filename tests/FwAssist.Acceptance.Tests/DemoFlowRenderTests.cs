@@ -12,6 +12,7 @@ using FwAssist.Helpers.Funkalphabet;
 using FwAssist.Helpers.Hydranten;
 using FwAssist.Helpers.RthLandeplatz;
 using FwAssist.Helpers.Schaummittel;
+using FwAssist.Helpers.Strahlenschutz;
 
 namespace FwAssist.Acceptance.Tests;
 
@@ -378,6 +379,102 @@ public class DemoFlowRenderTests
         page.Laenge.Text = "10";
         page.Breite.Text = "5";
         page.Hoehe.Text = "3";
+        PhoneRender.Settle();
+
+        var form = phone.Window.GetVisualDescendants().OfType<ScrollViewer>().Single(s => s.Name == "Form");
+        Assert.True(
+            form.Extent.Height <= form.Viewport.Height + 1,
+            $"The form is {form.Extent.Height} high in a viewport of {form.Viewport.Height}");
+    }
+
+    private static StrahlenschutzViewModel OpenStrahlenschutz(PhoneRender phone)
+    {
+        phone.Shell.Open(StrahlenschutzModule.HelperId);
+        PhoneRender.Settle();
+        return phone.Window.GetVisualDescendants().OfType<Control>()
+            .Select(c => c.DataContext).OfType<StrahlenschutzViewModel>().First();
+    }
+
+    [AvaloniaFact]
+    public void The_strahlenschutz_absperrung_shows_the_absperrgrenze_and_only_its_fields()
+    {
+        var phone = new PhoneRender();
+        var page = OpenStrahlenschutz(phone);
+
+        ((RadioButton)Named(phone, "AbsperrungMode")).IsChecked = true;
+        page.Dosisleistung.Text = "400";
+        page.Messabstand.Text = "5";
+        PhoneRender.Settle();
+
+        Assert.True(page.IsAbsperrung);
+        Assert.False(Named(phone, "TkzFields").IsVisible);
+        Assert.False(Named(phone, "ZielabstandField").IsVisible);
+        Assert.True(Named(phone, "GrenzwertField").IsVisible);
+        Assert.Equal(["Absperrgrenze", "20 m"], ResultTexts(phone.Window));
+
+        phone.Capture("15-strahlenschutz.png");
+    }
+
+    [AvaloniaFact]
+    public void The_strahlenschutz_tkz_shows_the_dose_rate_beside_the_package()
+    {
+        var phone = new PhoneRender();
+        var page = OpenStrahlenschutz(phone);
+
+        page.Tkz.Text = "2";
+        page.TkzAbstand.Text = "2";
+        PhoneRender.Settle();
+
+        Assert.False(Named(phone, "MessungFields").IsVisible);
+        Assert.Equal(["In 1 m", "20 µSv/h", "In 2 m", "5,0 µSv/h"], ResultTexts(phone.Window));
+    }
+
+    [AvaloniaFact]
+    public void A_bad_strahlenschutz_value_shows_its_error_under_the_field()
+    {
+        var phone = new PhoneRender();
+        var page = OpenStrahlenschutz(phone);
+
+        page.TkzAbstand.Text = "0";
+        PhoneRender.Settle();
+
+        var errors = phone.Window.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.Classes.Contains("field-error") && t.IsEffectivelyVisible)
+            .Select(t => t.Text);
+        Assert.Equal(["Von 0,1 bis 10.000 m möglich."], errors);
+    }
+
+    [AvaloniaFact]
+    public void The_strahlenschutz_modes_and_the_grenzwert_preset_stay_glove_sized_on_a_320_dp_phone()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Width = 320;
+        var page = OpenStrahlenschutz(phone);
+        page.IsAbsperrung = true;
+        PhoneRender.Settle();
+
+        foreach (var name in new[] { "TkzMode", "AbstandMode", "AbsperrungMode", "GrenzwertPreset" })
+        {
+            var control = Named(phone, name);
+            Assert.True(control.Bounds.Height >= 48, $"{name} is {control.Bounds.Height} high");
+            Assert.True(control.Bounds.Width >= 48, $"{name} is {control.Bounds.Width} wide");
+        }
+
+        var label = Named(phone, "AbsperrungMode").GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == "ABSPERRUNG");
+        Assert.True(label.Bounds.Right <= Named(phone, "AbsperrungMode").Bounds.Width + 1, "ABSPERRUNG is cut off");
+    }
+
+    // 780 dp is about what a 915 dp phone leaves between its status and navigation bars.
+    [AvaloniaFact]
+    public void A_whole_strahlenschutz_calculation_fits_without_scrolling()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Height = 780;
+        var page = OpenStrahlenschutz(phone);
+
+        page.IsAbsperrung = true;
+        page.Dosisleistung.Text = "400";
+        page.Messabstand.Text = "5";
         PhoneRender.Settle();
 
         var form = phone.Window.GetVisualDescendants().OfType<ScrollViewer>().Single(s => s.Name == "Form");
