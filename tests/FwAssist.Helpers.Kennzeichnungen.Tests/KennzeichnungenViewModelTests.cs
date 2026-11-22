@@ -31,12 +31,61 @@ public class KennzeichnungenViewModelTests
     }
 
     [Fact]
+    public void Choosing_rohrleitung_or_gasflasche_shows_that_group_with_its_note()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { IsRohrleitung = true };
+        Assert.Same(Kennzeichenkatalog.Rohrleitungen, vm.Entries);
+        Assert.True(vm.HasGroupNote);
+        Assert.Contains("Beschriftung am Rohr", vm.GroupNote, StringComparison.Ordinal);
+
+        vm.IsGasflasche = true;
+        Assert.Same(Kennzeichenkatalog.Gasflaschen, vm.Entries);
+        Assert.False(vm.IsRohrleitung);
+        Assert.Contains("Gefahrgutaufkleber", vm.GroupNote, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void The_pictogram_groups_carry_no_note()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { IsGhs = true };
+
+        Assert.False(vm.HasGroupNote);
+        Assert.Equal(string.Empty, vm.GroupNote);
+    }
+
+    [Fact]
+    public void A_search_hides_the_group_note()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { IsGasflasche = true, Query = "Ammoniak" };
+
+        Assert.False(vm.HasGroupNote);
+        Assert.Equal("flasche-gelb", Assert.Single(vm.Entries).PictureKey);
+    }
+
+    [Fact]
+    public void Choosing_a_group_notifies_its_note()
+    {
+        var vm = new KennzeichnungenViewModel(_settings);
+        var changed = new List<string?>();
+        vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+        vm.IsGasflasche = true;
+
+        Assert.Contains(nameof(vm.GroupNote), changed);
+        Assert.Contains(nameof(vm.HasGroupNote), changed);
+        Assert.Contains(nameof(vm.IsGasflasche), changed);
+        Assert.Contains(nameof(vm.IsRohrleitung), changed);
+    }
+
+    [Fact]
     public void A_radio_button_losing_its_check_changes_nothing()
     {
         var vm = new KennzeichnungenViewModel(_settings) { IsGhs = true };
 
         vm.IsWarntafel = false;
         vm.IsGefahrzettel = false;
+        vm.IsRohrleitung = false;
+        vm.IsGasflasche = false;
 
         Assert.True(vm.IsGhs);
     }

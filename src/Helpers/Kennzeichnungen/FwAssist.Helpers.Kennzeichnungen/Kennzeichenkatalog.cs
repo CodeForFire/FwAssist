@@ -5,7 +5,9 @@ namespace FwAssist.Helpers.Kennzeichnungen;
 /// 2021, 5.2.2.2.2 (Gefahrzettelmuster, the class headings and the column "Symbol und Farbe des
 /// Symbols"); the GHS entries are CLP, Verordnung (EG) Nr. 1272/2008, Anhang V, in the version of
 /// ABl. L 353 of 31.12.2008, shortened to the hazard classes without their categories where the
-/// screen has no room. Every entry names its paragraph in <see cref="Kennzeichen.Source"/>.
+/// screen has no room. Rohrleitungen and Gasflaschen are documented on their lists. The wording is
+/// our own and states the sources' facts in new sentences. Every entry names its paragraph in
+/// <see cref="Kennzeichen.Source"/>.
 /// </summary>
 public static class Kennzeichenkatalog
 {
@@ -17,7 +19,10 @@ public static class Kennzeichenkatalog
     [
         "ADR 2021, Teil 5: Gefahrzettel 5.2.2.2.2, Kennzeichen 5.2.1.8 und 5.3.3, Warntafeln 5.3.2",
         "Verordnung (EG) Nr. 1272/2008 (CLP), Anhang V: Gefahrenpiktogramme",
-        "Bilder: Wikimedia Commons, gemeinfrei (Public Domain)",
+        "TRGS 201, Anhang 3: Kennzeichnung von Rohrleitungen nach den Durchflussstoffen (nach DIN 2403)",
+        "DIN EN 1089-3:2011, Farbcodierung von Gasflaschen, deutscher Text wie in BGBl. II Nr. 458/2011 (Österreich)",
+        "Industriegaseverband (IGV): Faltblatt Farbkennzeichnung von Gasflaschen",
+        "Bilder: Wikimedia Commons, gemeinfrei (Public Domain); Rohrleitungen und Gasflaschen eigene Zeichnungen",
     ];
 
     public static IReadOnlyList<Kennzeichen> Warntafeln { get; } =
@@ -95,18 +100,85 @@ public static class Kennzeichenkatalog
         Piktogramm("ghs09", "GHS09", "Umwelt", "Gewässergefährdend: akut Kategorie 1, chronisch Kategorien 1 und 2", "3.1"),
     ];
 
+    /// <summary>
+    /// TRGS 201 Anhang 3, Tabelle 2, which gives DIN 2403's groups "beispielhaft". The group
+    /// colour is the band, the extra colour a field beside it, the lettering colour the arrow.
+    /// </summary>
+    public static IReadOnlyList<Kennzeichen> Rohrleitungen { get; } =
+    [
+        Rohr("1", "Wasser", "grün", null, "weiß"),
+        Rohr("2", "Wasserdampf", "rot", null, "weiß"),
+        Rohr("3", "Luft", "grau", null, "schwarz"),
+        Rohr("4", "Brennbare Gase", "gelb", "rot", "schwarz"),
+        Rohr("5", "Nichtbrennbare Gase", "gelb", "schwarz", "schwarz"),
+        Rohr("6", "Säuren", "orange", null, "schwarz"),
+        Rohr("7", "Laugen", "violett", null, "weiß"),
+        Rohr("8", "Brennbare Flüssigkeiten und Feststoffe", "braun", "rot", "weiß"),
+        Rohr("9", "Nichtbrennbare Flüssigkeiten und Feststoffe", "braun", "schwarz", "weiß"),
+        Rohr("0", "Sauerstoff", "blau", null, "weiß"),
+    ];
+
+    /// <summary>
+    /// The shoulder colours of EN 1089-3:2011: by hazard (6.2.2), for special gases (6.2.3), for
+    /// breathing and medical mixtures (6.2.5, 6.2.6) and the white body (6.3). Examples of gases
+    /// are Tabelle D.1 and the IGV leaflet; the body colour of industrial cylinders is the IGV's.
+    /// </summary>
+    public static IReadOnlyList<Kennzeichen> Gasflaschen { get; } =
+    [
+        Flasche("flasche-gelb", "gelb", "Giftig und/oder ätzend", "Schulter gelb", "Zum Beispiel Ammoniak, Chlor, Kohlenmonoxid, Schwefeldioxid.", "6.2.2.2 a, Tabelle D.1"),
+        Flasche("flasche-rot", "rot", "Entzündbar", "Schulter rot", "Zum Beispiel Wasserstoff, Methan, Ethylen, Formiergas.", "6.2.2.2 b, Tabelle D.1"),
+        Flasche("flasche-hellblau", "hellblau", "Oxidierend", "Schulter hellblau", "Brandfördernde Gase und Gemische, soweit sie keine eigene Farbe haben.", "6.2.2.2 c"),
+        Flasche("flasche-gruen", "leuchtend grün", "Inert (erstickend)", "Schulter leuchtend gelbgrün", "Nicht giftig, nicht entzündbar, nicht oxidierend, verdrängt aber den Sauerstoff. Zum Beispiel Krypton, Xenon, Neon, Schweißschutzgas, technische Druckluft.", "6.2.2.2 d, IGV"),
+        Flasche("flasche-gelb-rot", "gelb + rot", "Giftig und entzündbar", "Schulter gelb mit rotem Ring", "Die Hauptgefahr gelb, die Nebengefahr rot. Der rote Ring darf fehlen.", "6.2.2.3 a"),
+        Flasche("flasche-gelb-hellblau", "gelb + hellblau", "Giftig und oxidierend", "Schulter gelb mit hellblauem Ring", "Die Hauptgefahr gelb, die Nebengefahr hellblau. Der hellblaue Ring darf fehlen.", "6.2.2.3 b"),
+        Flasche("flasche-acetylen", "kastanienbraun", "Acetylen", "Schulter kastanienbraun", "Entzündbar, mit eigener Farbe statt rot.", "6.2.3.1 a"),
+        Flasche("flasche-sauerstoff", "weiß", "Sauerstoff", "Schulter weiß", "Oxidierend, mit eigener Farbe statt hellblau.", "6.2.3.1 b"),
+        Flasche("flasche-lachgas", "blau", "Distickstoffmonoxid (Lachgas)", "Schulter dunkelblau", "Oxidierend, mit eigener Farbe.", "6.2.3.1 b"),
+        Flasche("flasche-argon", "dunkelgrün", "Argon", "Schulter dunkelgrün", "Inert. Außerhalb der Medizin auch leuchtend grün.", "6.2.3.2 a"),
+        Flasche("flasche-stickstoff", "schwarz", "Stickstoff", "Schulter schwarz", "Inert. Außerhalb der Medizin auch leuchtend grün.", "6.2.3.2 b"),
+        Flasche("flasche-kohlendioxid", "grau", "Kohlendioxid", "Schulter grau", "Inert, erstickend. Außerhalb der Medizin auch leuchtend grün.", "6.2.3.2 c"),
+        Flasche("flasche-helium", "braun", "Helium", "Schulter braun", "Inert. Außerhalb der Medizin auch leuchtend grün.", "6.2.3.2 d"),
+        Flasche("flasche-luft", "weiß + schwarz", "Luft zum Atmen", "Schulter in Vierteln weiß und schwarz", "Atemluft oder synthetische Luft, medizinisch oder als Atemgas. Atemluftflaschen der Feuerwehr haben meist einen gelben oder roten Mantel in Leuchtfarbe.", "6.2.5 a, IGV"),
+        Flasche("flasche-sauerstoff-helium", "weiß + braun", "Sauerstoff und Helium", "Schulter mit weißem und braunem Ring", "Gemisch zum Atmen mit mindestens 20 % Sauerstoff.", "6.2.5 b"),
+        Flasche("flasche-sauerstoff-kohlendioxid", "weiß + grau", "Sauerstoff und Kohlendioxid", "Schulter mit weißem und grauem Ring", "Gemisch zum Atmen mit mindestens 20 % Sauerstoff.", "6.2.5 c"),
+        Flasche("flasche-sauerstoff-lachgas", "weiß + blau", "Sauerstoff und Lachgas", "Schulter mit weißem und dunkelblauem Ring", "Gemisch zum Atmen mit mindestens 20 % Sauerstoff.", "6.2.5 d"),
+        Flasche("flasche-stickstoffmonoxid", "türkisblau", "Stickstoffmonoxid in Stickstoff", "Schulter türkisblau, Mantel weiß", "Medizinisches Gemisch mit weniger als 1000 ppm Stickstoffmonoxid.", "6.2.6"),
+        Flasche("flasche-medizinisch", "weißer Mantel", "Gas für die medizinische Verwendung", "Mantel ganz weiß, Schulter in der Farbe des Gases", "Ein weißer Flaschenkörper bedeutet immer: medizinisches Gas. Industriegase haben ihn nie.", "6.3"),
+    ];
+
     /// <summary>Every marking, group by group, in the order the screen lists them.</summary>
-    public static IReadOnlyList<Kennzeichen> All { get; } = [.. Warntafeln, .. Gefahrzettel, .. Ghs];
+    public static IReadOnlyList<Kennzeichen> All { get; } = [.. Warntafeln, .. Gefahrzettel, .. Ghs, .. Rohrleitungen, .. Gasflaschen];
 
     public static IReadOnlyList<Kennzeichen> Of(KennzeichenGruppe gruppe) => gruppe switch
     {
         KennzeichenGruppe.Gefahrzettel => Gefahrzettel,
         KennzeichenGruppe.Ghs => Ghs,
+        KennzeichenGruppe.Rohrleitung => Rohrleitungen,
+        KennzeichenGruppe.Gasflasche => Gasflaschen,
         _ => Warntafeln,
     };
 
     private static Kennzeichen Zettel(string key, string muster, string name, string look, string klasse) =>
         new(KennzeichenGruppe.Gefahrzettel, key, muster, name, look, klasse, "ADR 5.2.2.2.2, Muster " + muster);
+
+    private static Kennzeichen Rohr(string gruppe, string stoff, string farbe, string? zusatz, string schrift)
+    {
+        var look = zusatz is null
+            ? $"Band {farbe}, Pfeil und Schrift {schrift}"
+            : $"Band {farbe} mit Feldern in {zusatz}, Pfeil und Schrift {schrift}";
+        var colours = zusatz is null ? $"Gruppenfarbe {farbe}" : $"Gruppenfarbe {farbe}, Zusatzfarbe {zusatz}";
+        return new(
+            KennzeichenGruppe.Rohrleitung,
+            "rohr-" + gruppe,
+            "Gruppe " + gruppe,
+            stoff,
+            look,
+            colours + ".",
+            "TRGS 201 Anhang 3, Tabelle 2");
+    }
+
+    private static Kennzeichen Flasche(string key, string farbe, string name, string look, string meaning, string paragraph) =>
+        new(KennzeichenGruppe.Gasflasche, key, farbe, name, look, meaning, "EN 1089-3:2011, " + paragraph);
 
     private static Kennzeichen Piktogramm(string key, string code, string symbol, string meaning, string section) =>
         new(KennzeichenGruppe.Ghs, key, code, symbol, symbol + " schwarz auf Weiß, roter Rand, Raute", meaning, "CLP Anhang V, " + section);

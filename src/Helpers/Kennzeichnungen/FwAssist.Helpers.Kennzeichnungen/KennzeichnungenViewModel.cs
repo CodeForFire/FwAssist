@@ -34,6 +34,10 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsWarntafel))]
     [NotifyPropertyChangedFor(nameof(IsGefahrzettel))]
     [NotifyPropertyChangedFor(nameof(IsGhs))]
+    [NotifyPropertyChangedFor(nameof(IsRohrleitung))]
+    [NotifyPropertyChangedFor(nameof(IsGasflasche))]
+    [NotifyPropertyChangedFor(nameof(GroupNote))]
+    [NotifyPropertyChangedFor(nameof(HasGroupNote))]
     [NotifyPropertyChangedFor(nameof(Entries))]
     [NotifyPropertyChangedFor(nameof(ListTitle))]
     private KennzeichenGruppe _gruppe;
@@ -42,6 +46,7 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(Entries))]
     [NotifyPropertyChangedFor(nameof(ListTitle))]
     [NotifyPropertyChangedFor(nameof(IsSearching))]
+    [NotifyPropertyChangedFor(nameof(HasGroupNote))]
     [NotifyPropertyChangedFor(nameof(HasNoHits))]
     [NotifyPropertyChangedFor(nameof(HasEntries))]
     [NotifyPropertyChangedFor(nameof(Gefahrnummer))]
@@ -69,7 +74,36 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
         set => Choose(value, KennzeichenGruppe.Ghs);
     }
 
+    public bool IsRohrleitung
+    {
+        get => Gruppe == KennzeichenGruppe.Rohrleitung;
+        set => Choose(value, KennzeichenGruppe.Rohrleitung);
+    }
+
+    public bool IsGasflasche
+    {
+        get => Gruppe == KennzeichenGruppe.Gasflasche;
+        set => Choose(value, KennzeichenGruppe.Gasflasche);
+    }
+
     public bool IsSearching => !string.IsNullOrWhiteSpace(Query);
+
+    /// <summary>
+    /// What a colour code cannot promise, said above the group that relies on one: EN 1089-3's
+    /// introduction makes the Gefahrgutaufkleber the binding mark, and TRGS 201 Anhang 3 gives its
+    /// colours as an example and asks for the Stoff and the direction on the pipe as well.
+    /// </summary>
+    public string GroupNote => Gruppe switch
+    {
+        KennzeichenGruppe.Gasflasche =>
+            "Verbindlich ist der Gefahrgutaufkleber auf der Flasche. Die Farbe der Schulter hilft nur aus der Entfernung.",
+        KennzeichenGruppe.Rohrleitung =>
+            "Die Farben sind ein Beispiel aus der TRGS. Verbindlich ist die Beschriftung am Rohr mit Stoff und Fließrichtung.",
+        _ => string.Empty,
+    };
+
+    /// <summary>Only on the group's own page: a search mixes groups, and the note would mislabel half of it.</summary>
+    public bool HasGroupNote => !IsSearching && GroupNote.Length > 0;
 
     /// <summary>While searching: the hits of every group. Otherwise: the chosen group.</summary>
     public IReadOnlyList<Kennzeichen> Entries =>
@@ -82,6 +116,8 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
         {
             KennzeichenGruppe.Gefahrzettel => "GEFAHRZETTEL (ADR, BEFÖRDERUNG)",
             KennzeichenGruppe.Ghs => "GHS-PIKTOGRAMME (CLP, VERPACKUNG UND ARBEITSPLATZ)",
+            KennzeichenGruppe.Rohrleitung => "ROHRLEITUNGEN NACH DEM DURCHFLUSSSTOFF",
+            KennzeichenGruppe.Gasflasche => "GASFLASCHEN: FARBE DER SCHULTER (EN 1089-3)",
             _ => "WARNTAFELN UND KENNZEICHEN AM FAHRZEUG",
         };
 
