@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.AppLogic.ViewModels;assembly=FwAssist.AppLogic"
+             xmlns:views="clr-namespace:FwAssist.Ui.Views"
+             x:Class="FwAssist.Ui.Views.NumberFieldView"
+             x:DataType="vm:NumberField">
+  <!-- Every calculator's input: what to type, the box, and why the value cannot be used. -->
+  <StackPanel Spacing="4">
+    <TextBlock Classes="overline" Text="{Binding Label}" />
+    <views:NumberBox />
+    <TextBlock Classes="field-error" Text="{Binding Error}"
+               IsVisible="{Binding !IsValid}" />
+  </StackPanel>
+</UserControl>

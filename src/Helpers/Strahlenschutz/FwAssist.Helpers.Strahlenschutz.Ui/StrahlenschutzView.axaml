@@ -1,0 +1,80 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.Helpers.Strahlenschutz;assembly=FwAssist.Helpers.Strahlenschutz"
+             xmlns:views="clr-namespace:FwAssist.Ui.Views;assembly=FwAssist.Ui"
+             x:Class="FwAssist.Helpers.Strahlenschutz.Ui.StrahlenschutzView"
+             x:DataType="vm:StrahlenschutzViewModel">
+  <UserControl.Styles>
+    <!-- Three modes share a phone's width: the text is what has to fit, not Fluent's padding. -->
+    <Style Selector="RadioButton.mode">
+      <Setter Property="HorizontalAlignment" Value="Stretch" />
+      <Setter Property="Padding" Value="4,0,0,0" />
+    </Style>
+  </UserControl.Styles>
+
+  <!-- A form scrolls, so the soft keyboard leaves the field being typed into visible. -->
+  <DockPanel Margin="16">
+    <Button x:Name="ResetButton" DockPanel.Dock="Bottom" Margin="0,12,0,0" HorizontalAlignment="Stretch"
+            Content="ZURÜCKSETZEN" Command="{Binding ResetCommand}" />
+    <ScrollViewer x:Name="Form">
+      <StackPanel Spacing="12">
+        <!-- RadioButtons: a screen reader hears which calculation is selected. -->
+        <Grid ColumnDefinitions="*,*,*">
+          <RadioButton x:Name="TkzMode" Grid.Column="0" Classes="mode" GroupName="Modus" Content="TKZ"
+                       IsChecked="{Binding IsTkz}" />
+          <RadioButton x:Name="AbstandMode" Grid.Column="1" Classes="mode" GroupName="Modus" Content="ABSTAND"
+                       IsChecked="{Binding IsAbstand}" />
+          <RadioButton x:Name="AbsperrungMode" Grid.Column="2" Classes="mode" GroupName="Modus" Content="ABSPERRUNG"
+                       IsChecked="{Binding IsAbsperrung}" />
+        </Grid>
+
+        <StackPanel x:Name="TkzFields" Spacing="12" IsVisible="{Binding IsTkz}">
+          <ContentControl Content="{Binding Tkz}" />
+          <ContentControl Content="{Binding TkzAbstand}" />
+        </StackPanel>
+
+        <!-- ABSTAND and ABSPERRUNG start from the same measurement. -->
+        <StackPanel x:Name="MessungFields" Spacing="12" IsVisible="{Binding !IsTkz}">
+          <ContentControl Content="{Binding Dosisleistung}" />
+          <ContentControl Content="{Binding Messabstand}" />
+        </StackPanel>
+
+        <ContentControl x:Name="ZielabstandField" Content="{Binding Zielabstand}" IsVisible="{Binding IsAbstand}" />
+
+        <!-- The limit holds a short number, so its preset shares the row. -->
+        <StackPanel x:Name="GrenzwertField" Spacing="4" IsVisible="{Binding IsAbsperrung}">
+          <TextBlock Classes="overline" Text="{Binding Grenzwert.Label}" />
+          <Grid ColumnDefinitions="*,8,*">
+            <views:NumberBox Grid.Column="0" DataContext="{Binding Grenzwert}" />
+            <Button x:Name="GrenzwertPreset" Grid.Column="2" HorizontalAlignment="Stretch"
+                    Content="25 µSv/h"
+                    Command="{Binding SetGrenzwertCommand}"
+                    CommandParameter="{x:Static vm:StrahlenschutzViewModel.GrenzwertPreset}" />
+          </Grid>
+          <TextBlock Classes="field-error" Text="{Binding Grenzwert.Error}"
+                     IsVisible="{Binding !Grenzwert.IsValid}" />
+        </StackPanel>
+
+        <StackPanel x:Name="ResultPanel" Spacing="4" IsVisible="{Binding HasResults}">
+          <TextBlock Classes="overline" Text="RICHTWERT" />
+          <ItemsControl x:Name="Results" ItemsSource="{Binding Results}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ResultLine">
+                <Grid ColumnDefinitions="*,Auto" MinHeight="32">
+                  <TextBlock Grid.Column="0" Classes="secondary" VerticalAlignment="Center" Text="{Binding Label}" />
+                  <TextBlock Grid.Column="1" Classes="display" VerticalAlignment="Center" Text="{Binding Value}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <TextBlock x:Name="Hinweis" Classes="secondary" TextWrapping="Wrap" Text="{Binding Hinweis}" />
+        <TextBlock Classes="secondary" TextWrapping="Wrap"
+                   Text="Richtwerte. Ersetzen keine Messung." />
+        <TextBlock Classes="secondary" TextWrapping="Wrap"
+                   Text="{x:Static vm:StrahlenschutzViewModel.Quellen}" />
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

@@ -35,6 +35,7 @@ on:
           - Helpers.DekonPlatz
           - Helpers.Hydranten
           - Helpers.Kennzeichnungen
+          - Helpers.Strahlenschutz
 
 permissions:
   contents: read
@@ -56,7 +57,7 @@ jobs:
         # A scheduled run has no inputs and mutates everything; a manual run
         # can pick one project. Keep this list in step with MUTATE_PROJECTS in
         # the Makefile.
-        project: ${{ fromJSON((inputs.project == '' || inputs.project == 'all') && '["Core","AppLogic","Helpers.Stoppuhr","Helpers.Funkalphabet","Helpers.Schaummittel","Helpers.RthLandeplatz","Helpers.DekonPlatz","Helpers.Hydranten","Helpers.Kennzeichnungen"]' || format('["{0}"]', inputs.project)) }}
+        project: ${{ fromJSON((inputs.project == '' || inputs.project == 'all') && '["Core","AppLogic","Helpers.Stoppuhr","Helpers.Funkalphabet","Helpers.Schaummittel","Helpers.RthLandeplatz","Helpers.DekonPlatz","Helpers.Hydranten","Helpers.Kennzeichnungen","Helpers.Strahlenschutz"]' || format('["{0}"]', inputs.project)) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -105,7 +106,7 @@ jobs:
       matrix:
         # Keep in step with MUTATE_PROJECTS in the Makefile. A new helper adds
         # its Helpers.<Name> entry here and to the workflow_dispatch options.
-        project: [Core, AppLogic, Helpers.Stoppuhr, Helpers.Funkalphabet, Helpers.Schaummittel, Helpers.RthLandeplatz, Helpers.DekonPlatz, Helpers.Hydranten, Helpers.Kennzeichnungen]
+        project: [Core, AppLogic, Helpers.Stoppuhr, Helpers.Funkalphabet, Helpers.Schaummittel, Helpers.RthLandeplatz, Helpers.DekonPlatz, Helpers.Hydranten, Helpers.Kennzeichnungen, Helpers.Strahlenschutz]
     env:
       PROJECT: ${{ matrix.project }}
       BASE: origin/${{ github.base_ref }}

@@ -2,6 +2,7 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FwAssist.AppLogic.Services;
+using FwAssist.AppLogic.ViewModels;
 using FwAssist.Core;
 
 namespace FwAssist.Helpers.Schaummittel;

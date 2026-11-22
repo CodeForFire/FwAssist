@@ -153,6 +153,22 @@
           "FwAssist.Ui": "[1.0.0, )"
         }
       },
+      "fwassist.helpers.strahlenschutz": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
+          "FwAssist.AppLogic": "[1.0.0, )",
+          "FwAssist.Core": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.strahlenschutz.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Avalonia": "[12.1.4, )",
+          "FwAssist.Helpers.Strahlenschutz": "[1.0.0, )",
+          "FwAssist.Ui": "[1.0.0, )"
+        }
+      },
       "fwassist.ui": {
         "type": "Project",
         "dependencies": {

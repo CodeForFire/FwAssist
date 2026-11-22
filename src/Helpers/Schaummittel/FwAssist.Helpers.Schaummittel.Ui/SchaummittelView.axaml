@@ -1,19 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:FwAssist.Helpers.Schaummittel;assembly=FwAssist.Helpers.Schaummittel"
+             xmlns:views="clr-namespace:FwAssist.Ui.Views;assembly=FwAssist.Ui"
              x:Class="FwAssist.Helpers.Schaummittel.Ui.SchaummittelView"
              x:DataType="vm:SchaummittelViewModel">
-  <UserControl.Resources>
-    <!-- Every input looks the same. Number opens the phone's decimal keyboard, and with no
-         suggestions it cannot rewrite a value. -->
-    <DataTemplate x:Key="NumberInput" x:DataType="vm:NumberField">
-      <TextBox Text="{Binding Text}"
-               AutomationProperties.Name="{Binding Label}"
-               TextInputOptions.ContentType="Number"
-               TextInputOptions.ShowSuggestions="False" />
-    </DataTemplate>
-  </UserControl.Resources>
-
   <UserControl.Styles>
     <!-- Three presets share what the field leaves of a phone's width: the width goes, the height
          stays at the glove-sized 48 dp. -->
@@ -27,17 +17,6 @@
       <Setter Property="HorizontalAlignment" Value="Left" />
     </Style>
   </UserControl.Styles>
-
-  <UserControl.DataTemplates>
-    <DataTemplate DataType="vm:NumberField" x:DataType="vm:NumberField">
-      <StackPanel Spacing="4">
-        <TextBlock Classes="overline" Text="{Binding Label}" />
-        <ContentControl Content="{Binding}" ContentTemplate="{StaticResource NumberInput}" />
-        <TextBlock Classes="field-error" Text="{Binding Error}"
-                   IsVisible="{Binding !IsValid}" />
-      </StackPanel>
-    </DataTemplate>
-  </UserControl.DataTemplates>
 
   <!-- A form scrolls, so the soft keyboard leaves the field being typed into visible. -->
   <DockPanel Margin="16">
@@ -60,8 +39,7 @@
         <StackPanel Spacing="4">
           <TextBlock Classes="overline" Text="{Binding Zumischrate.Label}" />
           <Grid ColumnDefinitions="64,8,*,8,*,8,*,8,*">
-            <ContentControl Grid.Column="0" HorizontalContentAlignment="Stretch"
-                            Content="{Binding Zumischrate}" ContentTemplate="{StaticResource NumberInput}" />
+            <views:NumberBox Grid.Column="0" DataContext="{Binding Zumischrate}" />
             <Button Grid.Column="2" Classes="preset" Content="0,1 %"
                     Command="{Binding SetZumischrateCommand}" CommandParameter="0,1" />
             <Button Grid.Column="4" Classes="preset" Content="1 %"
@@ -78,8 +56,7 @@
         <StackPanel Spacing="4">
           <TextBlock Classes="overline" Text="{Binding Verschaeumungszahl.Label}" />
           <Grid ColumnDefinitions="64,8,*,8,*,8,*">
-            <ContentControl Grid.Column="0" HorizontalContentAlignment="Stretch"
-                            Content="{Binding Verschaeumungszahl}" ContentTemplate="{StaticResource NumberInput}" />
+            <views:NumberBox Grid.Column="0" DataContext="{Binding Verschaeumungszahl}" />
             <Button Grid.Column="2" Classes="preset" Content="SCHWER 10"
                     Command="{Binding SetVerschaeumungszahlCommand}" CommandParameter="10" />
             <Button Grid.Column="4" Classes="preset" Content="MITTEL 75"
