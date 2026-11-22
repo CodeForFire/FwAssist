@@ -92,6 +92,16 @@ public class KennzeichenkatalogTests
         Assert.All(Kennzeichenkatalog.Gasflaschen, e => Assert.StartsWith("EN 1089-3:2011, ", e.Source, StringComparison.Ordinal));
     }
 
+    [Theory]
+    [InlineData("ghs02", "desensibilisierte explosive Stoffe")]
+    [InlineData("ghs07", "schädigt die Ozonschicht")]
+    public void A_ghs_piktogramm_names_the_hazards_clp_added_after_2008(string key, string hazard)
+    {
+        var entry = Kennzeichenkatalog.Ghs.Single(e => e.PictureKey == key);
+
+        Assert.Contains(hazard, entry.Meaning, StringComparison.Ordinal);
+    }
+
     [Fact]
     public void An_unknown_group_falls_back_to_the_warntafeln()
     {

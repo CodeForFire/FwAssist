@@ -2,12 +2,13 @@ namespace FwAssist.Helpers.Kennzeichnungen;
 
 /// <summary>
 /// Every marking the helper shows, by group. Names and descriptions of the Gefahrzettel are ADR
-/// 2021, 5.2.2.2.2 (Gefahrzettelmuster, the class headings and the column "Symbol und Farbe des
-/// Symbols"); the GHS entries are CLP, Verordnung (EG) Nr. 1272/2008, Anhang V, in the version of
-/// ABl. L 353 of 31.12.2008, shortened to the hazard classes without their categories where the
-/// screen has no room. Rohrleitungen and Gasflaschen are documented on their lists. The wording is
-/// our own and states the sources' facts in new sentences. Every entry names its paragraph in
-/// <see cref="Kennzeichen.Source"/>.
+/// 5.2.2.2.2 (Gefahrzettelmuster, the class headings and the column "Symbol und Farbe des
+/// Symbols"), German text of ADR 2021, unchanged in substance by the 2023 and 2025 amendments and
+/// by the draft for 2027. The GHS entries are CLP, Verordnung (EG) Nr. 1272/2008, Anhang V, in the
+/// consolidated version of 1 September 2025, shortened to the hazard classes without their
+/// categories where the screen has no room. Rohrleitungen and Gasflaschen are documented on their
+/// lists. The wording is our own and states the sources' facts in new sentences. Every entry names
+/// its paragraph in <see cref="Kennzeichen.Source"/>.
 /// </summary>
 public static class Kennzeichenkatalog
 {
@@ -17,8 +18,8 @@ public static class Kennzeichenkatalog
     /// <summary>Named on screen, and no more than named.</summary>
     public static IReadOnlyList<string> Sources { get; } =
     [
-        "ADR 2021, Teil 5: Gefahrzettel 5.2.2.2.2, Kennzeichen 5.2.1.8 und 5.3.3, Warntafeln 5.3.2",
-        "Verordnung (EG) Nr. 1272/2008 (CLP), Anhang V: Gefahrenpiktogramme",
+        "ADR 2025, Teil 5: Gefahrzettel 5.2.2.2.2, Kennzeichen 5.2.1.8 und 5.3.3, Warntafeln 5.3.2",
+        "Verordnung (EG) Nr. 1272/2008 (CLP), Anhang V: Gefahrenpiktogramme, Fassung vom 1. September 2025",
         "TRGS 201, Anhang 3: Kennzeichnung von Rohrleitungen nach den Durchflussstoffen (nach DIN 2403)",
         "DIN EN 1089-3:2011, Farbcodierung von Gasflaschen, deutscher Text wie in BGBl. II Nr. 458/2011 (Österreich)",
         "Industriegaseverband (IGV): Faltblatt Farbkennzeichnung von Gasflaschen",
@@ -90,12 +91,12 @@ public static class Kennzeichenkatalog
     public static IReadOnlyList<Kennzeichen> Ghs { get; } =
     [
         Piktogramm("ghs01", "GHS01", "Explodierende Bombe", "Instabile explosive Stoffe, explosive Stoffe der Unterklassen 1.1 bis 1.4, selbstzersetzliche Stoffe und organische Peroxide der Typen A und B", "1.1"),
-        Piktogramm("ghs02", "GHS02", "Flamme", "Entzündbare Gase, Aerosole, Flüssigkeiten und Feststoffe; pyrophore und selbsterhitzungsfähige Stoffe; Stoffe, die mit Wasser entzündbare Gase abgeben; selbstzersetzliche Stoffe und organische Peroxide der Typen B bis F", "1.2"),
+        Piktogramm("ghs02", "GHS02", "Flamme", "Entzündbare Gase, Aerosole, Flüssigkeiten und Feststoffe; pyrophore und selbsterhitzungsfähige Stoffe; Stoffe, die mit Wasser entzündbare Gase abgeben; selbstzersetzliche Stoffe und organische Peroxide der Typen B bis F; desensibilisierte explosive Stoffe", "1.2"),
         Piktogramm("ghs03", "GHS03", "Flamme über einem Kreis", "Oxidierende Gase, Flüssigkeiten und Feststoffe", "1.3"),
         Piktogramm("ghs04", "GHS04", "Gasflasche", "Gase unter Druck: verdichtet, verflüssigt, tiefgekühlt verflüssigt oder gelöst", "1.4"),
         Piktogramm("ghs05", "GHS05", "Ätzwirkung", "Auf Metalle korrosiv wirkend, hautätzend, schwere Augenschädigung", "1.5, 2.2"),
         Piktogramm("ghs06", "GHS06", "Totenkopf mit gekreuzten Knochen", "Akute Toxizität (oral, dermal, inhalativ), Kategorien 1 bis 3", "2.1"),
-        Piktogramm("ghs07", "GHS07", "Ausrufezeichen", "Akute Toxizität Kategorie 4, Reizung von Haut und Augen, Sensibilisierung der Haut, Atemwegsreizung, narkotisierende Wirkung", "2.3"),
+        Piktogramm("ghs07", "GHS07", "Ausrufezeichen", "Akute Toxizität Kategorie 4, Reizung von Haut und Augen, Sensibilisierung der Haut, Atemwegsreizung, narkotisierende Wirkung; schädigt die Ozonschicht", "2.3, 4.1"),
         Piktogramm("ghs08", "GHS08", "Gesundheitsgefahr", "Sensibilisierung der Atemwege, Keimzellmutagenität, Karzinogenität, Reproduktionstoxizität, Zielorgan-Toxizität, Aspirationsgefahr", "2.4"),
         Piktogramm("ghs09", "GHS09", "Umwelt", "Gewässergefährdend: akut Kategorie 1, chronisch Kategorien 1 und 2", "3.1"),
     ];

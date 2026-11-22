@@ -126,6 +126,15 @@ public class GefahrnummernTests
     }
 
     [Fact]
+    public void Seventy_eight_is_no_longer_listed_since_adr_2025()
+    {
+        Assert.True(Gefahrnummern.TryRead("78", out var number));
+
+        Assert.Null(number.Meaning);
+        Assert.Equal(['7', '8'], number.Digits.Select(d => d.Digit));
+    }
+
+    [Fact]
     public void Every_listed_number_reads_back_as_itself_with_its_meaning()
     {
         Assert.All(Gefahrnummern.ListedNumbers, listed =>
@@ -139,7 +148,7 @@ public class GefahrnummernTests
     [Fact]
     public void The_list_holds_every_number_of_adr_5_3_2_3_2_once()
     {
-        Assert.Equal(98, Gefahrnummern.ListedNumbers.Count);
+        Assert.Equal(97, Gefahrnummern.ListedNumbers.Count);
         Assert.Equal(Gefahrnummern.ListedNumbers.Count, Gefahrnummern.ListedNumbers.Distinct(StringComparer.Ordinal).Count());
     }
 

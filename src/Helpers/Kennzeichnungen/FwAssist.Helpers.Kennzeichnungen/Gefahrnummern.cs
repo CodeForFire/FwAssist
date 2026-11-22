@@ -5,14 +5,17 @@ namespace FwAssist.Helpers.Kennzeichnungen;
 
 /// <summary>
 /// The upper number on an orange Warntafel, the Nummer zur Kennzeichnung der Gefahr. Source: ADR
-/// 2021, Unterabschnitt 5.3.2.3, German text. The digit meanings are 5.3.2.3.1 and the listed
+/// 2025, Unterabschnitt 5.3.2.3: the German text of ADR 2021, checked against the 2023 edition
+/// (formatting changes only) and the 2025 amendments (30. ADR-Änderungsverordnung, BGBl. 2025 II
+/// Nr. 57, which strikes "78 radioaktiver Stoff, ätzend"). The draft for ADR 2027 leaves this
+/// subsection alone. The digit meanings are 5.3.2.3.1 and the listed
 /// meanings are the table of 5.3.2.3.2, quoted with its footnote 3) written out once as
 /// <see cref="WaterNote"/> instead of after every X entry. The ADR's German text is shared with
 /// Switzerland and spells "einschliesslich"; the screen spells it the German way.
 /// </summary>
 public static class Gefahrnummern
 {
-    public const string Source = "ADR 2021, Unterabschnitt 5.3.2.3";
+    public const string Source = "ADR 2025, Unterabschnitt 5.3.2.3";
 
     /// <summary>What an X in front means, ADR 5.3.2.3.1 and footnote 3) of 5.3.2.3.2.</summary>
     public const string WaterNote =
@@ -120,7 +123,6 @@ public static class Gefahrnummern
         ("69", "giftiger oder schwach giftiger Stoff, der spontan zu einer heftigen Reaktion führen kann"),
         ("70", "radioaktiver Stoff"),
         ("768", "radioaktiver Stoff, giftig, ätzend"),
-        ("78", "radioaktiver Stoff, ätzend"),
         ("80", "ätzender oder schwach ätzender Stoff"),
         ("X80", "ätzender oder schwach ätzender Stoff, der mit Wasser gefährlich reagiert"),
         ("823", "ätzender flüssiger Stoff, der mit Wasser reagiert und entzündbare Gase bildet"),
