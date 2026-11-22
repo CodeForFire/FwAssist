@@ -10,17 +10,28 @@
         <TextBlock x:Name="Version" Classes="mono" Text="{Binding VersionText}" />
       </StackPanel>
       <TextBlock Classes="secondary" TextWrapping="Wrap" Text="Ein Projekt von CodeForFire" />
+      <Button x:Name="RepositoryLink" HorizontalAlignment="Stretch"
+              HorizontalContentAlignment="Left"
+              MinHeight="{StaticResource ControlHeight}"
+              Command="{Binding OpenRepositoryCommand}"
+              AutomationProperties.Name="Projekt auf GitHub öffnen">
+        <TextBlock Text="{Binding RepositoryText}" TextWrapping="Wrap" />
+      </Button>
+      <!-- Google Play requires the privacy policy to be reachable inside the app. -->
       <StackPanel Spacing="4">
-        <Button x:Name="RepositoryLink" HorizontalAlignment="Stretch"
+        <TextBlock Classes="overline" Text="DATENSCHUTZ" />
+        <TextBlock Classes="secondary" TextWrapping="Wrap"
+                   Text="Kein Konto, keine Werbung, keine Telemetrie. Den Standort speichert und sendet die App nie." />
+        <Button x:Name="PrivacyPolicyLink" HorizontalAlignment="Stretch"
                 HorizontalContentAlignment="Left"
                 MinHeight="{StaticResource ControlHeight}"
-                Command="{Binding OpenRepositoryCommand}"
-                AutomationProperties.Name="Projekt auf GitHub öffnen">
-          <TextBlock Text="{Binding RepositoryText}" TextWrapping="Wrap" />
+                Command="{Binding OpenPrivacyPolicyCommand}"
+                AutomationProperties.Name="Datenschutzerklärung öffnen">
+          <TextBlock Text="{Binding PrivacyPolicyText}" TextWrapping="Wrap" />
         </Button>
-        <TextBlock x:Name="Error" Classes="field-error" Text="{Binding Error}"
-                   IsVisible="{Binding Error, Converter={x:Static ObjectConverters.IsNotNull}}" />
       </StackPanel>
+      <TextBlock x:Name="Error" Classes="field-error" Text="{Binding Error}"
+                 IsVisible="{Binding Error, Converter={x:Static ObjectConverters.IsNotNull}}" />
       <TextBlock Classes="secondary" TextWrapping="Wrap" Text="Veröffentlicht unter der MIT-Lizenz." />
       <TextBlock Classes="secondary" TextWrapping="Wrap" Text="Copyright (C) 2026 Christian Arlt" />
     </StackPanel>
