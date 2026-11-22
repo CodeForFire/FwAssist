@@ -6,7 +6,8 @@ namespace FwAssist.Helpers.Strahlenschutz;
 /// <item>ADR: ADR 5.1.5.3.1, how the Transportkennzahl (TKZ, Transport Index) is set.</item>
 /// <item>TK: Taschenkarte ABC, AK Gefahrgut, 2023, "Absperren" (the source attached to #25).</item>
 /// </list>
-/// The limits still have to be checked against the current FwDV 500 (2022), issue #22.
+/// The maintainer checked the limits from TK against the current FwDV 500 (2022) after #22 was
+/// merged, and they agree.
 /// </summary>
 public static class Strahlenschutzvorgaben
 {
@@ -26,10 +27,15 @@ public static class Strahlenschutzvorgaben
     /// <summary>The distance the TKZ refers to, in metres (ADR 5.1.5.3.1 (a)).</summary>
     public const decimal TkzBezugsabstandMeter = 1m;
 
-    /// <summary>TK, "Absperren": the Gefahrenbereich ends at 25 µSv/h at an A-Einsatz.</summary>
+    /// <summary>
+    /// TK, "Absperren": the Gefahrenbereich ends at 25 µSv/h at an A-Einsatz. Checked against FwDV 500 (2022).
+    /// </summary>
     public const decimal GrenzwertGefahrenbereich = 25m;
 
-    /// <summary>TK, "Absperren": the Gefahrenbereich is at least 50 m around the Schadenstelle.</summary>
+    /// <summary>
+    /// TK, "Absperren": the Gefahrenbereich is at least 50 m around the Schadenstelle. Checked against
+    /// FwDV 500 (2022).
+    /// </summary>
     public const decimal MindestGefahrenbereichMeter = 50m;
 
     /// <summary>Named on screen, and no more than named. A number and its unit never wrap apart.</summary>
