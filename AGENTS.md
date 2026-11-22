@@ -108,7 +108,10 @@ manifest disagree. `AutomationPropertiesTests` walks every helper's page.
 A helper's view model is created once per process and kept while the user
 visits other helpers, so a running timer keeps running. A helper whose state
 must survive the process being killed persists it itself, through
-`HelperServices.Settings` (`IHelperSettings`).
+`HelperServices.Settings` (`IHelperSettings`). Einsatz data, such as the
+Hydrantenkarte's Einsatzstelle, goes through `HelperServices.DeviceOnlySettings`
+instead: Android's backup copies `Settings` into the user's Google account, and
+`BackupRulesTests` holds the line that it never copies the device-only file.
 
 ## Mobile
 

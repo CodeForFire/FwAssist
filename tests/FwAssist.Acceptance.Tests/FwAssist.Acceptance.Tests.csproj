@@ -31,6 +31,9 @@
     <!-- Read by LauncherAliasTests: the manifest is the Android head's, which this project cannot
          reference (it targets net10.0-android). -->
     <None Include="..\..\src\FwAssist.App.Android\AndroidManifest.xml" Link="AndroidManifest.xml" CopyToOutputDirectory="PreserveNewest" />
+    <!-- Read by BackupRulesTests, for the same reason. -->
+    <None Include="..\..\src\FwAssist.App.Android\Resources\xml\data_extraction_rules.xml" Link="data_extraction_rules.xml" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="..\..\src\FwAssist.App.Android\Resources\xml\backup_rules.xml" Link="backup_rules.xml" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

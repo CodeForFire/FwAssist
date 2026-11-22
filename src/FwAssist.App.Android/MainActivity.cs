@@ -49,11 +49,12 @@ public class MainActivity : AvaloniaMainActivity
             new HelperServices(
                 time,
                 new DispatcherTimerTicker(),
-                new AndroidHelperSettings(context),
+                new AndroidHelperSettings(context, AndroidHelperSettings.BackedUp),
                 new RegionPackLibrary(Http, Path.Join(files, "maps")),
                 _location,
                 _compass,
-                _signal),
+                _signal,
+                new AndroidHelperSettings(context, AndroidHelperSettings.DeviceOnly)),
             new AndroidLauncherIcons(context),
             new AndroidExternalLinks(context),
             AppVersionText.Of(typeof(MainActivity).Assembly));

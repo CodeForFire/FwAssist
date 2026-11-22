@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 11 and older, which read this instead of data_extraction_rules.xml. Same exclusions:
+     the Einsatzstelle and the Kartenpakete never go into the user's Google account. -->
+<full-backup-content>
+    <exclude domain="sharedpref" path="helper-settings-device.xml" />
+    <exclude domain="file" path="maps/" />
+</full-backup-content>

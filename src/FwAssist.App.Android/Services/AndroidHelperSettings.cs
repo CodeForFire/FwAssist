@@ -3,17 +3,28 @@ using FwAssist.AppLogic.Services;
 
 namespace FwAssist.App.Android.Services;
 
-/// <summary>Helper settings in the app's private SharedPreferences. Nothing leaves the phone.</summary>
+/// <summary>
+/// Helper settings in one of the app's private SharedPreferences files. The app sends none of it
+/// anywhere; Android's own backup may copy <see cref="BackedUp"/>, but never <see cref="DeviceOnly"/>.
+/// </summary>
 internal sealed class AndroidHelperSettings : IHelperSettings
 {
-    private const string FileName = "helper-settings";
+    /// <summary>Small preferences that Android's backup may carry to a new phone.</summary>
+    public const string BackedUp = "helper-settings";
+
+    /// <summary>
+    /// Einsatz data. Resources/xml/data_extraction_rules.xml and backup_rules.xml exclude this file
+    /// by name, as <c>helper-settings-device.xml</c>; rename it only together with them.
+    /// </summary>
+    public const string DeviceOnly = "helper-settings-device";
 
     private readonly ISharedPreferences _preferences;
 
-    public AndroidHelperSettings(Context context)
+    public AndroidHelperSettings(Context context, string fileName)
     {
         ArgumentNullException.ThrowIfNull(context);
-        _preferences = context.GetSharedPreferences(FileName, FileCreationMode.Private)
+        ArgumentException.ThrowIfNullOrEmpty(fileName);
+        _preferences = context.GetSharedPreferences(fileName, FileCreationMode.Private)
             ?? throw new InvalidOperationException("Android returned no SharedPreferences.");
     }
 

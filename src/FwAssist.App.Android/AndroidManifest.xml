@@ -36,7 +36,14 @@
     <uses-feature android:name="android.hardware.location" android:required="false" />
     <uses-feature android:name="android.hardware.location.gps" android:required="false" />
     <uses-feature android:name="android.hardware.sensor.compass" android:required="false" />
+    <!-- Android's Auto Backup copies the app's data into the user's Google account. The two rule
+         files keep the Einsatzstelle (helper-settings-device) and the Kartenpakete (files/maps) out
+         of it: the first is Einsatz data, the second large enough to push the app past the backup
+         quota, after which Android backs up nothing. data_extraction_rules is read from Android 12,
+         fullBackupContent before. BackupRulesTests holds the line. -->
     <application android:label="FwAssist" android:icon="@drawable/ic_launcher"
+                 android:dataExtractionRules="@xml/data_extraction_rules"
+                 android:fullBackupContent="@xml/backup_rules"
                  android:theme="@style/MyTheme.NoActionBar" android:usesCleartextTraffic="false">
 
         <!-- singleTask: a helper's own icon brings the running app forward and arrives through
