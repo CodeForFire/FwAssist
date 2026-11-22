@@ -1,0 +1,119 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.Helpers.Kennzeichnungen;assembly=FwAssist.Helpers.Kennzeichnungen"
+             xmlns:ui="clr-namespace:FwAssist.Helpers.Kennzeichnungen.Ui"
+             x:Class="FwAssist.Helpers.Kennzeichnungen.Ui.KennzeichnungenView"
+             x:DataType="vm:KennzeichnungenViewModel">
+  <UserControl.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://FwAssist.Helpers.Kennzeichnungen.Ui/Pictures.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </UserControl.Resources>
+
+  <UserControl.Styles>
+    <Style Selector="TextBlock.heading">
+      <Setter Property="FontSize" Value="18" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+    <Style Selector="TextBlock.line">
+      <Setter Property="FontSize" Value="15" />
+      <Setter Property="TextWrapping" Value="Wrap" />
+    </Style>
+  </UserControl.Styles>
+
+  <!-- The field stays at the top and the list scrolls under it, so the soft keyboard never covers
+       what is being typed. The group switch sits at the bottom, in thumb reach. RadioButtons: a
+       screen reader hears which group is selected, and the line above the list names it in words. -->
+  <DockPanel Margin="16">
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,8,*,8,*" Margin="0,12,0,0">
+      <RadioButton x:Name="WarntafelGroup" Grid.Column="0" GroupName="Gruppe" Content="WARNTAFEL"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsWarntafel}"
+                   IsCheckedChanged="OnGruppeChanged" />
+      <RadioButton x:Name="GefahrzettelGroup" Grid.Column="2" GroupName="Gruppe" Content="ZETTEL"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsGefahrzettel}"
+                   IsCheckedChanged="OnGruppeChanged" />
+      <RadioButton x:Name="GhsGroup" Grid.Column="4" GroupName="Gruppe" Content="GHS"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsGhs}"
+                   IsCheckedChanged="OnGruppeChanged" />
+    </Grid>
+
+    <!-- A Gefahrnummer is typed as read off the plate, so the keyboard may not correct it. -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,8,Auto">
+      <TextBox x:Name="Search" Grid.Column="0" MaxLength="40"
+               PlaceholderText="Nummer oder Stichwort"
+               AutomationProperties.Name="Nummer von der Warntafel oder Stichwort"
+               TextInputOptions.ShowSuggestions="False"
+               TextInputOptions.AutoCapitalization="False"
+               Text="{Binding Query}" />
+      <Button x:Name="ClearButton" Grid.Column="2" Content="LÖSCHEN" Command="{Binding ClearCommand}" />
+    </Grid>
+
+    <ScrollViewer x:Name="Scroller" Margin="0,12,0,0">
+      <StackPanel Spacing="16">
+        <Border x:Name="GefahrnummerCard" IsVisible="{Binding HasGefahrnummer}"
+                Background="{DynamicResource SurfaceRaisedBrush}" CornerRadius="8" Padding="12">
+          <StackPanel Spacing="6">
+            <TextBlock Classes="overline" Text="NUMMER ZUR KENNZEICHNUNG DER GEFAHR" />
+            <TextBlock x:Name="GefahrnummerText" Classes="display mono" FontSize="32"
+                       Text="{Binding Gefahrnummer.Number, FallbackValue=''}" />
+            <TextBlock x:Name="GefahrnummerMeaning" Classes="heading" Text="{Binding GefahrnummerMeaning}" />
+            <ItemsControl x:Name="GefahrnummerNotes" ItemsSource="{Binding GefahrnummerNotes}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="x:String">
+                  <TextBlock Classes="line" Margin="0,3" Text="{Binding}" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Classes="secondary" Text="{x:Static vm:Gefahrnummern.Source}" />
+          </StackPanel>
+        </Border>
+
+        <TextBlock x:Name="ListTitle" Classes="overline" TextWrapping="Wrap" Text="{Binding ListTitle}"
+                   IsVisible="{Binding HasEntries}" />
+        <TextBlock x:Name="NoHits" Classes="line" IsVisible="{Binding HasNoHits}"
+                   Text="Nichts gefunden. Anderes Stichwort versuchen oder die Gruppe unten wählen." />
+
+        <ItemsControl x:Name="Entries" ItemsSource="{Binding Entries}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="16" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:Kennzeichen">
+              <Grid ColumnDefinitions="96,12,*">
+                <ui:PictureImage Grid.Column="0" Width="96" Height="96" VerticalAlignment="Top"
+                                 Key="{Binding PictureKey}"
+                                 AutomationProperties.Name="{Binding Name}" />
+                <StackPanel Grid.Column="2" Spacing="2">
+                  <TextBlock Classes="display heading" Text="{Binding Code}" />
+                  <TextBlock Classes="line" FontWeight="SemiBold" Text="{Binding Name}" />
+                  <TextBlock Classes="line" Text="{Binding Meaning}" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{Binding Look}" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{Binding Source}" />
+                </StackPanel>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <StackPanel x:Name="SourceList" Spacing="4">
+          <TextBlock Classes="overline" Text="QUELLEN" />
+          <ItemsControl ItemsSource="{x:Static vm:Kennzeichenkatalog.Sources}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Classes="secondary" TextWrapping="Wrap" Margin="0,2" Text="{Binding}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{x:Static vm:Kennzeichenkatalog.SourceNote}" />
+        </StackPanel>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

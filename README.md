@@ -29,6 +29,7 @@ deshalb auch so aus.
 | **RTH-Landeplatz** | Vorgaben und Ablauf, wenn die Feuerwehr einen Landeplatz für den Rettungshubschrauber vorbereitet, getrennt für Tag und Nacht. |
 | **Dekon-Platz** | Dekon-Stufen I bis III: Sofortmaßnahmen, Aufbau und Plan für Stufe II, Technik und Ablauf für Stufe III. |
 | **Hydrantenkarte** | Hydranten rund um die Einsatzstelle auf einer Offline-Karte aus OpenStreetMap: die nächsten mit Entfernung (Luftlinie) und Zahl der B-Schläuche, und ein Richtungspfeil vom eigenen Standort zum gewählten Hydranten. Kartenpakete gibt es bisher für Landkreise in Bayern. |
+| **Kennzeichnungen** | Orange Warntafeln, Gefahrzettel nach ADR und GHS-Piktogramme mit Bild und Bedeutung, offline und durchsuchbar. Die obere Nummer einer Warntafel wird Ziffer für Ziffer erklärt, das X für die Gefahr mit Wasser eingeschlossen. |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
 [Ideen](https://github.com/CodeForFire/FwAssist/discussions/categories/ideen).
@@ -97,6 +98,10 @@ weiteren Helfer.
 | Hydrantenkarte: die nächsten Hydranten | Hydrantenkarte: ein Hydrant | Hydrantenkarte: Richtungspfeil |
 |---|---|---|
 | ![Hydrantenkarte: die nächsten Hydranten](docs/screenshots/12-hydrantenkarte-naechste.png) | ![Hydrantenkarte: ein Hydrant](docs/screenshots/13-hydrantenkarte-hydrant.png) | ![Hydrantenkarte: Richtungspfeil](docs/screenshots/14-hydrantenkarte-pfeil.png) |
+
+| Kennzeichnungen: Nummer auf der Warntafel | Kennzeichnungen: Gefahrzettel | Kennzeichnungen: GHS-Piktogramme |
+|---|---|---|
+| ![Kennzeichnungen: Nummer auf der Warntafel](docs/screenshots/15-kennzeichnungen-nummer.png) | ![Kennzeichnungen: Gefahrzettel](docs/screenshots/16-kennzeichnungen-gefahrzettel.png) | ![Kennzeichnungen: GHS-Piktogramme](docs/screenshots/17-kennzeichnungen-ghs.png) |
 
 ## Mitmachen & Kontakt
 
