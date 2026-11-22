@@ -10,7 +10,7 @@ StrykerOutput/
 *.trx
 artifacts/
 
-# Signing material. The Google Play upload key lives in ~/.config/helfer/, never in the
+# Signing material. The Google Play upload key lives in ~/.config/fwassist/, never in the
 # tree — see docs/releasing.md. These patterns are defence in depth, not the mechanism.
 *.p12
 *.jks

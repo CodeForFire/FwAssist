@@ -156,17 +156,16 @@ debug-signed APK has to be uninstalled once; the release body says so.
 
 The upload key is generated once, on a laptop, and never committed
 (`.gitignore` carries `*.p12`, `*.jks`, `*.keystore`, `*.pass` as defence in
-depth — the mechanism is that it lives outside the tree). Its path and alias
-keep the `helfer` name, like the applicationId:
+depth — the mechanism is that it lives outside the tree):
 
 ```bash
-mkdir -p ~/.config/helfer && chmod 700 ~/.config/helfer
+mkdir -p ~/.config/fwassist && chmod 700 ~/.config/fwassist
 keytool -genkeypair -v \
-  -keystore ~/.config/helfer/helfer-upload.p12 -storetype PKCS12 \
-  -alias helfer-upload -keyalg RSA -keysize 4096 -validity 10000 \
+  -keystore ~/.config/fwassist/fwassist-upload.p12 -storetype PKCS12 \
+  -alias fwassist-upload -keyalg RSA -keysize 4096 -validity 10000 \
   -dname "CN=CodeForFire, O=CodeForFire, C=DE"
-printf '%s' '<password>' > ~/.config/helfer/helfer-upload.pass
-chmod 600 ~/.config/helfer/helfer-upload.pass
+printf '%s' '<password>' > ~/.config/fwassist/fwassist-upload.pass
+chmod 600 ~/.config/fwassist/fwassist-upload.pass
 ```
 
 `-validity 10000` is about 27 years, past Play's 2033 minimum. Use one password
@@ -180,10 +179,10 @@ project with one maintainer — but recovery is a support round-trip, not a
 convenience.
 
 Three things can never be changed after the first upload: the package name
-(`de.codeforfire.helfer`), the app signing key, and the account type. **Confirm
-the package name is final before that first upload.** It stays `helfer` although
-the app is now FwAssist, because it already identifies every sideloaded install
-(see `AGENTS.md`, *Helpers*).
+(`de.codeforfire.fwassist`), the app signing key, and the account type. The
+package name matches the app's name and is final; it replaced
+`de.codeforfire.helfer` before anything reached Play, so no Play install carries
+the old one.
 
 #### Handing the key and Play access to CI
 
@@ -197,10 +196,10 @@ publish the other.
    only the tag pattern `v*`.
 2. **Keystore secrets** in that Environment, not in the repository:
    ```bash
-   base64 -w0 ~/.config/helfer/helfer-upload.p12 \
+   base64 -w0 ~/.config/fwassist/fwassist-upload.p12 \
      | gh secret set ANDROID_UPLOAD_KEYSTORE_B64 --env google-play --repo CodeForFire/FwAssist
    gh secret set ANDROID_UPLOAD_KEYSTORE_PASS --env google-play --repo CodeForFire/FwAssist \
-     < ~/.config/helfer/helfer-upload.pass
+     < ~/.config/fwassist/fwassist-upload.pass
    ```
 3. **Workload Identity Federation**, in the project that already has the *Google
    Play Android Developer API* enabled for Lagebuch:
@@ -285,7 +284,7 @@ The keystore path, password file and alias are overridable (`KEYSTORE=`,
 refuses to run without a keystore and a password file.
 
 Then, in the Play Console: pick the track → *Create new release* → upload
-`de.codeforfire.helfer-Signed.aab` → German release notes → roll out. Never
+`de.codeforfire.fwassist-Signed.aab` → German release notes → roll out. Never
 upload by hand a version the workflow already uploaded: Play refuses the
 `versionCode` a second time.
 

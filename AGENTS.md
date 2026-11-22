@@ -89,13 +89,13 @@ each can have its own launcher icon on the phone's home screen.
    `<Name>Views.Register(ViewRegistry)`.
 3. `CompositionRoot.Modules` and `CompositionRoot.RegisterViews`, and the
    project reference in `FwAssist.Composition.csproj`.
-4. An `<activity-alias>` named `de.codeforfire.helfer.launcher.<id>` in
+4. An `<activity-alias>` named `de.codeforfire.fwassist.launcher.<id>` in
    `src/FwAssist.App.Android/AndroidManifest.xml`, with its icon as
    `Resources/drawable/ic_helper_<id>.xml`, `ic_helper_<id>_foreground.xml` and
    `drawable-anydpi-v26/ic_helper_<id>.xml` (copy the Stoppuhr's three files).
-   The `helfer` in that name is the applicationId, `de.codeforfire.helfer`,
-   and it stays although the app is now FwAssist: changing it would turn
-   every installed copy into a separate app that never receives an update.
+   The `fwassist` in that name is the applicationId, `de.codeforfire.fwassist`,
+   and it is permanent: changing it would turn every installed copy into a
+   separate app that never receives an update.
 5. `tests/FwAssist.Helpers.<Name>.Tests/` with a `stryker-config.json`, and the
    project in `MUTATE_PROJECTS` (Makefile) and in both lists in
    `.github/workflows/mutation.yml`.

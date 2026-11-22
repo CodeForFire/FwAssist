@@ -7,7 +7,7 @@
     <OutputType>Exe</OutputType>
     <!-- Permanent once the first build reaches Google Play: an application id can never be
          changed or reused there. It must be final before the first upload. -->
-    <ApplicationId>de.codeforfire.helfer</ApplicationId>
+    <ApplicationId>de.codeforfire.fwassist</ApplicationId>
     <!-- Placeholders for local builds only. The tag is the source of truth: release.yml passes
          -p:ApplicationVersion (versionCode), -p:ApplicationDisplayVersion (versionName) and
          -p:Version (assembly version, shown on the home screen). Never bump these by hand. -->
@@ -46,7 +46,7 @@
        passwords are read from a file rather than passed literally; see docs/releasing.md. -->
   <PropertyGroup Condition="'$(AndroidSigningKeyStore)' != ''">
     <AndroidKeyStore>true</AndroidKeyStore>
-    <AndroidSigningKeyAlias Condition="'$(AndroidSigningKeyAlias)' == ''">helfer-upload</AndroidSigningKeyAlias>
+    <AndroidSigningKeyAlias Condition="'$(AndroidSigningKeyAlias)' == ''">fwassist-upload</AndroidSigningKeyAlias>
   </PropertyGroup>
 
   <ItemGroup>
