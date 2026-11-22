@@ -42,6 +42,7 @@ DIE HELFER
 • Hydrantenkarte — Hydranten an der Einsatzstelle auf einer Offline-Karte, die nächsten mit Entfernung und B-Schläuchen, und ein Richtungspfeil zum gewählten Hydranten
 • Kennzeichnungen — Warntafeln, Gefahrzettel, GHS-Piktogramme, Rohrleitungen und Gasflaschen erkennen, mit der Nummer auf der Warntafel Ziffer für Ziffer erklärt
 • Strahlenschutz — Dosisleistung aus TKZ und Abstand, Absperrgrenze, als Richtwerte neben der Messung
+• Sandsack — Sandsäcke, Sand und Arbeitszeit für einen Sandsackdamm, als Richtwerte
 
 Weitere Helfer folgen. Ideen dafür sammeln wir offen auf GitHub.
 

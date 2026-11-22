@@ -11,6 +11,8 @@ using FwAssist.Helpers.Kennzeichnungen;
 using FwAssist.Helpers.Kennzeichnungen.Ui;
 using FwAssist.Helpers.RthLandeplatz;
 using FwAssist.Helpers.RthLandeplatz.Ui;
+using FwAssist.Helpers.Sandsack;
+using FwAssist.Helpers.Sandsack.Ui;
 using FwAssist.Helpers.Schaummittel;
 using FwAssist.Helpers.Schaummittel.Ui;
 using FwAssist.Helpers.Stoppuhr;
@@ -38,6 +40,7 @@ public static class CompositionRoot
         new HydrantenModule(),
         new KennzeichnungenModule(),
         new StrahlenschutzModule(),
+        new SandsackModule(),
     ];
 
     public static void RegisterViews(ViewRegistry views)
@@ -51,6 +54,7 @@ public static class CompositionRoot
         HydrantenViews.Register(views);
         KennzeichnungenViews.Register(views);
         StrahlenschutzViews.Register(views);
+        SandsackViews.Register(views);
     }
 
     public static ShellViewModel CreateShell(

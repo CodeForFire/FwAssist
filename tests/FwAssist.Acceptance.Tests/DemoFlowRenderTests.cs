@@ -13,6 +13,7 @@ using FwAssist.Helpers.Hydranten;
 using FwAssist.Helpers.Kennzeichnungen;
 using FwAssist.Helpers.Kennzeichnungen.Ui;
 using FwAssist.Helpers.RthLandeplatz;
+using FwAssist.Helpers.Sandsack;
 using FwAssist.Helpers.Schaummittel;
 using FwAssist.Helpers.Strahlenschutz;
 
@@ -485,6 +486,83 @@ public class DemoFlowRenderTests
         page.Dosisleistung.Text = "400";
         page.Messabstand.Text = "5";
         PhoneRender.Settle();
+
+        var form = phone.Window.GetVisualDescendants().OfType<ScrollViewer>().Single(s => s.Name == "Form");
+        Assert.True(
+            form.Extent.Height <= form.Viewport.Height + 1,
+            $"The form is {form.Extent.Height} high in a viewport of {form.Viewport.Height}");
+    }
+
+    private static SandsackViewModel OpenSandsack(PhoneRender phone)
+    {
+        phone.Shell.Open(SandsackModule.HelperId);
+        PhoneRender.Settle();
+        return phone.Window.GetVisualDescendants().OfType<Control>()
+            .Select(c => c.DataContext).OfType<SandsackViewModel>().First();
+    }
+
+    private static SandsackViewModel FilledSandsack(PhoneRender phone)
+    {
+        var page = OpenSandsack(phone);
+        page.Laenge.Text = "100";
+        page.Hoehe.Text = "1";
+        page.Helfer.Text = "10";
+        PhoneRender.Settle();
+        return page;
+    }
+
+    [AvaloniaFact]
+    public void The_sandsack_shows_sacks_sand_and_time_for_a_dam()
+    {
+        var phone = new PhoneRender();
+        FilledSandsack(phone);
+
+        Assert.Equal(
+            ["Sandsäcke", "16.000", "Sand", "300,0 m³", "Sand, nass", "600,0 t", "Arbeitszeit", "80 h"],
+            ResultTexts(phone.Window));
+
+        phone.Capture("21-sandsack.png");
+    }
+
+    [AvaloniaFact]
+    public void A_bad_sandsack_height_shows_its_error_under_the_field()
+    {
+        var phone = new PhoneRender();
+        var page = OpenSandsack(phone);
+
+        page.Hoehe.Text = "3";
+        PhoneRender.Settle();
+
+        var errors = phone.Window.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.Classes.Contains("field-error") && t.IsEffectivelyVisible)
+            .Select(t => t.Text);
+        Assert.Equal(["Von 0,1 bis 2,0 m möglich."], errors);
+    }
+
+    [AvaloniaFact]
+    public void The_sandsack_fields_and_reset_stay_glove_sized_on_a_320_dp_phone()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Width = 320;
+        OpenSandsack(phone);
+
+        var controls = phone.Window.GetVisualDescendants().OfType<TextBox>().Cast<Control>()
+            .Append(Named(phone, "ResetButton"))
+            .ToList();
+        Assert.Equal(4, controls.Count);
+        foreach (var control in controls)
+        {
+            Assert.True(control.Bounds.Height >= 48, $"{control.GetType().Name} is {control.Bounds.Height} high");
+        }
+    }
+
+    // 780 dp is about what a 915 dp phone leaves between its status and navigation bars.
+    [AvaloniaFact]
+    public void A_whole_sandsack_calculation_fits_without_scrolling()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Height = 780;
+        FilledSandsack(phone);
 
         var form = phone.Window.GetVisualDescendants().OfType<ScrollViewer>().Single(s => s.Name == "Form");
         Assert.True(
