@@ -6,8 +6,8 @@ namespace FwAssist.Helpers.Strahlenschutz;
 /// <item>ADR: ADR 5.1.5.3.1, how the Transportkennzahl (TKZ, Transport Index) is set.</item>
 /// <item>TK: Taschenkarte ABC, AK Gefahrgut, 2023, "Absperren" (the source attached to #25).</item>
 /// </list>
-/// The maintainer checked the limits from TK against the current FwDV 500 (2022) after #22 was
-/// merged, and they agree.
+/// After #22 was merged, the maintainer checked the limits from TK against the current FwDV 500
+/// (2022) and the TKZ rules against the current ADR, and both agree.
 /// </summary>
 public static class Strahlenschutzvorgaben
 {
