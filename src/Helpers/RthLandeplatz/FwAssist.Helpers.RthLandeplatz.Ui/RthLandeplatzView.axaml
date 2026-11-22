@@ -41,8 +41,8 @@
     <ui:DrawingTemplate />
   </UserControl.DataTemplates>
 
-  <!-- The pilot's decision and the abort rule stay put while the steps scroll under them, so neither
-       can be scrolled away. The mode switch sits at the bottom, in thumb reach. RadioButtons: a screen
+  <!-- The mode with its timeframe, the pilot's decision and the abort rule stay put while the steps
+       scroll under them, so none can be scrolled away. The mode switch sits at the bottom, in thumb reach. RadioButtons: a screen
        reader hears which mode is selected, and the section headings say which phase a line is from. -->
   <DockPanel Margin="16">
     <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,12,*" Margin="0,12,0,0">
@@ -55,6 +55,10 @@
     </Grid>
 
     <StackPanel DockPanel.Dock="Top" Spacing="8" Margin="0,0,0,12">
+      <StackPanel Spacing="2">
+        <TextBlock x:Name="ModeHeading" Classes="display heading" Text="{Binding ModeHeading}" />
+        <TextBlock x:Name="ModeDefinition" Classes="secondary" TextWrapping="Wrap" Text="{Binding ModeDefinition}" />
+      </StackPanel>
       <Border x:Name="AbortRule" Classes="banner abort" IsVisible="{Binding IsNacht}">
         <TextBlock Classes="display heading" TextWrapping="Wrap" Text="{x:Static vm:Landeplatzvorgaben.AbortRule}" />
       </Border>
@@ -65,9 +69,6 @@
 
     <ScrollViewer>
       <StackPanel Spacing="20">
-        <TextBlock x:Name="NightDefinition" Classes="secondary" TextWrapping="Wrap"
-                   Text="{x:Static vm:Landeplatzvorgaben.NightDefinition}" />
-
         <ItemsControl x:Name="Sections" ItemsSource="{Binding Sections}">
           <ItemsControl.ItemsPanel>
             <ItemsPanelTemplate>

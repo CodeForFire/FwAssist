@@ -25,13 +25,93 @@
         </ItemsControl.ItemTemplate>
       </ItemsControl>
 
-      <!-- Google Play requires the privacy policy inside the app. Text, not a link: opening a URL
-           would need a launcher seam and a URL validator for a page that is read once. -->
-      <TextBlock Classes="overline" Text="DATENSCHUTZ" Margin="0,12,0,0" />
-      <TextBlock Classes="secondary" TextWrapping="Wrap"
-                 Text="FwAssist speichert keine personenbezogenen Daten, braucht kein Konto und keine Berechtigungen und sendet nichts. Die Datenschutzerklärung steht hier:" />
-      <TextBlock x:Name="PrivacyPolicyUrl" TextWrapping="Wrap"
-                 Text="codeforfire.github.io/fwassist/datenschutz" />
+      <!-- The order of the helpers on the overview. The grip at the right of each row picks it up,
+           and the row follows the finger until it is let go; the rest of the row scrolls the page as
+           usual. The drag itself lives in the code-behind, the move in HelperOrderSection.Move. -->
+      <Panel IsVisible="{Binding Order, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel x:Name="HelperOrder" Spacing="12" Margin="0,12,0,0" DataContext="{Binding Order}"
+                    x:DataType="vm:HelperOrderSection">
+          <TextBlock Classes="overline" Text="REIHENFOLGE IN DER ÜBERSICHT" TextWrapping="Wrap" />
+          <TextBlock Classes="secondary" TextWrapping="Wrap"
+                     Text="Am Griff rechts festhalten und an die neue Stelle ziehen." />
+          <ItemsControl x:Name="HelperOrderRows" ItemsSource="{Binding Rows}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:HelperOrderRow">
+                <Border Classes="order-row" BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,0,1"
+                        Padding="0,4">
+                  <Grid ColumnDefinitions="*,Auto" MinHeight="{StaticResource ControlHeight}">
+                    <TextBlock Grid.Column="0" Text="{Binding Title}" VerticalAlignment="Center" TextWrapping="Wrap" />
+                    <Border Grid.Column="1" Classes="drag-handle" AutomationProperties.Name="{Binding DragName}">
+                      <PathIcon Data="M8,5 H11 V8 H8 Z M13,5 H16 V8 H13 Z M8,10.5 H11 V13.5 H8 Z M13,10.5 H16 V13.5 H13 Z M8,16 H11 V19 H8 Z M13,16 H16 V19 H13 Z" />
+                    </Border>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+          <Button x:Name="ResetOrder" HorizontalAlignment="Stretch" Content="REIHENFOLGE ZURÜCKSETZEN"
+                  Command="{Binding ResetCommand}" />
+        </StackPanel>
+      </Panel>
+
+      <!-- The Kartenpakete: on this device, and on offer once the user asks for the list. -->
+      <Panel IsVisible="{Binding Maps, Converter={x:Static ObjectConverters.IsNotNull}}">
+        <StackPanel x:Name="MapPacks" Spacing="12" Margin="0,12,0,0" DataContext="{Binding Maps}"
+                    x:DataType="vm:MapPacksSection">
+          <TextBlock Classes="overline" Text="KARTENPAKETE" />
+          <TextBlock Classes="secondary" TextWrapping="Wrap"
+                     Text="Für die Hydrantenkarte. Ein Paket je Landkreis, etwa 100 MB – am besten im WLAN laden. Bisher nur Bayern." />
+          <TextBlock x:Name="MapPacksSummary" Text="{Binding Summary}" />
+          <Button x:Name="LoadCatalog" HorizontalAlignment="Stretch" Content="LISTE LADEN"
+                  Command="{Binding LoadCatalogCommand}" />
+          <TextBlock x:Name="MapPacksStatus" Classes="secondary" TextWrapping="Wrap" Text="{Binding Status}"
+                     IsVisible="{Binding Status, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+          <Border x:Name="ConfirmRemove" BorderBrush="{StaticResource BorderStrongBrush}" BorderThickness="1" Padding="12"
+                  IsVisible="{Binding Removing, Converter={x:Static ObjectConverters.IsNotNull}}">
+            <StackPanel Spacing="8">
+              <TextBlock TextWrapping="Wrap" Text="{Binding Removing.Name, StringFormat='„{0}“ vom Gerät löschen?'}" />
+              <Grid ColumnDefinitions="*,12,*">
+                <Button Grid.Column="0" Classes="signal" HorizontalAlignment="Stretch" Content="WIRKLICH LÖSCHEN"
+                        Command="{Binding ConfirmRemoveCommand}" />
+                <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="BEHALTEN"
+                        Command="{Binding CancelRemoveCommand}" />
+              </Grid>
+            </StackPanel>
+          </Border>
+
+          <ItemsControl x:Name="MapPackRows" ItemsSource="{Binding Packs}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:MapPackRow">
+                <Border BorderBrush="{StaticResource HairlineBrush}" BorderThickness="0,0,0,1" Padding="0,8">
+                  <StackPanel Spacing="6">
+                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" TextWrapping="Wrap" />
+                    <TextBlock Classes="secondary" Text="{Binding Detail}" IsVisible="{Binding ShowsDetail}" TextWrapping="Wrap" />
+                    <TextBlock Classes="secondary" Text="{Binding UpdateReason}" TextWrapping="Wrap"
+                               IsVisible="{Binding UpdateReason, Converter={x:Static ObjectConverters.IsNotNull}}" />
+                    <StackPanel Spacing="6" IsVisible="{Binding IsDownloading}">
+                      <ProgressBar Minimum="0" Maximum="1" Value="{Binding Progress}" AutomationProperties.Name="{Binding ProgressText}" />
+                      <Grid ColumnDefinitions="*,Auto">
+                        <TextBlock Text="{Binding ProgressText}" VerticalAlignment="Center" />
+                        <Button Grid.Column="1" Content="ABBRECHEN"
+                                Command="{Binding $parent[ItemsControl].((vm:MapPacksSection)DataContext).CancelInstallCommand}" />
+                      </Grid>
+                    </StackPanel>
+                    <Grid ColumnDefinitions="*,12,*">
+                      <Button Grid.Column="0" HorizontalAlignment="Stretch" Content="{Binding ActionLabel}" IsVisible="{Binding ShowsAction}"
+                              Command="{Binding $parent[ItemsControl].((vm:MapPacksSection)DataContext).InstallCommand}"
+                              CommandParameter="{Binding}" />
+                      <Button Grid.Column="2" HorizontalAlignment="Stretch" Content="LÖSCHEN" IsVisible="{Binding ShowsRemove}"
+                              Command="{Binding $parent[ItemsControl].((vm:MapPacksSection)DataContext).RemoveCommand}"
+                              CommandParameter="{Binding}" />
+                    </Grid>
+                  </StackPanel>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Panel>
     </StackPanel>
   </ScrollViewer>
 </UserControl>

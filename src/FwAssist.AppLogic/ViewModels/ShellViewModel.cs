@@ -40,8 +40,11 @@ public sealed partial class ShellViewModel : ObservableObject
 
         _modules = modules.ToDictionary(m => m.Id, StringComparer.Ordinal);
         _services = services;
-        Home = new HomeViewModel(modules, Open, OpenSettings, OpenAbout);
-        _settings = new SettingsViewModel(modules, launcherIcons);
+        var settings = services.Settings ?? new InMemoryHelperSettings();
+        var arranged = HelperOrderSection.Arrange(modules, settings.Get(HelperOrderSection.SettingsKey));
+        Home = new HomeViewModel(arranged, Open, OpenSettings, OpenAbout);
+        var order = new HelperOrderSection(modules, settings, Home.Arrange);
+        _settings = new SettingsViewModel(modules, launcherIcons, services.Maps, order);
         _about = new AboutViewModel(externalLinks, appVersion);
         _current = Home;
         _title = HomeTitle;
@@ -60,6 +63,15 @@ public sealed partial class ShellViewModel : ObservableObject
     private string _title;
 
     public bool IsHome => ReferenceEquals(Current, Home);
+
+    // A helper that runs something only while it is on screen hears when the user leaves it.
+    partial void OnCurrentChanged(ObservableObject? oldValue, ObservableObject newValue)
+    {
+        if (!ReferenceEquals(oldValue, newValue) && oldValue is IHelperPage page)
+        {
+            page.Leave();
+        }
+    }
 
     /// <summary>Opens a helper from its tile on the home screen.</summary>
     public void Open(string helperId)

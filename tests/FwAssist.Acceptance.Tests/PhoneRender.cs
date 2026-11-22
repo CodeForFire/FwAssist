@@ -2,8 +2,10 @@ using Avalonia.Controls;
 using Avalonia.Headless;
 using Avalonia.Threading;
 using FwAssist.AppLogic.Helpers;
+using FwAssist.AppLogic.Services.Map;
 using FwAssist.AppLogic.ViewModels;
 using FwAssist.Composition;
+using FwAssist.Helpers.Hydranten.Tests;
 using FwAssist.Testing;
 using FwAssist.Ui.Views;
 
@@ -20,9 +22,25 @@ internal sealed class PhoneRender
     private const int DefaultWidth = 412;
     private const int DefaultHeight = 915;
 
+    // The made-up Fürstenfeldbruck pack, installed once per test run. Every phone shares it and
+    // the catalogue below: nothing here ever reaches the network.
+    private static readonly Lazy<string> MapRoot = new(() =>
+    {
+        var root = Path.Join(Directory.CreateTempSubdirectory("fwassist-phone-").FullName, "maps");
+        FictionalRegionPack.Install(root);
+        return root;
+    });
+
+    private static readonly HttpClient Http = new(new FictionalCatalogue());
+
     public PhoneRender()
     {
-        Shell = CompositionRoot.CreateShell(new HelperServices(Time, Ticker), Icons, new FakeExternalLinks(), "0.1.0");
+        Maps = new RegionPackLibrary(Http, MapRoot.Value);
+        Shell = CompositionRoot.CreateShell(
+            new HelperServices(Time, Ticker, Maps: Maps, Location: Location, Compass: Compass, Signal: Signal),
+            Icons,
+            new FakeExternalLinks(),
+            "0.1.0");
         Window = new Window
         {
             Content = new ShellView { DataContext = Shell },
@@ -39,11 +57,36 @@ internal sealed class PhoneRender
 
     public FakeLauncherIcons Icons { get; } = new();
 
+    public RegionPackLibrary Maps { get; }
+
+    public FakeLocationSource Location { get; } = new();
+
+    public FakeCompass Compass { get; } = new();
+
+    public FakeAttentionSignal Signal { get; } = new();
+
     public ShellViewModel Shell { get; }
 
     public Window Window { get; }
 
     public static void Settle() => Dispatcher.UIThread.RunJobs();
+
+    /// <summary>
+    /// Runs the UI thread's jobs until <paramref name="done"/> holds, for work that finishes on a
+    /// thread-pool thread, such as a pack's water points being read. Fails after five seconds.
+    /// </summary>
+    public static void SettleUntil(Func<bool> done)
+    {
+        ArgumentNullException.ThrowIfNull(done);
+        var deadline = DateTime.UtcNow.AddSeconds(5);
+        Settle();
+        while (!done())
+        {
+            Assert.True(DateTime.UtcNow < deadline, "The UI did not settle within five seconds.");
+            Thread.Sleep(10);
+            Settle();
+        }
+    }
 
     public void Capture(string name)
     {

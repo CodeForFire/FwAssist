@@ -1,0 +1,36 @@
+namespace FwAssist.AppLogic.Services.Map;
+
+/// <summary>
+/// The Kartenpakete on this device and the catalogue they come from.
+/// </summary>
+public interface IRegionPackLibrary
+{
+    /// <summary>
+    /// A pack was installed or removed. Raised on the caller's context once the change is on disk,
+    /// so a map open elsewhere in the app can show the new set of packs.
+    /// </summary>
+    event EventHandler? InstalledChanged;
+
+    /// <summary>The packs the catalogue offers.</summary>
+    /// <exception cref="RegionPackException">The catalogue could not be fetched or read.</exception>
+    Task<IReadOnlyList<RegionPackInfo>> GetCatalogAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>The packs installed on this device, by name. A folder that is not a complete pack is left out.</summary>
+    /// <exception cref="RegionPackException">The pack folder could not be read.</exception>
+    IReadOnlyList<InstalledRegionPack> GetInstalled();
+
+    /// <summary>
+    /// Downloads <paramref name="pack"/> and installs it, replacing an older copy of the same pack.
+    /// <paramref name="progress"/> runs from 0 to 1 while downloading and unpacking.
+    /// </summary>
+    /// <exception cref="RegionPackException">The download or installation failed; an older copy stays in place.</exception>
+    Task<InstalledRegionPack> InstallAsync(RegionPackInfo pack, IProgress<double>? progress = null, CancellationToken cancellationToken = default);
+
+    /// <summary>The Hydranten and other Wasserentnahmestellen of an installed pack, read off the UI thread.</summary>
+    /// <exception cref="RegionPackException">The pack's <c>water.geojson</c> is missing, too large or no FeatureCollection.</exception>
+    Task<IReadOnlyList<WaterPoint>> GetWaterPointsAsync(InstalledRegionPack pack, CancellationToken cancellationToken = default);
+
+    /// <summary>Deletes an installed pack from the device.</summary>
+    /// <exception cref="RegionPackException">The pack's folder could not be deleted.</exception>
+    void Remove(InstalledRegionPack pack);
+}

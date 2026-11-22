@@ -8,6 +8,34 @@
      end of <application>. The C# class carries [Register] with the same Java name. -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-sdk android:targetSdkVersion="36" />
+
+    <!-- The one permission, and only for the Hydrantenkarte's Kartenpakete: the list of packs and
+         a pack are fetched over https when the user asks for them under Einstellungen. Nothing
+         else goes online, and nothing about the user or an Einsatz is sent. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- The Hydrantenkarte's Richtungspfeil, which points from where the phone is to the chosen
+         hydrant, and its Mein Standort button, which centres the map on the phone once. Asked for
+         only when one of them is first used, used only while the arrow is open or the button waits
+         for its fix and the app is in front, never stored and never sent. Coarse is listed with fine
+         because Android 12 lets the user grant only the approximate position. -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <!-- The Richtungspfeil's arrival at the hydrant: a short vibration with the tone, so a crew
+         member walking with eyes on the street notices it, and still notices it on a phone set to
+         vibrate. Nothing else vibrates. A normal permission: Android grants it at install, with no
+         dialog, and it reads or sends nothing. -->
+    <uses-permission android:name="android.permission.VIBRATE" />
+
+    <!-- None is required: without GPS the network position serves, without a compass the arrow
+         gives the Himmelsrichtung instead, and without any location only the Richtungspfeil is
+         missing. The location permissions imply android.hardware.location and its .gps, so both are
+         declared here; otherwise Google Play hides the app from devices that lack them, such as
+         Wi-Fi-only tablets. ManifestFeatureTests holds the line. -->
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.compass" android:required="false" />
     <application android:label="FwAssist" android:icon="@drawable/ic_launcher"
                  android:theme="@style/MyTheme.NoActionBar" android:usesCleartextTraffic="false">
 
@@ -81,6 +109,42 @@
                         android:targetActivity="de.codeforfire.helfer.MainActivity"
                         android:label="Dekon-Platz"
                         android:icon="@drawable/ic_helper_dekonplatz"
+                        android:exported="true"
+                        android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias android:name="de.codeforfire.helfer.launcher.hydranten"
+                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+                        android:label="Hydrantenkarte"
+                        android:icon="@drawable/ic_helper_hydranten"
+                        android:exported="true"
+                        android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias android:name="de.codeforfire.helfer.launcher.kennzeichnungen"
+                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+                        android:label="Kennzeichnungen"
+                        android:icon="@drawable/ic_helper_kennzeichnungen"
+                        android:exported="true"
+                        android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
+        <activity-alias android:name="de.codeforfire.helfer.launcher.strahlenschutz"
+                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+                        android:label="Strahlenschutz"
+                        android:icon="@drawable/ic_helper_strahlenschutz"
                         android:exported="true"
                         android:enabled="true">
             <intent-filter>

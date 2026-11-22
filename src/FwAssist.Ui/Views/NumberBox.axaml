@@ -1,0 +1,14 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.AppLogic.ViewModels;assembly=FwAssist.AppLogic"
+             x:Class="FwAssist.Ui.Views.NumberBox"
+             x:DataType="vm:NumberField">
+  <!-- Every number input looks the same. Number opens the phone's decimal keyboard, and with no
+       suggestions it cannot rewrite a value. The label above it is not part of the box, so a
+       screen reader gets it as the box's name. -->
+  <TextBox x:Name="Input"
+           Text="{Binding Text}"
+           AutomationProperties.Name="{Binding Label}"
+           TextInputOptions.ContentType="Number"
+           TextInputOptions.ShowSuggestions="False" />
+</UserControl>

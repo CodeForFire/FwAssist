@@ -1,13 +1,20 @@
 using Avalonia;
 using Avalonia.Automation;
 using Avalonia.Controls;
+using Avalonia.Headless;
 using Avalonia.Headless.XUnit;
+using Avalonia.Input;
 using Avalonia.VisualTree;
+using FwAssist.AppLogic.ViewModels;
 using FwAssist.Composition;
 using FwAssist.Helpers.DekonPlatz;
 using FwAssist.Helpers.Funkalphabet;
+using FwAssist.Helpers.Hydranten;
+using FwAssist.Helpers.Kennzeichnungen;
+using FwAssist.Helpers.Kennzeichnungen.Ui;
 using FwAssist.Helpers.RthLandeplatz;
 using FwAssist.Helpers.Schaummittel;
+using FwAssist.Helpers.Strahlenschutz;
 
 namespace FwAssist.Acceptance.Tests;
 
@@ -117,18 +124,97 @@ public class DemoFlowRenderTests
         phone.Capture("03-einstellungen.png");
     }
 
-    // Google Play wants the privacy policy reachable inside the app, not only on the listing.
     [AvaloniaFact]
-    public void Settings_show_where_the_privacy_policy_is()
+    public void Dragging_a_helper_by_its_grip_in_einstellungen_moves_it_on_the_overview()
     {
         var phone = new PhoneRender();
+        var first = CompositionRoot.Modules[0].Title;
+        var third = CompositionRoot.Modules[2].Title;
         phone.Shell.Home.OpenSettingsCommand.Execute(null);
         PhoneRender.Settle();
+        Named(phone, "ResetOrder").BringIntoView();
+        PhoneRender.Settle();
+        var grip = phone.Window.GetVisualDescendants().OfType<Border>()
+            .Single(b => AutomationProperties.GetName(b) == third + " verschieben");
+        var rowHeight = grip.GetVisualAncestors().OfType<Border>().First(b => b.Classes.Contains("order-row")).Bounds.Height;
+        var start = grip.TranslatePoint(new Point(grip.Bounds.Width / 2, grip.Bounds.Height / 2), phone.Window);
+        Assert.NotNull(start);
+        Assert.True(rowHeight > 0);
 
-        var url = phone.Window.GetVisualDescendants().OfType<TextBlock>().Single(t => t.Name == "PrivacyPolicyUrl");
-        Assert.True(url.IsEffectivelyVisible);
-        Assert.Equal("codeforfire.github.io/fwassist/datenschutz", url.Text);
-        Assert.Contains("DATENSCHUTZ", Texts(phone.Window));
+        // Up by two rows, in small steps as a finger moves, and let go above the first helper.
+        phone.Window.MouseDown(start.Value, MouseButton.Left);
+        for (var step = 1; step <= 10; step++)
+        {
+            phone.Window.MouseMove(start.Value - new Point(0, rowHeight * 2.2 * step / 10));
+        }
+
+        phone.Window.MouseUp(start.Value - new Point(0, rowHeight * 2.2), MouseButton.Left);
+        phone.Shell.GoHome();
+        PhoneRender.Settle();
+
+        var tiles = Named(phone, "Tiles").GetVisualDescendants().OfType<Button>().Select(AutomationProperties.GetName).ToList();
+        Assert.Equal([third, first], tiles.Take(2));
+    }
+
+    // A drag in Einstellungen, picked up at the grip of the helper at index, and moved up by rows.
+    private static (HelperOrderSection Order, Point At) StartDrag(PhoneRender phone, int index, double rows)
+    {
+        phone.Shell.Home.OpenSettingsCommand.Execute(null);
+        PhoneRender.Settle();
+        Named(phone, "ResetOrder").BringIntoView();
+        PhoneRender.Settle();
+        var order = Assert.IsType<SettingsViewModel>(phone.Shell.Current).Order;
+        Assert.NotNull(order);
+        var grip = phone.Window.GetVisualDescendants().OfType<Border>()
+            .Single(b => AutomationProperties.GetName(b) == CompositionRoot.Modules[index].Title + " verschieben");
+        var rowHeight = grip.GetVisualAncestors().OfType<Border>().First(b => b.Classes.Contains("order-row")).Bounds.Height;
+        var start = grip.TranslatePoint(new Point(grip.Bounds.Width / 2, grip.Bounds.Height / 2), phone.Window);
+        Assert.NotNull(start);
+        phone.Window.MouseDown(start.Value, MouseButton.Left);
+        for (var step = 1; step <= 10; step++)
+        {
+            phone.Window.MouseMove(start.Value - new Point(0, rowHeight * rows * step / 10));
+        }
+
+        return (order, start.Value - new Point(0, rowHeight * rows));
+    }
+
+    [AvaloniaFact]
+    public void While_a_helper_is_dragged_the_order_cannot_be_reset()
+    {
+        var phone = new PhoneRender();
+        var (order, at) = StartDrag(phone, 2, 2.2);
+
+        Assert.True(order.IsDragging);
+        Assert.False(Named(phone, "ResetOrder").IsEffectivelyEnabled);
+
+        phone.Window.MouseUp(at, MouseButton.Left);
+        PhoneRender.Settle();
+        Assert.False(order.IsDragging);
+        Assert.True(Named(phone, "ResetOrder").IsEffectivelyEnabled);
+        Assert.Equal(CompositionRoot.Modules[2].Id, order.Ids[0]);
+    }
+
+    [AvaloniaFact]
+    public void A_second_finger_let_go_elsewhere_does_not_end_the_first_fingers_drag()
+    {
+        var phone = new PhoneRender();
+        var before = CompositionRoot.Modules.Select(m => m.Id).ToList();
+        var (order, at) = StartDrag(phone, 2, 2.2);
+        var rows = Named(phone, "HelperOrderRows");
+
+        // Another finger, touching and letting go of another row while the first still drags.
+        var other = new Pointer(Pointer.GetNextFreeId(), PointerType.Touch, isPrimary: false);
+        rows.RaiseEvent(new PointerReleasedEventArgs(
+            rows, other, phone.Window, new Point(10, 10), 0, new PointerPointProperties(), KeyModifiers.None, MouseButton.Left));
+        PhoneRender.Settle();
+
+        Assert.Equal(before, order.Ids);
+        Assert.True(order.IsDragging);
+
+        phone.Window.MouseUp(at, MouseButton.Left);
+        PhoneRender.Settle();
+        Assert.Equal(CompositionRoot.Modules[2].Id, order.Ids[0]);
     }
 
     [AvaloniaFact]
@@ -303,6 +389,102 @@ public class DemoFlowRenderTests
             $"The form is {form.Extent.Height} high in a viewport of {form.Viewport.Height}");
     }
 
+    private static StrahlenschutzViewModel OpenStrahlenschutz(PhoneRender phone)
+    {
+        phone.Shell.Open(StrahlenschutzModule.HelperId);
+        PhoneRender.Settle();
+        return phone.Window.GetVisualDescendants().OfType<Control>()
+            .Select(c => c.DataContext).OfType<StrahlenschutzViewModel>().First();
+    }
+
+    [AvaloniaFact]
+    public void The_strahlenschutz_absperrung_shows_the_absperrgrenze_and_only_its_fields()
+    {
+        var phone = new PhoneRender();
+        var page = OpenStrahlenschutz(phone);
+
+        ((RadioButton)Named(phone, "AbsperrungMode")).IsChecked = true;
+        page.Dosisleistung.Text = "400";
+        page.Messabstand.Text = "5";
+        PhoneRender.Settle();
+
+        Assert.True(page.IsAbsperrung);
+        Assert.False(Named(phone, "TkzFields").IsVisible);
+        Assert.False(Named(phone, "ZielabstandField").IsVisible);
+        Assert.True(Named(phone, "GrenzwertField").IsVisible);
+        Assert.Equal(["Absperrgrenze", "20 m"], ResultTexts(phone.Window));
+
+        phone.Capture("20-strahlenschutz.png");
+    }
+
+    [AvaloniaFact]
+    public void The_strahlenschutz_tkz_shows_the_dose_rate_beside_the_package()
+    {
+        var phone = new PhoneRender();
+        var page = OpenStrahlenschutz(phone);
+
+        page.Tkz.Text = "2";
+        page.TkzAbstand.Text = "2";
+        PhoneRender.Settle();
+
+        Assert.False(Named(phone, "MessungFields").IsVisible);
+        Assert.Equal(["In 1 m", "20 µSv/h", "In 2 m", "5,0 µSv/h"], ResultTexts(phone.Window));
+    }
+
+    [AvaloniaFact]
+    public void A_bad_strahlenschutz_value_shows_its_error_under_the_field()
+    {
+        var phone = new PhoneRender();
+        var page = OpenStrahlenschutz(phone);
+
+        page.TkzAbstand.Text = "0";
+        PhoneRender.Settle();
+
+        var errors = phone.Window.GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.Classes.Contains("field-error") && t.IsEffectivelyVisible)
+            .Select(t => t.Text);
+        Assert.Equal(["Von 0,1 bis 10.000 m möglich."], errors);
+    }
+
+    [AvaloniaFact]
+    public void The_strahlenschutz_modes_and_the_grenzwert_preset_stay_glove_sized_on_a_320_dp_phone()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Width = 320;
+        var page = OpenStrahlenschutz(phone);
+        page.IsAbsperrung = true;
+        PhoneRender.Settle();
+
+        foreach (var name in new[] { "TkzMode", "AbstandMode", "AbsperrungMode", "GrenzwertPreset" })
+        {
+            var control = Named(phone, name);
+            Assert.True(control.Bounds.Height >= 48, $"{name} is {control.Bounds.Height} high");
+            Assert.True(control.Bounds.Width >= 48, $"{name} is {control.Bounds.Width} wide");
+        }
+
+        var label = Named(phone, "AbsperrungMode").GetVisualDescendants().OfType<TextBlock>().Single(t => t.Text == "ABSPERRUNG");
+        Assert.True(label.Bounds.Right <= Named(phone, "AbsperrungMode").Bounds.Width + 1, "ABSPERRUNG is cut off");
+    }
+
+    // 780 dp is about what a 915 dp phone leaves between its status and navigation bars.
+    [AvaloniaFact]
+    public void A_whole_strahlenschutz_calculation_fits_without_scrolling()
+    {
+        var phone = new PhoneRender();
+        phone.Window.Height = 780;
+        var page = OpenStrahlenschutz(phone);
+
+        page.IsAbsperrung = true;
+        page.Dosisleistung.Text = "400";
+        page.Messabstand.Text = "5";
+        PhoneRender.Settle();
+
+        var form = phone.Window.GetVisualDescendants().OfType<ScrollViewer>().Single(s => s.Name == "Form");
+        Assert.True(
+            form.Extent.Height <= form.Viewport.Height + 1,
+            $"The form is {form.Extent.Height} high in a viewport of {form.Viewport.Height}");
+    }
+
     private static Control Named(PhoneRender phone, string name) =>
         phone.Window.GetVisualDescendants().OfType<Control>().Single(c => c.Name == name);
 
@@ -325,6 +507,8 @@ public class DemoFlowRenderTests
         phone.Shell.Open(RthLandeplatzModule.HelperId);
         PhoneRender.Settle();
 
+        Assert.Equal("TAG", ((TextBlock)Named(phone, "ModeHeading")).Text);
+        Assert.Equal(Landeplatzvorgaben.DayDefinition, ((TextBlock)Named(phone, "ModeDefinition")).Text);
         Assert.Contains(Landeplatzvorgaben.PilotDecides, VisibleTexts(phone.Window));
         Assert.DoesNotContain(Landeplatzvorgaben.AbortRule, VisibleTexts(phone.Window));
         Assert.Contains("Fläche: 30 m x 30 m oder größer", VisibleTexts(phone.Window));
@@ -335,6 +519,8 @@ public class DemoFlowRenderTests
         ((RadioButton)Named(phone, "NachtMode")).IsChecked = true;
         PhoneRender.Settle();
 
+        Assert.Equal("NACHT", ((TextBlock)Named(phone, "ModeHeading")).Text);
+        Assert.Equal(Landeplatzvorgaben.NightDefinition, ((TextBlock)Named(phone, "ModeDefinition")).Text);
         Assert.Contains(Landeplatzvorgaben.PilotDecides, VisibleTexts(phone.Window));
         Assert.Contains(Landeplatzvorgaben.AbortRule, VisibleTexts(phone.Window));
         Assert.Contains("Fläche: 35 m x 70 m oder größer", VisibleTexts(phone.Window));
@@ -344,7 +530,7 @@ public class DemoFlowRenderTests
     }
 
     [AvaloniaFact]
-    public void The_pilot_line_and_the_abort_rule_stay_outside_the_scrolling_steps()
+    public void The_mode_its_timeframe_the_pilot_line_and_the_abort_rule_stay_outside_the_scrolling_steps()
     {
         var phone = new PhoneRender();
         phone.Shell.Open(RthLandeplatzModule.HelperId);
@@ -352,6 +538,8 @@ public class DemoFlowRenderTests
 
         var scroller = Named(phone, "Sections").GetVisualAncestors().OfType<ScrollViewer>().First();
 
+        Assert.False(scroller.IsVisualAncestorOf(Named(phone, "ModeHeading")));
+        Assert.False(scroller.IsVisualAncestorOf(Named(phone, "ModeDefinition")));
         Assert.False(scroller.IsVisualAncestorOf(Named(phone, "PilotDecides")));
         Assert.False(scroller.IsVisualAncestorOf(Named(phone, "AbortRule")));
     }
@@ -463,5 +651,304 @@ public class DemoFlowRenderTests
 
         Assert.All(Dekonvorgaben.Sources, source => Assert.Contains(source, texts));
         Assert.Contains(Dekonvorgaben.SourceNote, texts);
+    }
+
+    private static HydrantenkarteViewModel OpenHydrantenkarte(PhoneRender phone)
+    {
+        phone.Shell.Open(HydrantenModule.HelperId);
+        var vm = Assert.IsType<HydrantenkarteViewModel>(phone.Shell.Current);
+        PhoneRender.SettleUntil(() => vm.Hydranten.Count > 0);
+        return vm;
+    }
+
+    [AvaloniaFact]
+    public void The_hydrantenkarte_shows_the_pack_and_asks_for_the_einsatzstelle_first()
+    {
+        var phone = new PhoneRender();
+
+        var vm = OpenHydrantenkarte(phone);
+
+        Assert.Equal(3, vm.Hydranten.Count);
+        Assert.True(Named(phone, "StatusBanner").IsVisible);
+        Assert.Equal(HydrantenkarteViewModel.PlacingText, ((TextBlock)Named(phone, "StatusText")).Text);
+        Assert.Equal(FictionalRegionPack.Attribution, vm.Map.Attribution);
+        Assert.False(Named(phone, "Nearest").IsEffectivelyVisible);
+    }
+
+    [AvaloniaFact]
+    public void A_tapped_einsatzstelle_lists_the_nearest_hydranten_with_their_b_schlaeuche()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+
+        vm.TapCommand.Execute(FictionalRegionPack.Musterstrasse1);
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "Nearest").IsEffectivelyVisible);
+        vm.NaechsteHydrantenCommand.Execute(null);
+        PhoneRender.Settle();
+
+        Assert.False(Named(phone, "StatusBanner").IsVisible);
+        Assert.Equal(1, Named(phone, "EinsatzstellePin").GetVisualDescendants().OfType<TextBlock>().Count(t => t.Text == "ESt"));
+        var rows = VisibleTexts(Named(phone, "NearestRows"));
+        Assert.Equal(
+            ["Unterflurhydrant", "56 m Luftlinie · 3 B-Schläuche", "Überflurhydrant", "93 m Luftlinie · 5 B-Schläuche", "Unterflurhydrant", "167 m Luftlinie · 9 B-Schläuche"],
+            rows);
+
+        phone.Capture("12-hydrantenkarte-naechste.png");
+
+        vm.WaehleCommand.Execute(vm.Nearest[0]);
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "HydrantCard").IsVisible);
+        Assert.Contains("DN 100", VisibleTexts(Named(phone, "HydrantCard")));
+
+        phone.Capture("13-hydrantenkarte-hydrant.png");
+    }
+
+    [AvaloniaFact]
+    public async Task Einstellungen_list_the_kartenpakete_and_fetch_the_offer_only_on_request()
+    {
+        var phone = new PhoneRender();
+        phone.Shell.Home.OpenSettingsCommand.Execute(null);
+        PhoneRender.Settle();
+
+        Assert.Equal("1 installiert", ((TextBlock)Named(phone, "MapPacksSummary")).Text);
+        Assert.Equal(["Landkreis Fürstenfeldbruck"], VisibleTexts(Named(phone, "MapPackRows")).Take(1));
+
+        var settings = Assert.IsType<SettingsViewModel>(phone.Shell.Current);
+        Assert.NotNull(settings.Maps);
+        await settings.Maps.LoadCatalogCommand.ExecuteAsync(null);
+        PhoneRender.Settle();
+
+        var rows = VisibleTexts(Named(phone, "MapPackRows"));
+        Assert.Contains("Landkreis Musterkreis", rows);
+        Assert.Contains("HERUNTERLADEN", rows);
+    }
+
+    [AvaloniaFact]
+    public async Task The_richtungspfeil_points_from_the_phone_to_the_chosen_hydrant()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        vm.TapCommand.Execute(FictionalRegionPack.Musterstrasse1);
+        vm.NaechsteHydrantenCommand.Execute(null);
+        vm.WaehleCommand.Execute(vm.Nearest[1]);
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "PfeilStarten").IsEffectivelyVisible);
+
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+        phone.Location.Move(FictionalRegionPack.Musterstrasse1, phone.Time.GetUtcNow(), accuracy: 6);
+        phone.Compass.Turn(30);
+        PhoneRender.Settle();
+
+        Assert.True(Named(phone, "Arrow").IsEffectivelyVisible);
+        Assert.Equal("93 m", ((TextBlock)Named(phone, "Distance")).Text);
+        Assert.Equal("Richtung SO (119°)", ((TextBlock)Named(phone, "Direction")).Text);
+        Assert.Equal("Richtung SO (119°)", AutomationProperties.GetName(Named(phone, "Arrow")));
+
+        phone.Capture("14-hydrantenkarte-pfeil.png");
+
+        ((Button)Named(phone, "PfeilBeenden")).Command?.Execute(null);
+        PhoneRender.Settle();
+        Assert.False(phone.Location.IsRunning);
+        Assert.False(Named(phone, "Richtungspfeil").IsEffectivelyVisible);
+    }
+
+    // At the hydrant: once the signal, AM HYDRANTEN in large letters, and the arrow, smaller, still showing the way (#70).
+    [AvaloniaFact]
+    public async Task At_the_hydrant_the_phone_signals_once_and_says_so_over_a_smaller_arrow()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        vm.TapCommand.Execute(FictionalRegionPack.Musterstrasse1);
+        vm.NaechsteHydrantenCommand.Execute(null);
+        vm.WaehleCommand.Execute(vm.Nearest[0]);
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+        phone.Location.Move(FictionalRegionPack.Musterstrasse1, phone.Time.GetUtcNow());
+        phone.Compass.Turn(0);
+        PhoneRender.Settle();
+        var before = Named(phone, "ArrowBox").Bounds.Height;
+        Assert.False(Named(phone, "Angekommen").IsVisible);
+        Assert.Equal(0, phone.Signal.Played);
+
+        // About 4 m south of the hydrant.
+        Assert.NotNull(vm.Selected);
+        var target = vm.Selected.Position;
+        phone.Location.Move(new Core.Map.GeoPoint(target.Latitude - 0.00004, target.Longitude), phone.Time.GetUtcNow());
+        PhoneRender.Settle();
+
+        Assert.Equal(1, phone.Signal.Played);
+        Assert.True(Named(phone, "Angekommen").IsEffectivelyVisible);
+        Assert.Equal("AM HYDRANTEN", ((TextBlock)Named(phone, "Angekommen")).Text);
+        Assert.True(Named(phone, "Arrow").IsEffectivelyVisible);
+        Assert.True(Named(phone, "ArrowBox").Bounds.Height < before, "The arrow shrinks at the hydrant.");
+        Assert.True(Named(phone, "Angekommen").Bounds.Bottom <= Named(phone, "ArrowBox").Bounds.Top, "AM HYDRANTEN stands above the arrow.");
+
+        phone.Capture("angekommen.png");
+    }
+
+    [AvaloniaFact]
+    public async Task Leaving_the_hydrantenkarte_switches_the_gps_off()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        vm.TapCommand.Execute(FictionalRegionPack.Musterstrasse1);
+        vm.NaechsteHydrantenCommand.Execute(null);
+        vm.WaehleCommand.Execute(vm.Nearest[0]);
+        await vm.PfeilStartenCommand.ExecuteAsync(null);
+        Assert.True(phone.Location.IsRunning);
+
+        phone.Shell.GoHome();
+
+        Assert.False(phone.Location.IsRunning);
+        Assert.False(phone.Compass.IsRunning);
+    }
+
+    [AvaloniaFact]
+    public async Task Mein_standort_sits_above_the_zoom_buttons_and_marks_the_phone_on_the_map()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        var standort = Named(phone, "Standort");
+        var zoomIn = Named(phone, "ZoomIn");
+
+        Assert.True(standort.IsEffectivelyVisible);
+        Assert.Equal("Mein Standort", AutomationProperties.GetName(standort));
+        var standortBox = standort.Bounds;
+        var zoomBox = zoomIn.Bounds;
+        Assert.True(standortBox.Bottom <= zoomBox.Top, "MEIN STANDORT sits above +.");
+        Assert.True(Math.Abs(standortBox.Left - zoomBox.Left) <= 0.5, "MEIN STANDORT shares the zoom buttons' column.");
+
+        await vm.StandortZeigenCommand.ExecuteAsync(null);
+        phone.Location.Move(FictionalRegionPack.Musterstrasse1, phone.Time.GetUtcNow());
+        PhoneRender.Settle();
+
+        Assert.Equal(FictionalRegionPack.Musterstrasse1, vm.Map.Center);
+        Assert.Single(Named(phone, "StandortDot").GetVisualDescendants().OfType<Avalonia.Controls.Shapes.Ellipse>());
+        Assert.False(phone.Location.IsRunning);
+
+        phone.Capture("standort.png");
+    }
+
+    // Tapped where they are drawn, so nothing laid over the map may catch the tap instead (#68).
+    [AvaloniaFact]
+    public void Tapping_plus_and_minus_zooms_the_map_in_and_out()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenHydrantenkarte(phone);
+        var before = vm.Map.Zoom;
+
+        Tap(phone, Named(phone, "ZoomIn"));
+        Assert.Equal(before + 1, vm.Map.Zoom);
+
+        Tap(phone, Named(phone, "ZoomOut"));
+        Assert.Equal(before, vm.Map.Zoom);
+    }
+
+    private static KennzeichnungenViewModel OpenKennzeichnungen(PhoneRender phone)
+    {
+        phone.Shell.Open(KennzeichnungenModule.HelperId);
+        PhoneRender.Settle();
+        return phone.Window.GetVisualDescendants().OfType<Control>()
+            .Select(c => c.DataContext).OfType<KennzeichnungenViewModel>().First();
+    }
+
+    [AvaloniaFact]
+    public void The_kennzeichnungen_read_a_gefahrnummer_and_show_every_group()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenKennzeichnungen(phone);
+
+        ((TextBox)Named(phone, "Search")).Text = "X423";
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "GefahrnummerCard").IsEffectivelyVisible);
+        Assert.Contains(Gefahrnummern.WaterNote, VisibleTexts(phone.Window));
+        phone.Capture("15-kennzeichnungen-nummer.png");
+
+        vm.ClearCommand.Execute(null);
+        ((RadioButton)Named(phone, "GefahrzettelGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.False(Named(phone, "GefahrnummerCard").IsEffectivelyVisible);
+        Assert.Contains("Entzündbare Gase", VisibleTexts(phone.Window));
+        phone.Capture("16-kennzeichnungen-gefahrzettel.png");
+
+        ((RadioButton)Named(phone, "GhsGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.Contains("GHS01", VisibleTexts(phone.Window));
+        phone.Capture("17-kennzeichnungen-ghs.png");
+
+        ((RadioButton)Named(phone, "RohrleitungGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "GroupNote").IsEffectivelyVisible);
+        Assert.Contains("Wasserdampf", VisibleTexts(phone.Window));
+        phone.Capture("18-kennzeichnungen-rohrleitungen.png");
+
+        ((RadioButton)Named(phone, "GasflascheGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.Contains(vm.GroupNote, VisibleTexts(phone.Window));
+        phone.Capture("19-kennzeichnungen-gasflaschen.png");
+    }
+
+    [AvaloniaFact]
+    public void Every_kennzeichnungen_group_button_is_glove_sized()
+    {
+        var phone = new PhoneRender();
+        _ = OpenKennzeichnungen(phone);
+
+        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup" })
+        {
+            var button = Named(phone, group);
+            Assert.True(button.Bounds.Height >= 48, $"{group} is {button.Bounds.Height} high");
+        }
+    }
+
+    [AvaloniaFact]
+    public void Every_kennzeichen_shows_its_picture_and_names_it_for_a_screen_reader()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenKennzeichnungen(phone);
+
+        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup" })
+        {
+            ((RadioButton)Named(phone, group)).IsChecked = true;
+            PhoneRender.Settle();
+
+            var pictures = Named(phone, "Entries").GetVisualDescendants().OfType<PictureImage>().ToList();
+            Assert.Equal(vm.Entries.Select(e => e.Name), pictures.Select(AutomationProperties.GetName));
+            Assert.All(pictures, p => Assert.True(p.Source is not null, $"{p.Key} has no picture"));
+        }
+    }
+
+    [AvaloniaFact]
+    public void A_kennzeichnungen_search_without_hits_says_so()
+    {
+        var phone = new PhoneRender();
+        _ = OpenKennzeichnungen(phone);
+
+        ((TextBox)Named(phone, "Search")).Text = "Quarkspeise";
+        PhoneRender.Settle();
+
+        Assert.True(Named(phone, "NoHits").IsEffectivelyVisible);
+        Assert.Empty(Named(phone, "Entries").GetVisualDescendants().OfType<PictureImage>());
+    }
+
+    [AvaloniaFact]
+    public void The_kennzeichnungen_name_their_sources()
+    {
+        var phone = new PhoneRender();
+        _ = OpenKennzeichnungen(phone);
+
+        var texts = Texts(Named(phone, "SourceList"));
+
+        Assert.All(Kennzeichenkatalog.Sources, source => Assert.Contains(source, texts));
+        Assert.Contains(Kennzeichenkatalog.SourceNote, texts);
+    }
+
+    private static void Tap(PhoneRender phone, Control control)
+    {
+        var middle = control.TranslatePoint(new Point(control.Bounds.Width / 2, control.Bounds.Height / 2), phone.Window)
+            ?? throw new InvalidOperationException($"{control.Name} is not in the window.");
+        phone.Window.MouseDown(middle, MouseButton.Left);
+        phone.Window.MouseUp(middle, MouseButton.Left);
+        PhoneRender.Settle();
     }
 }

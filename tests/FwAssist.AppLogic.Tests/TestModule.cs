@@ -21,5 +21,11 @@ internal sealed class TestModule(string id, string title) : IHelperModule
         return new Page();
     }
 
-    internal sealed class Page : ObservableObject;
+    /// <summary>The page this module's helper shows; counts how often the user left it.</summary>
+    internal sealed class Page : ObservableObject, IHelperPage
+    {
+        public int Left { get; private set; }
+
+        public void Leave() => Left++;
+    }
 }

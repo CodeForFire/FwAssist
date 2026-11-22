@@ -73,6 +73,38 @@
           "FwAssist.Ui": "[1.0.0, )"
         }
       },
+      "fwassist.helpers.hydranten": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
+          "FwAssist.AppLogic": "[1.0.0, )",
+          "FwAssist.Core": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.hydranten.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Avalonia": "[12.1.4, )",
+          "FwAssist.Helpers.Hydranten": "[1.0.0, )",
+          "FwAssist.Ui": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.kennzeichnungen": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
+          "FwAssist.AppLogic": "[1.0.0, )",
+          "FwAssist.Core": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.kennzeichnungen.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Avalonia": "[12.1.4, )",
+          "FwAssist.Helpers.Kennzeichnungen": "[1.0.0, )",
+          "FwAssist.Ui": "[1.0.0, )"
+        }
+      },
       "fwassist.helpers.rthlandeplatz": {
         "type": "Project",
         "dependencies": {
@@ -118,6 +150,22 @@
         "dependencies": {
           "Avalonia": "[12.1.4, )",
           "FwAssist.Helpers.Stoppuhr": "[1.0.0, )",
+          "FwAssist.Ui": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.strahlenschutz": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
+          "FwAssist.AppLogic": "[1.0.0, )",
+          "FwAssist.Core": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.strahlenschutz.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Avalonia": "[12.1.4, )",
+          "FwAssist.Helpers.Strahlenschutz": "[1.0.0, )",
           "FwAssist.Ui": "[1.0.0, )"
         }
       },

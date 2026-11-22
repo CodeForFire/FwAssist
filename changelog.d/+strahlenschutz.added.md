@@ -1,0 +1,1 @@
+A new Strahlenschutz helper gives Richtwerte for the dose rate from a package's TKZ, the dose rate at another distance and the Absperrgrenze, built on a NumberField that every calculator can now share (#22, #12).

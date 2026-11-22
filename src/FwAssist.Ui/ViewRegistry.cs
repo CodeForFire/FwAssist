@@ -18,6 +18,9 @@ public sealed class ViewRegistry
         Register<HomeViewModel>(() => new HomeView());
         Register<SettingsViewModel>(() => new SettingsView());
         Register<AboutViewModel>(() => new AboutView());
+
+        // Not a page: the input every calculator shares, shown wherever a page binds a field.
+        Register<NumberField>(() => new NumberFieldView());
     }
 
     public void Register<TViewModel>(Func<Control> createView)

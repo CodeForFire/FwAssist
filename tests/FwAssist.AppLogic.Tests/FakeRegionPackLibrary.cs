@@ -1,0 +1,92 @@
+using FwAssist.AppLogic.Services.Map;
+
+namespace FwAssist.AppLogic.Tests;
+
+/// <summary>An in-memory Kartenpaket library; nothing is downloaded and no folder is real.</summary>
+internal sealed class FakeRegionPackLibrary : IRegionPackLibrary
+{
+    private readonly List<InstalledRegionPack> _installed = new();
+
+    public event EventHandler? InstalledChanged;
+
+    public IReadOnlyList<RegionPackInfo> Catalogue { get; set; } = [];
+
+    public RegionPackException? Failure { get; set; }
+
+    /// <summary>When set, an install waits for it, so a test can look at the section mid-download.</summary>
+    public TaskCompletionSource? InstallGate { get; set; }
+
+    /// <summary>When set, fetching the catalogue waits for it.</summary>
+    public TaskCompletionSource? CatalogGate { get; set; }
+
+    /// <summary>Called as a removal starts, so a test can look at the section at that moment.</summary>
+    public Action? Removing { get; set; }
+
+    public int InstallCount { get; private set; }
+
+    /// <summary>Every pack's water points; a pack missing here has none.</summary>
+    public Dictionary<string, IReadOnlyList<WaterPoint>> WaterPoints { get; } = new(StringComparer.Ordinal);
+
+    /// <summary>When set, reading water points fails with it: for every pack, or only for <see cref="WaterFailureSlug"/>.</summary>
+    public RegionPackException? WaterFailure { get; set; }
+
+    public string? WaterFailureSlug { get; set; }
+
+    public static RegionPackInfo Pack(string slug, string name, int version = 1) =>
+        new(name, slug, version, $"https://example.org/{slug}.zip", 16 * 1024 * 1024, new string('a', 64), 10.99, 48.08, 11.41, 48.29, 0, 15, "2026-10-27T20:15:49Z", "© OpenStreetMap contributors");
+
+    public void Preinstall(RegionPackInfo info) => _installed.Add(new InstalledRegionPack(info, Path.Join("regions", info.Slug)));
+
+    /// <summary>A pack whose folder is real, so the view model can read files from it.</summary>
+    public void Preinstall(InstalledRegionPack pack) => _installed.Add(pack);
+
+    public async Task<IReadOnlyList<RegionPackInfo>> GetCatalogAsync(CancellationToken cancellationToken = default)
+    {
+        if (CatalogGate is { } gate)
+        {
+            await gate.Task;
+        }
+
+        return Failure is { } failure ? throw failure : Catalogue;
+    }
+
+    public IReadOnlyList<InstalledRegionPack> GetInstalled() => _installed.ToList();
+
+    public async Task<InstalledRegionPack> InstallAsync(RegionPackInfo pack, IProgress<double>? progress = null, CancellationToken cancellationToken = default)
+    {
+        InstallCount++;
+        progress?.Report(0.5);
+        if (InstallGate is { } gate)
+        {
+            await gate.Task.WaitAsync(cancellationToken);
+        }
+
+        if (Failure is { } failure)
+        {
+            throw failure;
+        }
+
+        _installed.RemoveAll(p => p.Info.Slug == pack.Slug);
+        var installed = new InstalledRegionPack(pack, Path.Join("regions", pack.Slug));
+        _installed.Add(installed);
+        InstalledChanged?.Invoke(this, EventArgs.Empty);
+        return installed;
+    }
+
+    public Task<IReadOnlyList<WaterPoint>> GetWaterPointsAsync(InstalledRegionPack pack, CancellationToken cancellationToken = default) =>
+        WaterFailure is { } failure && (WaterFailureSlug is null || WaterFailureSlug == pack.Info.Slug)
+            ? Task.FromException<IReadOnlyList<WaterPoint>>(failure)
+            : Task.FromResult(WaterPoints.GetValueOrDefault(pack.Info.Slug) ?? []);
+
+    public void Remove(InstalledRegionPack pack)
+    {
+        Removing?.Invoke();
+        if (Failure is { } failure)
+        {
+            throw failure;
+        }
+
+        _installed.RemoveAll(p => p.Info.Slug == pack.Info.Slug);
+        InstalledChanged?.Invoke(this, EventArgs.Empty);
+    }
+}

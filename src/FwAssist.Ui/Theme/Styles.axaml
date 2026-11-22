@@ -170,6 +170,28 @@
     <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
   </Style>
 
+  <!-- Drag handle: the grip a row is picked up by, at the 48dp touch minimum. Give each instance
+       an AutomationProperties.Name, since the grip alone carries no text. -->
+  <Style Selector="Border.drag-handle">
+    <Setter Property="Width" Value="{StaticResource ControlHeight}" />
+    <Setter Property="Height" Value="{StaticResource ControlHeight}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Cursor" Value="SizeNorthSouth" />
+  </Style>
+  <Style Selector="Border.drag-handle PathIcon">
+    <Setter Property="Width" Value="24" />
+    <Setter Property="Height" Value="24" />
+    <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+  </Style>
+  <!-- The row being dragged: lifted above the others, its grip lit. -->
+  <Style Selector="Border.order-row.dragging">
+    <Setter Property="Background" Value="{StaticResource SurfaceRaisedBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource BorderStrongBrush}" />
+  </Style>
+  <Style Selector="Border.order-row.dragging Border.drag-handle PathIcon">
+    <Setter Property="Foreground" Value="{StaticResource SignalBrush}" />
+  </Style>
+
   <!-- =========================================================
        INPUTS — TextBox / ComboBox / NumericUpDown
        ========================================================= -->

@@ -5,12 +5,18 @@ using FwAssist.Helpers.DekonPlatz;
 using FwAssist.Helpers.DekonPlatz.Ui;
 using FwAssist.Helpers.Funkalphabet;
 using FwAssist.Helpers.Funkalphabet.Ui;
+using FwAssist.Helpers.Hydranten;
+using FwAssist.Helpers.Hydranten.Ui;
+using FwAssist.Helpers.Kennzeichnungen;
+using FwAssist.Helpers.Kennzeichnungen.Ui;
 using FwAssist.Helpers.RthLandeplatz;
 using FwAssist.Helpers.RthLandeplatz.Ui;
 using FwAssist.Helpers.Schaummittel;
 using FwAssist.Helpers.Schaummittel.Ui;
 using FwAssist.Helpers.Stoppuhr;
 using FwAssist.Helpers.Stoppuhr.Ui;
+using FwAssist.Helpers.Strahlenschutz;
+using FwAssist.Helpers.Strahlenschutz.Ui;
 using FwAssist.Ui;
 
 namespace FwAssist.Composition;
@@ -29,6 +35,9 @@ public static class CompositionRoot
         new SchaummittelModule(),
         new RthLandeplatzModule(),
         new DekonPlatzModule(),
+        new HydrantenModule(),
+        new KennzeichnungenModule(),
+        new StrahlenschutzModule(),
     ];
 
     public static void RegisterViews(ViewRegistry views)
@@ -39,6 +48,9 @@ public static class CompositionRoot
         SchaummittelViews.Register(views);
         RthLandeplatzViews.Register(views);
         DekonPlatzViews.Register(views);
+        HydrantenViews.Register(views);
+        KennzeichnungenViews.Register(views);
+        StrahlenschutzViews.Register(views);
     }
 
     public static ShellViewModel CreateShell(

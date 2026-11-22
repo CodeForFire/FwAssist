@@ -1,0 +1,174 @@
+using Avalonia.Media.Imaging;
+using FwAssist.AppLogic.Services.Map.Tiles;
+
+namespace FwAssist.Ui.Map;
+
+/// <summary>
+/// Rendered tiles of one <see cref="IMapTileSource"/> -- of each of its packs, for a
+/// <see cref="CombinedMapTileSource"/> -- so that a pan redraws from memory instead of reading and
+/// rendering every visible tile on every frame. A tile the pack lacks is remembered
+/// as missing too, so the map does not ask the file for it again.
+/// </summary>
+/// <remarks>
+/// Deliberately not <see cref="IDisposable"/>: its owner is a control, which releases it through
+/// <see cref="Clear"/> when it leaves the visual tree.
+/// </remarks>
+public sealed class MapTileCache
+{
+    /// <summary>About four screens of tiles on a large screen, at 256 KB each once rendered.</summary>
+    public const int Capacity = 256;
+
+    private readonly Dictionary<(IMapTileSource Layer, int Zoom, int X, int Y), LinkedListNode<Entry>> _entries = new();
+    private readonly LinkedList<Entry> _recent = new();
+
+    // Decoded vector tiles, so that the 16 tiles of z17 cut from one z15 tile
+    // parse it once. A handful is enough: a screen at z17 spans few z15 tiles.
+    private readonly Dictionary<(IMapTileSource Layer, int Zoom, int X, int Y), IReadOnlyList<VectorLayer>?> _vectors = new();
+    private readonly Queue<(IMapTileSource Layer, int Zoom, int X, int Y)> _vectorOrder = new();
+
+    public IMapTileSource? Source { get; private set; }
+
+    /// <summary>The colours the tiles are rendered in.</summary>
+    public MapStyle Style { get; private set; } = MapStyle.Day;
+
+    /// <summary>
+    /// Renders from now on in <paramref name="style"/>, dropping the tiles rendered in the previous
+    /// one. The decoded vector tiles stay, so switching does not read the pack again.
+    /// </summary>
+    public void UseStyle(MapStyle style)
+    {
+        ArgumentNullException.ThrowIfNull(style);
+        if (ReferenceEquals(style, Style))
+        {
+            return;
+        }
+
+        DropRendered();
+        Style = style;
+    }
+
+    /// <summary>Points the cache at <paramref name="source"/>, dropping every tile of the previous one.</summary>
+    public void Use(IMapTileSource? source)
+    {
+        if (ReferenceEquals(source, Source))
+        {
+            return;
+        }
+
+        Clear();
+        Source = source;
+    }
+
+    /// <summary>The decoded tile, or null when the source has none there or its bytes are not an image.</summary>
+    public Bitmap? Get(int zoom, int x, int y) => Source is { } source ? Get(source, zoom, x, y) : null;
+
+    /// <summary>
+    /// The decoded tile of <paramref name="layer"/>, one pack of the source, or null when it has
+    /// none there. Shares the capacity with every other layer.
+    /// </summary>
+    public Bitmap? Get(IMapTileSource layer, int zoom, int x, int y)
+    {
+        ArgumentNullException.ThrowIfNull(layer);
+        if (Source is null)
+        {
+            return null;
+        }
+
+        var key = (layer, zoom, x, y);
+        if (_entries.TryGetValue(key, out var node))
+        {
+            _recent.Remove(node);
+            _recent.AddFirst(node);
+            return node.Value.Bitmap;
+        }
+
+        var bitmap = Render(layer, zoom, x, y, out var labels);
+        _entries[key] = _recent.AddFirst(new Entry(key, bitmap, labels));
+        if (_entries.Count > Capacity && _recent.Last is { } oldest)
+        {
+            _recent.RemoveLast();
+            _entries.Remove(oldest.Value.Key);
+            oldest.Value.Bitmap?.Dispose();
+        }
+
+        return bitmap;
+    }
+
+    /// <summary>
+    /// The names a vector tile wants drawn over the map, in the tile's pixels, once
+    /// <see cref="Get(IMapTileSource, int, int, int)"/> has fetched it; empty for a tile not fetched.
+    /// </summary>
+    public IReadOnlyList<MapLabel> Labels(IMapTileSource layer, int zoom, int x, int y) =>
+        _entries.TryGetValue((layer, zoom, x, y), out var node) ? node.Value.Labels : [];
+
+    public void Clear()
+    {
+        DropRendered();
+        _vectors.Clear();
+        _vectorOrder.Clear();
+    }
+
+    private void DropRendered()
+    {
+        foreach (var entry in _recent)
+        {
+            entry.Bitmap?.Dispose();
+        }
+
+        _recent.Clear();
+        _entries.Clear();
+    }
+
+    // Past the archive's deepest zoom, the tile is the matching part of its ancestor, rendered at
+    // this zoom rather than enlarged.
+    private RenderTargetBitmap? Render(IMapTileSource source, int zoom, int x, int y, out IReadOnlyList<MapLabel> labels)
+    {
+        labels = [];
+        if (source.GetMaxZoom() is not { } maxZoom)
+        {
+            return null;
+        }
+
+        var sourceZoom = Math.Min(zoom, maxZoom);
+        var levels = zoom - sourceZoom;
+        (IMapTileSource Layer, int Zoom, int X, int Y) key = (source, sourceZoom, x >> levels, y >> levels);
+        if (!_vectors.TryGetValue(key, out var layers))
+        {
+            layers = DecodeVector(source.GetTile(sourceZoom, key.X, key.Y));
+            _vectors[key] = layers;
+            _vectorOrder.Enqueue(key);
+            if (_vectorOrder.Count > 16)
+            {
+                _vectors.Remove(_vectorOrder.Dequeue());
+            }
+        }
+
+        if (layers is null)
+        {
+            return null;
+        }
+
+        var (subX, subY) = (x - (key.X << levels), y - (key.Y << levels));
+        labels = VectorTileRenderer.Labels(layers, zoom, levels, subX, subY, Style);
+        return VectorTileRenderer.Render(layers, zoom, levels, subX, subY, Style);
+    }
+
+    private static IReadOnlyList<VectorLayer>? DecodeVector(byte[]? bytes)
+    {
+        if (bytes is null)
+        {
+            return null;
+        }
+
+        try
+        {
+            return MvtTile.Decode(bytes);
+        }
+        catch (FormatException)
+        {
+            return null;
+        }
+    }
+
+    private sealed record Entry((IMapTileSource Layer, int Zoom, int X, int Y) Key, Bitmap? Bitmap, IReadOnlyList<MapLabel> Labels);
+}
