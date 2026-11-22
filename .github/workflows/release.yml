@@ -335,8 +335,8 @@ jobs:
           service_account: ${{ vars.GCP_PLAY_SERVICE_ACCOUNT }}
       # A prerelease tag (v0.6.0-beta.1) goes to closed testing, a final one to production.
       # In the Play API closed testing is the track named `alpha` (`beta` is *open* testing);
-      # it is the track the 12-testers/14-days gate counts. Until that gate is passed, a final
-      # tag fails here; promote the closed-testing release in the Console instead.
+      # it is the track the 12-testers/14-days gate counts. Both as drafts: nothing reaches a
+      # device until someone presses roll out in the Console.
       - id: track
         name: Pick the track
         env:
