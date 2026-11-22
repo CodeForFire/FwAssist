@@ -89,6 +89,22 @@
           "FwAssist.Ui": "[1.0.0, )"
         }
       },
+      "fwassist.helpers.kennzeichnungen": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
+          "FwAssist.AppLogic": "[1.0.0, )",
+          "FwAssist.Core": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.kennzeichnungen.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Avalonia": "[12.1.4, )",
+          "FwAssist.Helpers.Kennzeichnungen": "[1.0.0, )",
+          "FwAssist.Ui": "[1.0.0, )"
+        }
+      },
       "fwassist.helpers.rthlandeplatz": {
         "type": "Project",
         "dependencies": {

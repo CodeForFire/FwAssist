@@ -29,6 +29,7 @@ deshalb auch so aus.
 | **RTH-Landeplatz** | Vorgaben und Ablauf, wenn die Feuerwehr einen Landeplatz für den Rettungshubschrauber vorbereitet, getrennt für Tag und Nacht. |
 | **Dekon-Platz** | Dekon-Stufen I bis III: Sofortmaßnahmen, Aufbau und Plan für Stufe II, Technik und Ablauf für Stufe III. |
 | **Hydrantenkarte** | Hydranten rund um die Einsatzstelle auf einer Offline-Karte aus OpenStreetMap: die nächsten mit Entfernung (Luftlinie) und Zahl der B-Schläuche, und ein Richtungspfeil vom eigenen Standort zum gewählten Hydranten. Kartenpakete gibt es bisher für Landkreise in Bayern. |
+| **Kennzeichnungen** | Orange Warntafeln, Gefahrzettel nach ADR, GHS-Piktogramme, die Farben von Rohrleitungen und die Schulterfarben von Gasflaschen mit Bild und Bedeutung, offline und durchsuchbar. Die obere Nummer einer Warntafel wird Ziffer für Ziffer erklärt, das X für die Gefahr mit Wasser eingeschlossen. |
 | **Strahlenschutz** | Richtwerte: die Dosisleistung aus der Transportkennzahl (TKZ) eines Versandstücks, die Dosisleistung in einem anderen Abstand und wo die Absperrgrenze liegt. Ersetzt keine Messung. |
 
 Weitere Helfer folgen. Welcher fehlt euch? Schreibt es unter
@@ -99,9 +100,17 @@ weiteren Helfer.
 |---|---|---|
 | ![Hydrantenkarte: die nächsten Hydranten](docs/screenshots/12-hydrantenkarte-naechste.png) | ![Hydrantenkarte: ein Hydrant](docs/screenshots/13-hydrantenkarte-hydrant.png) | ![Hydrantenkarte: Richtungspfeil](docs/screenshots/14-hydrantenkarte-pfeil.png) |
 
+| Kennzeichnungen: Nummer auf der Warntafel | Kennzeichnungen: Gefahrzettel | Kennzeichnungen: GHS-Piktogramme |
+|---|---|---|
+| ![Kennzeichnungen: Nummer auf der Warntafel](docs/screenshots/15-kennzeichnungen-nummer.png) | ![Kennzeichnungen: Gefahrzettel](docs/screenshots/16-kennzeichnungen-gefahrzettel.png) | ![Kennzeichnungen: GHS-Piktogramme](docs/screenshots/17-kennzeichnungen-ghs.png) |
+
+| Kennzeichnungen: Rohrleitungen | Kennzeichnungen: Gasflaschen |
+|---|---|
+| ![Kennzeichnungen: Rohrleitungen](docs/screenshots/18-kennzeichnungen-rohrleitungen.png) | ![Kennzeichnungen: Gasflaschen](docs/screenshots/19-kennzeichnungen-gasflaschen.png) |
+
 | Strahlenschutz |
 |---|
-| ![Strahlenschutz](docs/screenshots/15-strahlenschutz.png) |
+| ![Strahlenschutz](docs/screenshots/20-strahlenschutz.png) |
 
 ## Mitmachen & Kontakt
 

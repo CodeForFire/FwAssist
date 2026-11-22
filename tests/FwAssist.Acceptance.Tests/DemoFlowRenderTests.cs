@@ -10,6 +10,8 @@ using FwAssist.Composition;
 using FwAssist.Helpers.DekonPlatz;
 using FwAssist.Helpers.Funkalphabet;
 using FwAssist.Helpers.Hydranten;
+using FwAssist.Helpers.Kennzeichnungen;
+using FwAssist.Helpers.Kennzeichnungen.Ui;
 using FwAssist.Helpers.RthLandeplatz;
 using FwAssist.Helpers.Schaummittel;
 using FwAssist.Helpers.Strahlenschutz;
@@ -412,7 +414,7 @@ public class DemoFlowRenderTests
         Assert.True(Named(phone, "GrenzwertField").IsVisible);
         Assert.Equal(["Absperrgrenze", "20 m"], ResultTexts(phone.Window));
 
-        phone.Capture("15-strahlenschutz.png");
+        phone.Capture("20-strahlenschutz.png");
     }
 
     [AvaloniaFact]
@@ -840,6 +842,105 @@ public class DemoFlowRenderTests
 
         Tap(phone, Named(phone, "ZoomOut"));
         Assert.Equal(before, vm.Map.Zoom);
+    }
+
+    private static KennzeichnungenViewModel OpenKennzeichnungen(PhoneRender phone)
+    {
+        phone.Shell.Open(KennzeichnungenModule.HelperId);
+        PhoneRender.Settle();
+        return phone.Window.GetVisualDescendants().OfType<Control>()
+            .Select(c => c.DataContext).OfType<KennzeichnungenViewModel>().First();
+    }
+
+    [AvaloniaFact]
+    public void The_kennzeichnungen_read_a_gefahrnummer_and_show_every_group()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenKennzeichnungen(phone);
+
+        ((TextBox)Named(phone, "Search")).Text = "X423";
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "GefahrnummerCard").IsEffectivelyVisible);
+        Assert.Contains(Gefahrnummern.WaterNote, VisibleTexts(phone.Window));
+        phone.Capture("15-kennzeichnungen-nummer.png");
+
+        vm.ClearCommand.Execute(null);
+        ((RadioButton)Named(phone, "GefahrzettelGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.False(Named(phone, "GefahrnummerCard").IsEffectivelyVisible);
+        Assert.Contains("Entzündbare Gase", VisibleTexts(phone.Window));
+        phone.Capture("16-kennzeichnungen-gefahrzettel.png");
+
+        ((RadioButton)Named(phone, "GhsGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.Contains("GHS01", VisibleTexts(phone.Window));
+        phone.Capture("17-kennzeichnungen-ghs.png");
+
+        ((RadioButton)Named(phone, "RohrleitungGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "GroupNote").IsEffectivelyVisible);
+        Assert.Contains("Wasserdampf", VisibleTexts(phone.Window));
+        phone.Capture("18-kennzeichnungen-rohrleitungen.png");
+
+        ((RadioButton)Named(phone, "GasflascheGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.Contains(vm.GroupNote, VisibleTexts(phone.Window));
+        phone.Capture("19-kennzeichnungen-gasflaschen.png");
+    }
+
+    [AvaloniaFact]
+    public void Every_kennzeichnungen_group_button_is_glove_sized()
+    {
+        var phone = new PhoneRender();
+        _ = OpenKennzeichnungen(phone);
+
+        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup" })
+        {
+            var button = Named(phone, group);
+            Assert.True(button.Bounds.Height >= 48, $"{group} is {button.Bounds.Height} high");
+        }
+    }
+
+    [AvaloniaFact]
+    public void Every_kennzeichen_shows_its_picture_and_names_it_for_a_screen_reader()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenKennzeichnungen(phone);
+
+        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup" })
+        {
+            ((RadioButton)Named(phone, group)).IsChecked = true;
+            PhoneRender.Settle();
+
+            var pictures = Named(phone, "Entries").GetVisualDescendants().OfType<PictureImage>().ToList();
+            Assert.Equal(vm.Entries.Select(e => e.Name), pictures.Select(AutomationProperties.GetName));
+            Assert.All(pictures, p => Assert.True(p.Source is not null, $"{p.Key} has no picture"));
+        }
+    }
+
+    [AvaloniaFact]
+    public void A_kennzeichnungen_search_without_hits_says_so()
+    {
+        var phone = new PhoneRender();
+        _ = OpenKennzeichnungen(phone);
+
+        ((TextBox)Named(phone, "Search")).Text = "Quarkspeise";
+        PhoneRender.Settle();
+
+        Assert.True(Named(phone, "NoHits").IsEffectivelyVisible);
+        Assert.Empty(Named(phone, "Entries").GetVisualDescendants().OfType<PictureImage>());
+    }
+
+    [AvaloniaFact]
+    public void The_kennzeichnungen_name_their_sources()
+    {
+        var phone = new PhoneRender();
+        _ = OpenKennzeichnungen(phone);
+
+        var texts = Texts(Named(phone, "SourceList"));
+
+        Assert.All(Kennzeichenkatalog.Sources, source => Assert.Contains(source, texts));
+        Assert.Contains(Kennzeichenkatalog.SourceNote, texts);
     }
 
     private static void Tap(PhoneRender phone, Control control)

@@ -40,6 +40,7 @@ DIE HELFER
 • RTH-Landeplatz — Vorgaben und Ablauf für den Landeplatz, bei Tag und bei Nacht
 • Dekon-Platz — Sofortmaßnahmen, Aufbau und Technik für die Dekon-Stufen I bis III
 • Hydrantenkarte — Hydranten an der Einsatzstelle auf einer Offline-Karte, die nächsten mit Entfernung und B-Schläuchen, und ein Richtungspfeil zum gewählten Hydranten
+• Kennzeichnungen — Warntafeln, Gefahrzettel, GHS-Piktogramme, Rohrleitungen und Gasflaschen erkennen, mit der Nummer auf der Warntafel Ziffer für Ziffer erklärt
 • Strahlenschutz — Dosisleistung aus TKZ und Abstand, Absperrgrenze, als Richtwerte neben der Messung
 
 Weitere Helfer folgen. Ideen dafür sammeln wir offen auf GitHub.
