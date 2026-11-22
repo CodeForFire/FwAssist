@@ -305,6 +305,7 @@
           "FwAssist.Helpers.Hydranten.Ui": "[1.0.0, )",
           "FwAssist.Helpers.Kennzeichnungen.Ui": "[1.0.0, )",
           "FwAssist.Helpers.RthLandeplatz.Ui": "[1.0.0, )",
+          "FwAssist.Helpers.Sandsack.Ui": "[1.0.0, )",
           "FwAssist.Helpers.Schaummittel.Ui": "[1.0.0, )",
           "FwAssist.Helpers.Stoppuhr.Ui": "[1.0.0, )",
           "FwAssist.Helpers.Strahlenschutz.Ui": "[1.0.0, )",
@@ -391,6 +392,22 @@
         "dependencies": {
           "Avalonia": "[12.1.6, )",
           "FwAssist.Helpers.RthLandeplatz": "[1.0.0, )",
+          "FwAssist.Ui": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.sandsack": {
+        "type": "Project",
+        "dependencies": {
+          "CommunityToolkit.Mvvm": "[8.4.2, )",
+          "FwAssist.AppLogic": "[1.0.0, )",
+          "FwAssist.Core": "[1.0.0, )"
+        }
+      },
+      "fwassist.helpers.sandsack.ui": {
+        "type": "Project",
+        "dependencies": {
+          "Avalonia": "[12.1.6, )",
+          "FwAssist.Helpers.Sandsack": "[1.0.0, )",
           "FwAssist.Ui": "[1.0.0, )"
         }
       },

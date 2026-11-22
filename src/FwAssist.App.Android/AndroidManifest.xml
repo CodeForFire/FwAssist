@@ -160,5 +160,17 @@
             </intent-filter>
         </activity-alias>
 
+        <activity-alias android:name="de.codeforfire.helfer.launcher.sandsack"
+                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+                        android:label="Sandsack"
+                        android:icon="@drawable/ic_helper_sandsack"
+                        android:exported="true"
+                        android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
     </application>
 </manifest>

@@ -1,0 +1,38 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:FwAssist.Helpers.Sandsack;assembly=FwAssist.Helpers.Sandsack"
+             x:Class="FwAssist.Helpers.Sandsack.Ui.SandsackView"
+             x:DataType="vm:SandsackViewModel">
+  <!-- A form scrolls, so the soft keyboard leaves the field being typed into visible. -->
+  <DockPanel Margin="16">
+    <Button x:Name="ResetButton" DockPanel.Dock="Bottom" Margin="0,12,0,0" HorizontalAlignment="Stretch"
+            Content="ZURÜCKSETZEN" Command="{Binding ResetCommand}" />
+    <ScrollViewer x:Name="Form">
+      <StackPanel Spacing="12">
+        <ContentControl Content="{Binding Laenge}" />
+        <ContentControl Content="{Binding Hoehe}" />
+        <ContentControl Content="{Binding Helfer}" />
+
+        <StackPanel x:Name="ResultPanel" Spacing="4" IsVisible="{Binding HasResults}">
+          <TextBlock Classes="overline" Text="RICHTWERT" />
+          <ItemsControl x:Name="Results" ItemsSource="{Binding Results}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="vm:ResultLine">
+                <Grid ColumnDefinitions="*,Auto" MinHeight="32">
+                  <TextBlock Grid.Column="0" Classes="secondary" VerticalAlignment="Center" Text="{Binding Label}" />
+                  <TextBlock Grid.Column="1" Classes="display" VerticalAlignment="Center" Text="{Binding Value}" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+
+        <TextBlock x:Name="Hinweis" Classes="secondary" TextWrapping="Wrap" Text="{Binding Hinweis}" />
+        <TextBlock Classes="secondary" TextWrapping="Wrap"
+                   Text="Richtwerte. Ersetzen keine Fachberatung." />
+        <TextBlock Classes="secondary" TextWrapping="Wrap"
+                   Text="{x:Static vm:SandsackViewModel.Quellen}" />
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>
