@@ -62,6 +62,39 @@ public class AboutViewModelTests
     }
 
     [Fact]
+    public void The_privacy_link_opens_the_privacy_policy()
+    {
+        var about = About();
+
+        about.OpenPrivacyPolicyCommand.Execute(null);
+
+        Assert.Equal(new Uri("https://codeforfire.github.io/fwassist/datenschutz/"), Assert.Single(_links.Opened));
+        Assert.Null(about.Error);
+    }
+
+    [Fact]
+    public void A_privacy_link_the_platform_cannot_open_says_so()
+    {
+        _links.Refuse = true;
+        var about = About();
+
+        about.OpenPrivacyPolicyCommand.Execute(null);
+
+        Assert.Equal(Failed, about.Error);
+    }
+
+    [Fact]
+    public void A_privacy_address_that_is_not_http_never_reaches_the_platform()
+    {
+        var about = new AboutViewModel(_links, "1.2.3") { PrivacyPolicyText = "javascript:alert(1)" };
+
+        about.OpenPrivacyPolicyCommand.Execute(null);
+
+        Assert.Empty(_links.Opened);
+        Assert.Equal(Failed, about.Error);
+    }
+
+    [Fact]
     public void A_null_version_is_refused() =>
         Assert.Throws<ArgumentNullException>(() => new AboutViewModel(_links, null!));
 

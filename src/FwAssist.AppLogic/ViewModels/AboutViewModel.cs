@@ -24,6 +24,9 @@ public sealed partial class AboutViewModel : ObservableObject
 
     public string RepositoryText { get; init; } = "https://www.github.com/codeforfire/FwAssist";
 
+    /// <summary>The Datenschutzerklärung, which Google Play requires to be reachable inside the app.</summary>
+    public string PrivacyPolicyText { get; init; } = "https://codeforfire.github.io/fwassist/datenschutz/";
+
     /// <summary>Why the link did not open, in German; <see langword="null"/> when it did.</summary>
     [ObservableProperty]
     private string? _error;
@@ -32,9 +35,14 @@ public sealed partial class AboutViewModel : ObservableObject
     public void Refresh() => Error = null;
 
     [RelayCommand]
-    private void OpenRepository()
+    private void OpenRepository() => Open(RepositoryText);
+
+    [RelayCommand]
+    private void OpenPrivacyPolicy() => Open(PrivacyPolicyText);
+
+    private void Open(string address)
     {
-        Error = HttpUrlValidator.TryGetHttpUri(RepositoryText, out var uri) && _links.TryOpen(uri)
+        Error = HttpUrlValidator.TryGetHttpUri(address, out var uri) && _links.TryOpen(uri)
             ? null
             : "Link konnte nicht geöffnet werden.";
     }

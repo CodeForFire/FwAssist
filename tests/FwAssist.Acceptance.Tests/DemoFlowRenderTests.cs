@@ -83,6 +83,13 @@ public class DemoFlowRenderTests
         Assert.Contains("Copyright (C) 2026 Christian Arlt", texts);
         Assert.True(phone.Window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "RepositoryLink").Bounds.Height >= 48);
 
+        // Google Play wants the privacy policy reachable inside the app, not only on the listing.
+        Assert.Contains("DATENSCHUTZ", texts);
+        Assert.Contains("https://codeforfire.github.io/fwassist/datenschutz/", texts);
+        var privacy = phone.Window.GetVisualDescendants().OfType<Button>().Single(b => b.Name == "PrivacyPolicyLink");
+        Assert.True(privacy.IsEffectivelyVisible);
+        Assert.True(privacy.Bounds.Height >= 48, $"the privacy link is {privacy.Bounds.Height} high");
+
         phone.Capture("11-info.png");
     }
 
