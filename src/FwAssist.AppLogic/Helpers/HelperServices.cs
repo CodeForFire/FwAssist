@@ -15,6 +15,10 @@ namespace FwAssist.AppLogic.Helpers;
 /// <param name="Location">The phone's live position; null where the platform offers none.</param>
 /// <param name="Compass">Which way the phone points; null where the platform offers none.</param>
 /// <param name="Signal">A tone and vibration for something the user must notice; null stays quiet.</param>
+/// <param name="DeviceOnlySettings">
+/// Like <paramref name="Settings"/>, for values that must never leave the phone, not even into
+/// Android's backup: Einsatz data such as the Hydrantenkarte's Einsatzstelle. Null keeps nothing.
+/// </param>
 public sealed record HelperServices(
     TimeProvider Time,
     ITicker Ticker,
@@ -22,4 +26,5 @@ public sealed record HelperServices(
     IRegionPackLibrary? Maps = null,
     ILocationSource? Location = null,
     ICompass? Compass = null,
-    IAttentionSignal? Signal = null);
+    IAttentionSignal? Signal = null,
+    IHelperSettings? DeviceOnlySettings = null);

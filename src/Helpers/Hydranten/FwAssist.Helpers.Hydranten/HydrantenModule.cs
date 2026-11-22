@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using FwAssist.AppLogic.Helpers;
+using FwAssist.AppLogic.Services;
 
 namespace FwAssist.Helpers.Hydranten;
 
@@ -20,6 +21,25 @@ public sealed class HydrantenModule : IHelperModule
     public ObservableObject CreateViewModel(HelperServices services)
     {
         ArgumentNullException.ThrowIfNull(services);
-        return new HydrantenkarteViewModel(services.Maps, services.Settings, services.Location, services.Compass, services.Time, services.Signal);
+        MoveEinsatzstelleOutOfBackup(services.Settings, services.DeviceOnlySettings);
+        return new HydrantenkarteViewModel(services.Maps, services.DeviceOnlySettings, services.Location, services.Compass, services.Time, services.Signal);
+    }
+
+    // Up to 0.2.1 the Einsatzstelle sat in the settings Android backs up. A copy found there moves
+    // to the device-only settings, unless those already hold a newer one, and is blanked either way:
+    // IHelperSettings cannot remove a key, and empty is what the view model writes for "none".
+    private static void MoveEinsatzstelleOutOfBackup(IHelperSettings? backedUp, IHelperSettings? deviceOnly)
+    {
+        if (backedUp?.Get(HydrantenkarteViewModel.EinsatzstelleKey) is not { Length: > 0 } old)
+        {
+            return;
+        }
+
+        if (deviceOnly is not null && string.IsNullOrEmpty(deviceOnly.Get(HydrantenkarteViewModel.EinsatzstelleKey)))
+        {
+            deviceOnly.Set(HydrantenkarteViewModel.EinsatzstelleKey, old);
+        }
+
+        backedUp.Set(HydrantenkarteViewModel.EinsatzstelleKey, string.Empty);
     }
 }

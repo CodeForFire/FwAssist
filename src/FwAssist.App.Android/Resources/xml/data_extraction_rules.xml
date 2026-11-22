@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android 12 and newer. Cloud backup goes to the user's Google account, so the Einsatzstelle and
+     the Kartenpakete stay out of it; see the comment on <application> in AndroidManifest.xml. A
+     device-to-device transfer goes only to the user's own new phone and keeps everything.
+     The names match AndroidHelperSettings.DeviceOnly and the "maps" folder in MainActivity. -->
+<data-extraction-rules>
+    <cloud-backup>
+        <exclude domain="sharedpref" path="helper-settings-device.xml" />
+        <exclude domain="file" path="maps/" />
+    </cloud-backup>
+</data-extraction-rules>
