@@ -146,11 +146,13 @@ stays a person's decision, taken in the Console. The credentials are contained:
   reach a single device until someone rolls it out in the Console.
 
 Because the sideload `.apk` is extracted from the same signed bundle, it carries
-the upload key's certificate too. Up to v0.1.0 every CI build was signed with a
-debug key the runner generated fresh, so each APK had a different certificate
-and Android refused to install one over the other. From the first release
-signed with the upload key on, a sideloaded install updates in place. The last
-debug-signed APK has to be uninstalled once; the release body says so.
+the upload key's certificate too. Up to v0.3.0-alpha.2 every CI build was
+signed with a debug key the runner generated fresh, so each APK had a different
+certificate and Android refused to install one over the other; those builds
+were also still the package `de.codeforfire.helfer`. From the first release
+signed with the upload key on, a sideloaded install updates in place. An older
+install is a different app: the new one installs beside it, and the old one has
+to be uninstalled once. The release body says so.
 
 ### One-time setup
 

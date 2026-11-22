@@ -293,11 +293,11 @@ jobs:
           **Installation ohne Play Store.** Aktiviere einmalig *Installation aus unbekannten
           Quellen* für den Browser oder Dateimanager, mit dem die APK geöffnet wird.
 
-          **Update von 0.1.0 oder älter.** Bis 0.1.0 war jede APK mit einem anderen Schlüssel
-          signiert. Ab dieser Version ist der Schlüssel fest, deshalb die alte App einmalig
-          deinstallieren und diese APK neu installieren. Das löscht die gespeicherten
-          Einstellungen und Schaummittel-Eingaben. Danach installieren sich Updates
-          einfach darüber.
+          **Update von 0.3.0-alpha.2 oder älter.** Bis dahin war FwAssist ein anderes Paket,
+          und jede APK war mit einem anderen Schlüssel signiert. Diese APK installiert sich
+          deshalb neben der alten App. Die alte App einmalig deinstallieren; ihre
+          Einstellungen und Schaummittel-Eingaben werden nicht übernommen. Danach
+          installieren sich Updates einfach darüber.
           EOF
       # `gh release create` could do this too (zizmor's superfluous-actions); swapping a working
       # release step is a change of its own, tested on a tag.
