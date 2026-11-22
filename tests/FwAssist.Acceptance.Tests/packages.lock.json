@@ -438,7 +438,6 @@
         "type": "Project",
         "dependencies": {
           "Avalonia": "[12.1.6, )",
-          "Avalonia.Themes.Fluent": "[12.1.6, )",
           "FwAssist.Helpers.Strahlenschutz": "[1.0.0, )",
           "FwAssist.Ui": "[1.0.0, )"
         }
@@ -464,7 +463,7 @@
       },
       "Avalonia.Fonts.Inter": {
         "type": "CentralTransitive",
-        "requested": "[12.1.4, )",
+        "requested": "[12.1.6, )",
         "resolved": "12.1.6",
         "contentHash": "sb0jH+oKHCWGo5PHuYtsK3cJ2dcsiE7PQEJJ94ZrFewxwwyeUn0+EsvnzKPEfL2c4cvRXInL0O741yUf3aHX2Q==",
         "dependencies": {

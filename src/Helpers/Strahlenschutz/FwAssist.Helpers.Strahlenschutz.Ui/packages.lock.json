@@ -13,15 +13,6 @@
           "MicroCom.Runtime": "0.11.6"
         }
       },
-      "Avalonia.Themes.Fluent": {
-        "type": "Direct",
-        "requested": "[12.1.6, )",
-        "resolved": "12.1.6",
-        "contentHash": "CafSFU8q6I2ij7VRWy3D5qw3ObrDEOXRqIvFqVuEh7vqk1EC9ob94KYRmbHLZRsyj3Ob2xsF/tgcF5YF2uiKzQ==",
-        "dependencies": {
-          "Avalonia": "12.1.6"
-        }
-      },
       "StyleCop.Analyzers": {
         "type": "Direct",
         "requested": "[1.2.0-beta.556, )",
@@ -75,6 +66,15 @@
           "Avalonia": "[12.1.6, )",
           "Avalonia.Themes.Fluent": "[12.1.6, )",
           "FwAssist.AppLogic": "[1.0.0, )"
+        }
+      },
+      "Avalonia.Themes.Fluent": {
+        "type": "CentralTransitive",
+        "requested": "[12.1.6, )",
+        "resolved": "12.1.6",
+        "contentHash": "CafSFU8q6I2ij7VRWy3D5qw3ObrDEOXRqIvFqVuEh7vqk1EC9ob94KYRmbHLZRsyj3Ob2xsF/tgcF5YF2uiKzQ==",
+        "dependencies": {
+          "Avalonia": "12.1.6"
         }
       },
       "CommunityToolkit.Mvvm": {

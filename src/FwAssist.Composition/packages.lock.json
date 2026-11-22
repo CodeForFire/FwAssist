@@ -165,7 +165,6 @@
         "type": "Project",
         "dependencies": {
           "Avalonia": "[12.1.6, )",
-          "Avalonia.Themes.Fluent": "[12.1.6, )",
           "FwAssist.Helpers.Strahlenschutz": "[1.0.0, )",
           "FwAssist.Ui": "[1.0.0, )"
         }
