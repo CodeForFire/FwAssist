@@ -1,0 +1,1 @@
+The Kennzeichnungen helper now follows ADR 2025, which no longer lists Gefahrnummer 78, and the current CLP Anhang V, which adds desensibilisierte explosive Stoffe to GHS02 and damage to the ozone layer to GHS07 (#21).
