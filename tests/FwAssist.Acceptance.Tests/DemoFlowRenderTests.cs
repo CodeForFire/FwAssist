@@ -778,6 +778,30 @@ public class DemoFlowRenderTests
         PhoneRender.Settle();
         Assert.Contains("GHS01", VisibleTexts(phone.Window));
         phone.Capture("17-kennzeichnungen-ghs.png");
+
+        ((RadioButton)Named(phone, "RohrleitungGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "GroupNote").IsEffectivelyVisible);
+        Assert.Contains("Wasserdampf", VisibleTexts(phone.Window));
+        phone.Capture("18-kennzeichnungen-rohrleitungen.png");
+
+        ((RadioButton)Named(phone, "GasflascheGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.Contains(vm.GroupNote, VisibleTexts(phone.Window));
+        phone.Capture("19-kennzeichnungen-gasflaschen.png");
+    }
+
+    [AvaloniaFact]
+    public void Every_kennzeichnungen_group_button_is_glove_sized()
+    {
+        var phone = new PhoneRender();
+        _ = OpenKennzeichnungen(phone);
+
+        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup" })
+        {
+            var button = Named(phone, group);
+            Assert.True(button.Bounds.Height >= 48, $"{group} is {button.Bounds.Height} high");
+        }
     }
 
     [AvaloniaFact]
@@ -786,7 +810,7 @@ public class DemoFlowRenderTests
         var phone = new PhoneRender();
         var vm = OpenKennzeichnungen(phone);
 
-        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup" })
+        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup" })
         {
             ((RadioButton)Named(phone, group)).IsChecked = true;
             PhoneRender.Settle();

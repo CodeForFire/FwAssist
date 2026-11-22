@@ -8,6 +8,7 @@
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
         <ResourceInclude Source="avares://FwAssist.Helpers.Kennzeichnungen.Ui/Pictures.axaml" />
+        <ResourceInclude Source="avares://FwAssist.Helpers.Kennzeichnungen.Ui/Farbkennzeichen.axaml" />
       </ResourceDictionary.MergedDictionaries>
     </ResourceDictionary>
   </UserControl.Resources>
@@ -27,7 +28,8 @@
        what is being typed. The group switch sits at the bottom, in thumb reach. RadioButtons: a
        screen reader hears which group is selected, and the line above the list names it in words. -->
   <DockPanel Margin="16">
-    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,8,*,8,*" Margin="0,12,0,0">
+    <!-- Five groups do not fit one row at 412 dp with glove-sized targets, so they take two. -->
+    <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,8,*,8,*" RowDefinitions="Auto,4,Auto" Margin="0,12,0,0">
       <RadioButton x:Name="WarntafelGroup" Grid.Column="0" GroupName="Gruppe" Content="WARNTAFEL"
                    HorizontalAlignment="Stretch"
                    IsChecked="{Binding IsWarntafel}"
@@ -39,6 +41,14 @@
       <RadioButton x:Name="GhsGroup" Grid.Column="4" GroupName="Gruppe" Content="GHS"
                    HorizontalAlignment="Stretch"
                    IsChecked="{Binding IsGhs}"
+                   IsCheckedChanged="OnGruppeChanged" />
+      <RadioButton x:Name="RohrleitungGroup" Grid.Row="2" Grid.Column="0" GroupName="Gruppe" Content="ROHR"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsRohrleitung}"
+                   IsCheckedChanged="OnGruppeChanged" />
+      <RadioButton x:Name="GasflascheGroup" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" GroupName="Gruppe" Content="GASFLASCHE"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsGasflasche}"
                    IsCheckedChanged="OnGruppeChanged" />
     </Grid>
 
@@ -75,6 +85,7 @@
 
         <TextBlock x:Name="ListTitle" Classes="overline" TextWrapping="Wrap" Text="{Binding ListTitle}"
                    IsVisible="{Binding HasEntries}" />
+        <TextBlock x:Name="GroupNote" Classes="line" IsVisible="{Binding HasGroupNote}" Text="{Binding GroupNote}" />
         <TextBlock x:Name="NoHits" Classes="line" IsVisible="{Binding HasNoHits}"
                    Text="Nichts gefunden. Anderes Stichwort versuchen oder die Gruppe unten wählen." />
 

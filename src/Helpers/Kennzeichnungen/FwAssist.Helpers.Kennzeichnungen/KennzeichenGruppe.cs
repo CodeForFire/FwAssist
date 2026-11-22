@@ -6,4 +6,6 @@ public enum KennzeichenGruppe
     Warntafel,
     Gefahrzettel,
     Ghs,
+    Rohrleitung,
+    Gasflasche,
 }
