@@ -106,16 +106,16 @@ public static class Kennzeichenkatalog
     /// </summary>
     public static IReadOnlyList<Kennzeichen> Rohrleitungen { get; } =
     [
-        Rohr("1", "Wasser", "grün", null, "weiß"),
-        Rohr("2", "Wasserdampf", "rot", null, "weiß"),
-        Rohr("3", "Luft", "grau", null, "schwarz"),
+        Rohr("1", "Wasser", "grün", "weiß"),
+        Rohr("2", "Wasserdampf", "rot", "weiß"),
+        Rohr("3", "Luft", "grau", "schwarz"),
         Rohr("4", "Brennbare Gase", "gelb", "rot", "schwarz"),
         Rohr("5", "Nichtbrennbare Gase", "gelb", "schwarz", "schwarz"),
-        Rohr("6", "Säuren", "orange", null, "schwarz"),
-        Rohr("7", "Laugen", "violett", null, "weiß"),
+        Rohr("6", "Säuren", "orange", "schwarz"),
+        Rohr("7", "Laugen", "violett", "weiß"),
         Rohr("8", "Brennbare Flüssigkeiten und Feststoffe", "braun", "rot", "weiß"),
         Rohr("9", "Nichtbrennbare Flüssigkeiten und Feststoffe", "braun", "schwarz", "weiß"),
-        Rohr("0", "Sauerstoff", "blau", null, "weiß"),
+        Rohr("0", "Sauerstoff", "blau", "weiß"),
     ];
 
     /// <summary>
@@ -161,21 +161,16 @@ public static class Kennzeichenkatalog
     private static Kennzeichen Zettel(string key, string muster, string name, string look, string klasse) =>
         new(KennzeichenGruppe.Gefahrzettel, key, muster, name, look, klasse, "ADR 5.2.2.2.2, Muster " + muster);
 
-    private static Kennzeichen Rohr(string gruppe, string stoff, string farbe, string? zusatz, string schrift)
-    {
-        var look = zusatz is null
-            ? $"Band {farbe}, Pfeil und Schrift {schrift}"
-            : $"Band {farbe} mit Feldern in {zusatz}, Pfeil und Schrift {schrift}";
-        var colours = zusatz is null ? $"Gruppenfarbe {farbe}" : $"Gruppenfarbe {farbe}, Zusatzfarbe {zusatz}";
-        return new(
-            KennzeichenGruppe.Rohrleitung,
-            "rohr-" + gruppe,
-            "Gruppe " + gruppe,
-            stoff,
-            look,
-            colours + ".",
-            "TRGS 201 Anhang 3, Tabelle 2");
-    }
+    // Two overloads rather than a nullable extra colour: the list says which groups have one, and no
+    // branch is left that only the static initializer could ever take.
+    private static Kennzeichen Rohr(string gruppe, string stoff, string farbe, string schrift) =>
+        Rohr(gruppe, stoff, ($"Band {farbe}, Pfeil und Schrift {schrift}", $"Gruppenfarbe {farbe}."));
+
+    private static Kennzeichen Rohr(string gruppe, string stoff, string farbe, string zusatz, string schrift) =>
+        Rohr(gruppe, stoff, ($"Band {farbe} mit Feldern in {zusatz}, Pfeil und Schrift {schrift}", $"Gruppenfarbe {farbe}, Zusatzfarbe {zusatz}."));
+
+    private static Kennzeichen Rohr(string gruppe, string stoff, (string Look, string Meaning) text) =>
+        new(KennzeichenGruppe.Rohrleitung, "rohr-" + gruppe, "Gruppe " + gruppe, stoff, text.Look, text.Meaning, "TRGS 201 Anhang 3, Tabelle 2");
 
     private static Kennzeichen Flasche(string key, string farbe, string name, string look, string meaning, string paragraph) =>
         new(KennzeichenGruppe.Gasflasche, key, farbe, name, look, meaning, "EN 1089-3:2011, " + paragraph);

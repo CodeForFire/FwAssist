@@ -40,6 +40,7 @@ public class KennzeichnungenViewModelTests
 
         vm.IsGasflasche = true;
         Assert.Same(Kennzeichenkatalog.Gasflaschen, vm.Entries);
+        Assert.True(vm.IsGasflasche);
         Assert.False(vm.IsRohrleitung);
         Assert.Contains("Gefahrgutaufkleber", vm.GroupNote, StringComparison.Ordinal);
     }
