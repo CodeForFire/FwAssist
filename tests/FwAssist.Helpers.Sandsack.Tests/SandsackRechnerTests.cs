@@ -49,8 +49,21 @@ public class SandsackRechnerTests
     public void Sand_rounds_up_to_a_tenth() =>
         Assert.Equal(3.1m, SandsackRechner.SandKubikmeter(1.01m, SandsackRechner.Stufe(1m)));
 
+    // 1,333333334 m × 45 is 60,000000030 sacks: the part of a sack is real and needs a sack.
     [Fact]
-    public void An_exact_amount_is_not_rounded_up_by_noise() =>
+    public void A_tiny_real_part_of_a_sack_still_counts_as_a_whole_one() =>
+        Assert.Equal(61m, SandsackRechner.Saecke(1.333333334m, SandsackRechner.Stufe(0.5m)));
+
+    [Fact]
+    public void A_tiny_real_part_of_a_tenth_of_sand_still_counts() =>
+        Assert.Equal(1.1m, SandsackRechner.SandKubikmeter(1.00000001m, SandsackRechner.Stufe(0.5m)));
+
+    [Fact]
+    public void A_tiny_real_part_of_a_quarter_hour_still_counts() =>
+        Assert.Equal(TimeSpan.FromMinutes(30), SandsackRechner.Arbeitszeit(10.0000001m, 2m));
+
+    [Fact]
+    public void An_amount_just_below_a_whole_tenth_is_not_rounded_past_it() =>
         Assert.Equal(1m, SandsackRechner.SandKubikmeter(1m / 3m * 3m, SandsackRechner.Stufe(0.5m)));
 
     [Fact]

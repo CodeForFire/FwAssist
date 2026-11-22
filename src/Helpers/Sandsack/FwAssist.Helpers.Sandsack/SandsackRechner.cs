@@ -6,13 +6,15 @@ namespace FwAssist.Helpers.Sandsack;
 /// Rounding always errs towards having too much: a height rounds up to the next row of the table,
 /// sacks up to the whole sack, sand up to a tenth, and the working time up to a quarter hour.
 /// </para>
+/// <para>
+/// Unlike the other calculators, nothing here is rounded before its ceiling: any part of a sack,
+/// however small, is real and needs a sack. There is no noise to absorb either. Sacks and sand
+/// are decimal products, which are exact, and the time is one division, whose result is exact
+/// whenever it ends on a quarter hour.
+/// </para>
 /// </summary>
 public static class SandsackRechner
 {
-    // Repeating decimals land just beside the true value, and a ceiling would turn 100.00000001 into
-    // 101. Six places are far finer than anything shown and far coarser than that noise.
-    private const int NoiseDecimals = 6;
-
     private const decimal ViertelstundenJeStunde = 4m;
 
     /// <summary>The highest dam the table covers, in metres. A higher one is not calculated.</summary>
@@ -58,7 +60,7 @@ public static class SandsackRechner
 
         var stunden = saecke * Sandsackvorgaben.ArbeitsgaengeJeSack
             / Sandsackvorgaben.SaeckeJeHelferUndStunde / ganzeHelfer;
-        var viertelstunden = Math.Ceiling(Math.Round(stunden * ViertelstundenJeStunde, NoiseDecimals));
+        var viertelstunden = Math.Ceiling(stunden * ViertelstundenJeStunde);
         return TimeSpan.FromMinutes((double)(viertelstunden * 15m));
     }
 
@@ -69,6 +71,6 @@ public static class SandsackRechner
     private static decimal RoundUp(decimal value, int decimals)
     {
         var scale = decimals == 0 ? 1m : 10m;
-        return Math.Ceiling(Math.Round(value * scale, NoiseDecimals)) / scale;
+        return Math.Ceiling(value * scale) / scale;
     }
 }
