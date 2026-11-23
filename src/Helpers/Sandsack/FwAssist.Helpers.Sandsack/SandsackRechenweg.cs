@@ -97,7 +97,8 @@ public static class SandsackRechenweg
                 + $"{Aufgerundet(laenge * stufe.SandKubikmeterJeMeter, sand)}.",
             $"Sand, nass: {sandText} m³ × {Nass} t/m³ = {Formatting.Number(nass, 1)} t.",
             $"Sand, trocken: {sandText} m³ × {TrockenMin} bis {TrockenMax} t/m³ = "
-                + $"{Formatting.Number(trockenMin, 1)} bis {Formatting.Number(trockenMax, 1)} t. {WarumNass}",
+                + $"{Formatting.Number(trockenMin, 1)} bis {Formatting.Number(trockenMax, 1)} t"
+                + $"{TrockenAufgerundet(sand, trockenMin, trockenMax)}. {WarumNass}",
             Arbeitszeit(saecke, helfer),
             basisZeile,
             SichereSeite,
@@ -134,6 +135,13 @@ public static class SandsackRechenweg
 
     private static string Aufgerundet(decimal exakt, decimal gerundet) =>
         exakt == gerundet ? string.Empty : ", aufgerundet";
+
+    /// <summary>The rounding note for the dry range: it applies when either end was rounded up.</summary>
+    private static string TrockenAufgerundet(decimal kubikmeter, decimal min, decimal max) =>
+        kubikmeter * Sandsackvorgaben.SandTrockenMinTonnenJeKubikmeter == min
+            && kubikmeter * Sandsackvorgaben.SandTrockenMaxTonnenJeKubikmeter == max
+            ? string.Empty
+            : ", aufgerundet";
 
     /// <summary>A number with as many decimals as it was written with: "100", "0,8", "9,6".</summary>
     private static string Wie(decimal value) => Formatting.Number(value, value.Scale);

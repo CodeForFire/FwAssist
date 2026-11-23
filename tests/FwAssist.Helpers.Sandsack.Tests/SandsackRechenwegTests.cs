@@ -80,6 +80,14 @@ public class SandsackRechenwegTests
             "Arbeitszeit: 450 Säcke × 2 ÷ 40 je Helfer und Stunde ÷ 4 Helfer = 5 h 45 min, aufgerundet auf die Viertelstunde.",
             Zeilen(10m, 0.5m, 4m)[5]);
 
+    // 1,01 m × 3 m³ = 3,03, so 3,1 m³; × 1,2 and × 1,6 are 3,72 and 4,96 t.
+    [Fact]
+    public void A_dry_range_that_was_rounded_says_so() =>
+        Assert.StartsWith(
+            "Sand, trocken: 3,1 m³ × 1,2 bis 1,6 t/m³ = 3,8 bis 5,0 t, aufgerundet. ",
+            Zeilen(1.01m, 1m, null)[4],
+            StringComparison.Ordinal);
+
     [Fact]
     public void A_base_that_was_rounded_says_so() =>
         Assert.Equal("Basisbreite: 0,77 m × 2 = 1,6 m, aufgerundet.", Zeilen(null, 0.77m, null)[6]);
