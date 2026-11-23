@@ -557,17 +557,35 @@ public class DemoFlowRenderTests
     }
 
     // 780 dp is about what a 915 dp phone leaves between its status and navigation bars.
+    // The explanation below may scroll; the fields and every result may not.
     [AvaloniaFact]
-    public void A_whole_sandsack_calculation_fits_without_scrolling()
+    public void A_whole_sandsack_result_fits_without_scrolling()
     {
         var phone = new PhoneRender();
         phone.Window.Height = 780;
         FilledSandsack(phone);
 
         var form = phone.Window.GetVisualDescendants().OfType<ScrollViewer>().Single(s => s.Name == "Form");
+        var results = Named(phone, "ResultPanel");
+        var bottom = results.TranslatePoint(new Point(0, results.Bounds.Height), form);
+        Assert.NotNull(bottom);
         Assert.True(
-            form.Extent.Height <= form.Viewport.Height + 1,
-            $"The form is {form.Extent.Height} high in a viewport of {form.Viewport.Height}");
+            bottom.Value.Y <= form.Viewport.Height + 1,
+            $"The results end at {bottom.Value.Y} in a viewport of {form.Viewport.Height}");
+    }
+
+    [AvaloniaFact]
+    public void The_sandsack_explains_its_calculation_below_the_result()
+    {
+        var phone = new PhoneRender();
+        var page = FilledSandsack(phone);
+
+        var lines = Named(phone, "Rechenweg").GetVisualDescendants().OfType<TextBlock>()
+            .Where(t => t.IsEffectivelyVisible)
+            .Select(t => t.Text ?? string.Empty)
+            .ToList();
+        Assert.Equal(page.Rechenweg, lines);
+        Assert.Contains(lines, l => l.StartsWith("Sand, trocken: 300,0 m³ × 1,2 bis 1,6 t/m³ = 360,0 bis 480,0 t.", StringComparison.Ordinal));
     }
 
     private static Control Named(PhoneRender phone, string name) =>

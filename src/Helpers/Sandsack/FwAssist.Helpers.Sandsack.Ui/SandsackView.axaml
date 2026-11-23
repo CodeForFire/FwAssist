@@ -13,7 +13,9 @@
         <ContentControl Content="{Binding Hoehe}" />
         <ContentControl Content="{Binding Helfer}" />
 
-        <StackPanel x:Name="ResultPanel" Spacing="4" IsVisible="{Binding HasResults}">
+        <!-- Inset on the right so the overlay scroll bar, now that the explanation makes the page scroll,
+             never sits on the right-aligned values. -->
+        <StackPanel x:Name="ResultPanel" Spacing="4" Margin="0,0,8,0" IsVisible="{Binding HasResults}">
           <TextBlock Classes="overline" Text="RICHTWERT" />
           <ItemsControl x:Name="Results" ItemsSource="{Binding Results}">
             <ItemsControl.ItemTemplate>
@@ -28,6 +30,22 @@
         </StackPanel>
 
         <TextBlock x:Name="Hinweis" Classes="secondary" TextWrapping="Wrap" Text="{Binding Hinweis}" />
+
+        <StackPanel x:Name="RechenwegPanel" Spacing="6" Margin="0,8,0,0">
+          <TextBlock Classes="overline" Text="SO WIRD GERECHNET" />
+          <ItemsControl x:Name="Rechenweg" ItemsSource="{Binding Rechenweg}">
+            <ItemsControl.ItemsPanel>
+              <ItemsPanelTemplate>
+                <StackPanel Spacing="6" />
+              </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+              <DataTemplate x:DataType="x:String">
+                <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{Binding}" />
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
         <TextBlock Classes="secondary" TextWrapping="Wrap"
                    Text="Richtwerte. Ersetzen keine Fachberatung." />
         <TextBlock Classes="secondary" TextWrapping="Wrap"

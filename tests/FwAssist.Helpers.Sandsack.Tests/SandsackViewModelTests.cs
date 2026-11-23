@@ -86,7 +86,38 @@ public class SandsackViewModelTests
         var vm = Page();
 
         Assert.StartsWith("Dichter Verbund", vm.Hinweis, StringComparison.Ordinal);
-        Assert.Contains("40 Säcke je Helfer und Stunde", vm.Hinweis, StringComparison.Ordinal);
+    }
+
+    [Fact]
+    public void A_new_page_explains_the_rules_before_anything_is_entered()
+    {
+        var vm = Page();
+
+        Assert.Equal(SandsackRechenweg.Zeilen(null, null, null), vm.Rechenweg);
+        Assert.Contains(vm.Rechenweg, z => z.Contains("40 Säcke je Helfer und Stunde", StringComparison.Ordinal));
+    }
+
+    [Fact]
+    public void The_explanation_follows_what_is_typed()
+    {
+        var vm = Page();
+
+        vm.Laenge.Text = "100";
+        vm.Hoehe.Text = "1";
+        vm.Helfer.Text = "10";
+
+        Assert.Equal(SandsackRechenweg.Zeilen(100m, 1m, 10m), vm.Rechenweg);
+        Assert.Contains("Sandsäcke: 100 m × 160 je m = 16.000.", vm.Rechenweg);
+    }
+
+    [Fact]
+    public void The_rate_of_work_is_explained_once_not_also_in_the_hint()
+    {
+        var vm = Page();
+
+        vm.Hoehe.Text = "1";
+
+        Assert.DoesNotContain("je Helfer und Stunde", vm.Hinweis, StringComparison.Ordinal);
     }
 
     [Fact]

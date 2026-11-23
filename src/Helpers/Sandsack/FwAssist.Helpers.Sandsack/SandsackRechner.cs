@@ -50,6 +50,24 @@ public static class SandsackRechner
         RoundUp(kubikmeter * Sandsackvorgaben.SandTonnenJeKubikmeter, 1);
 
     /// <summary>
+    /// What <paramref name="kubikmeter"/> of dry sand weigh, from TK's lightest to its heaviest dry
+    /// figure, in tonnes to one decimal. Both ends round up, as the wet weight does.
+    /// </summary>
+    public static (decimal Min, decimal Max) SandTrockenTonnen(decimal kubikmeter) =>
+        (RoundUp(kubikmeter * Sandsackvorgaben.SandTrockenMinTonnenJeKubikmeter, 1),
+         RoundUp(kubikmeter * Sandsackvorgaben.SandTrockenMaxTonnenJeKubikmeter, 1));
+
+    /// <summary>
+    /// How much more wet sand weighs than the lightest dry sand, in whole percent: 2,0 t against
+    /// 1,2 t is 67 %.
+    /// </summary>
+    public static decimal NassMehrgewichtProzent =>
+        Math.Round(
+            ((Sandsackvorgaben.SandTonnenJeKubikmeter / Sandsackvorgaben.SandTrockenMinTonnenJeKubikmeter) - 1m) * 100m,
+            0,
+            MidpointRounding.AwayFromZero);
+
+    /// <summary>
     /// How long <paramref name="helfer"/> take to fill, carry and lay <paramref name="saecke"/>,
     /// rounded up to the quarter hour. Part of a Helfer does not count: 2,5 Helfer work as 2.
     /// </summary>
