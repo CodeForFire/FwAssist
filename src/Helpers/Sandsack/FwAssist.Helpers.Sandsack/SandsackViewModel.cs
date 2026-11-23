@@ -18,9 +18,6 @@ public sealed partial class SandsackViewModel : ObservableObject
 
     private static readonly string MaxHoeheText = Formatting.Number(SandsackRechner.MaxHoeheMeter, 1);
 
-    private static readonly string Arbeitsweise =
-        $"Arbeitszeit für Füllen, Tragen und Verlegen, {Formatting.Number(Sandsackvorgaben.SaeckeJeHelferUndStunde, 0)} Säcke je Helfer und Stunde.";
-
     private readonly IHelperSettings _settings;
 
     public SandsackViewModel(IHelperSettings settings)
@@ -52,6 +49,10 @@ public sealed partial class SandsackViewModel : ObservableObject
     [ObservableProperty]
     private string _hinweis = string.Empty;
 
+    /// <summary>How the results are calculated, one step per line, with the values entered so far (#87).</summary>
+    [ObservableProperty]
+    private IReadOnlyList<string> _rechenweg = [];
+
     [RelayCommand]
     private void Reset()
     {
@@ -60,22 +61,15 @@ public sealed partial class SandsackViewModel : ObservableObject
         Helfer.Text = string.Empty;
     }
 
-    private static string Dauer(TimeSpan dauer)
-    {
-        var stunden = (int)dauer.TotalHours;
-        return dauer.Minutes == 0
-            ? $"{Formatting.Number(stunden)} h"
-            : $"{Formatting.Number(stunden)} h {Formatting.Number(dauer.Minutes)} min";
-    }
-
     private NumberField Field(NumberFieldRule rule) =>
         new(_settings, rule with { Key = $"{SandsackModule.HelperId}.{rule.Key}" }, Recalculate);
 
     private void Recalculate()
     {
+        Rechenweg = SandsackRechenweg.Zeilen(Laenge.Value, Hoehe.Value, Helfer.Value);
         if (Hoehe.Value is not { } hoehe)
         {
-            Hinweis = $"{Ratschlag} {Arbeitsweise}";
+            Hinweis = Ratschlag;
             Results = [];
             return;
         }
@@ -83,7 +77,7 @@ public sealed partial class SandsackViewModel : ObservableObject
         var stufe = SandsackRechner.Stufe(hoehe);
         Hinweis = $"Gerechnet für {Formatting.Number(stufe.HoeheMeter, 1)} m Höhe. "
             + $"Basisbreite mindestens {Formatting.Number(SandsackRechner.Basisbreite(hoehe), 1)} m. "
-            + $"{Ratschlag} {Arbeitsweise}";
+            + Ratschlag;
 
         if (Laenge.Value is not { } laenge)
         {
@@ -102,7 +96,7 @@ public sealed partial class SandsackViewModel : ObservableObject
 
         if (Helfer.Value is { } helfer)
         {
-            lines.Add(new("Arbeitszeit", Dauer(SandsackRechner.Arbeitszeit(saecke, helfer))));
+            lines.Add(new("Arbeitszeit", SandsackRechenweg.Dauer(SandsackRechner.Arbeitszeit(saecke, helfer))));
         }
 
         Results = lines;

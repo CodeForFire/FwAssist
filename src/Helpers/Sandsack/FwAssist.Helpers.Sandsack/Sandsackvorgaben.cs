@@ -45,6 +45,15 @@ public static class Sandsackvorgaben
     /// </summary>
     public const decimal SandTonnenJeKubikmeter = 2m;
 
+    /// <summary>
+    /// TK, "Deichverteidigungsmaterialien", Sand: "Gewicht trocken 1.200 - 1.600 Kg/m³", the lower
+    /// end, in tonnes. Shown to explain the span only. No result is planned with it.
+    /// </summary>
+    public const decimal SandTrockenMinTonnenJeKubikmeter = 1.2m;
+
+    /// <summary>The upper end of TK's dry weight; see <see cref="SandTrockenMinTonnenJeKubikmeter"/>.</summary>
+    public const decimal SandTrockenMaxTonnenJeKubikmeter = 1.6m;
+
     /// <summary>TK, "Sandsackdamm, normale Stabilität": "b = > 2*h".</summary>
     public const decimal BasisbreiteJeHoehe = 2m;
 

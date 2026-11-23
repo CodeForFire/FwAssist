@@ -67,6 +67,18 @@ public class SandsackRechnerTests
         Assert.Equal(1m, SandsackRechner.SandKubikmeter(1m / 3m * 3m, SandsackRechner.Stufe(0.5m)));
 
     [Fact]
+    public void Dry_sand_weighs_one_point_two_to_one_point_six_tonnes_a_cubic_metre() =>
+        Assert.Equal((360m, 480m), SandsackRechner.SandTrockenTonnen(300m));
+
+    [Fact]
+    public void Both_ends_of_the_dry_weight_round_up_to_a_tenth() =>
+        Assert.Equal((3.8m, 5m), SandsackRechner.SandTrockenTonnen(3.1m));
+
+    [Fact]
+    public void Wet_sand_weighs_two_thirds_more_than_the_lightest_dry_sand() =>
+        Assert.Equal(67m, SandsackRechner.NassMehrgewichtProzent);
+
+    [Fact]
     public void Wet_sand_weighs_two_tonnes_a_cubic_metre() =>
         Assert.Equal(6.2m, SandsackRechner.SandTonnen(3.1m));
 

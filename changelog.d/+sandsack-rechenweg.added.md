@@ -1,0 +1,1 @@
+The Sandsack helper now explains below its result how each Richtwert is calculated, with the values entered, including why it plans with wet sand at 2,0 t/m³ rather than dry sand at 1,2 to 1,6 t/m³ (#87).
