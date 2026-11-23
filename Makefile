@@ -69,7 +69,8 @@ TEST_TARGET := $(if $(PROJECT),$(PROJECT),$(SLNF))
 
 .PHONY: help restore build test mutate mutate-src format format-check codeql ci clean \
         android-image android-image-rebuild apk aab emulator emulator-tablet install run-android \
-        logcat uninstall screenshots play-listing-check play-screenshots phone-screenshots
+        logcat uninstall screenshots play-listing-check play-screenshots phone-screenshots \
+        feature-graphic
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "} \
@@ -288,6 +289,9 @@ play-screenshots: ## Regenerate docs/play/screenshots/*.png at 9:16 for the Play
 	RENDER_OUT=$(CURDIR)/docs/play/screenshots RENDER_WIDTH=540 RENDER_HEIGHT=960 \
 	  $(DOTNET) test tests/FwAssist.Acceptance.Tests -c $(CONFIG) \
 	  --filter FullyQualifiedName~DemoFlowRenderTests
+
+feature-graphic: ## Regenerate docs/play/feature-graphic-1024x500.png (needs magick and rsvg-convert)
+	scripts/build-feature-graphic.sh
 
 play-listing-check: ## Check the Play Store listing text against the Console's limits
 	scripts/check-play-listing.sh
