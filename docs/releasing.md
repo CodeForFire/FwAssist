@@ -315,7 +315,7 @@ reproducible instead of being retyped from memory each time:
 |---|---|---|
 | Text — name, short and full description, reviewer notes | [`docs/play/listing-de-DE.md`](play/listing-de-DE.md) | by hand; `make play-listing-check` |
 | Icon, 512x512, 32-bit | `docs/play/icon-512.png` | yes |
-| Feature graphic, 1024x500, no alpha | `docs/play/feature-graphic-1024x500.png` | not yet |
+| Feature graphic, 1024x500, no alpha | `docs/play/feature-graphic-1024x500.png` | `make feature-graphic` |
 | Phone screenshots, 9:16 | `docs/play/screenshots/*.png` | `make play-screenshots` |
 
 `make play-listing-check` counts characters against the Console's limits — it
