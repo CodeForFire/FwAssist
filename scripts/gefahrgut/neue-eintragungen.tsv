@@ -1,0 +1,20 @@
+# Rows the 29. and 30. ADR-Änderungsverordnung add to Tabelle A, columns (1), (2), (3a), (5), (20).
+#
+# ADR 2023: Anlage zur 29. ADRÄndV vom 22. November 2022, BGBl. 2022 II Nr. 20 (Anlageband), S. 97.
+# ADR 2025: 30. ADRÄndV vom 19. Februar 2025, BGBl. 2025 II Nr. 57, Seite 61-62.
+#
+# Both tables are printed turned on their side and were typed from the page. Their UN-Nummern are
+# checked against the new entries the same Verordnungen add to Tabelle B.
+quelle	un	benennung	klasse	gefahrzettel	gefahrnummer
+ADR 2023	3550	COBALTDIHYDROXID-PULVER mit mindestens 10 % lungengängigen Partikeln	6.1	6.1	66
+ADR 2025	0514	FEUERLÖSCHMITTEL-DISPERGIERVORRICHTUNGEN	1	1.4
+ADR 2025	3551	NATRIUM-IONEN-BATTERIEN mit einem organischen Elektrolyt	9	9A
+ADR 2025	3552	NATRIUM-IONEN-BATTERIEN IN AUSRÜSTUNGEN oder NATRIUM-IONEN-BATTERIEN, MIT AUSRÜSTUNGEN VERPACKT, mit einem organischen Elektrolyt	9	9A
+ADR 2025	3553	DISILAN	2	2.1	23
+ADR 2025	3554	GALLIUM IN HERGESTELLTEN GEGENSTÄNDEN	8	8
+ADR 2025	3555	TRIFLUORMETHYLTETRAZOL-NATRIUMSALZ IN ACETON mit mindestens 68 Masse-% Aceton	3	3
+ADR 2025	3556	FAHRZEUG MIT ANTRIEB DURCH LITHIUM-IONEN-BATTERIEN	9	9A
+ADR 2025	3557	FAHRZEUG MIT ANTRIEB DURCH LITHIUM-METALL-BATTERIEN	9	9A
+ADR 2025	3558	FAHRZEUG MIT ANTRIEB DURCH NATRIUM-IONEN-BATTERIEN	9	9A
+ADR 2025	3559	FEUERLÖSCHMITTEL-DISPERGIERVORRICHTUNGEN	9	9
+ADR 2025	3560	TETRAMETHYLAMMONIUMHYDROXID, WÄSSERIGE LÖSUNG mit mindestens 25 % Tetramethylammoniumhydroxid	6.1	6.1+8	668

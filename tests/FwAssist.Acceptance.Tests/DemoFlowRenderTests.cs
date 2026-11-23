@@ -9,6 +9,7 @@ using FwAssist.AppLogic.ViewModels;
 using FwAssist.Composition;
 using FwAssist.Helpers.DekonPlatz;
 using FwAssist.Helpers.Funkalphabet;
+using FwAssist.Helpers.Gefahrgut;
 using FwAssist.Helpers.Hydranten;
 using FwAssist.Helpers.Kennzeichnungen;
 using FwAssist.Helpers.Kennzeichnungen.Ui;
@@ -1053,5 +1054,56 @@ public class DemoFlowRenderTests
         phone.Window.MouseDown(middle, MouseButton.Left);
         phone.Window.MouseUp(middle, MouseButton.Left);
         PhoneRender.Settle();
+    }
+
+    private static GefahrgutViewModel OpenGefahrgut(PhoneRender phone)
+    {
+        phone.Shell.Open(GefahrgutModule.HelperId);
+        PhoneRender.Settle();
+        return phone.Window.GetVisualDescendants().OfType<Control>()
+            .Select(c => c.DataContext).OfType<GefahrgutViewModel>().First();
+    }
+
+    [AvaloniaFact]
+    public void The_gefahrgut_lookup_shows_the_plate_and_the_stoff_for_a_un_nummer_and_a_name()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenGefahrgut(phone);
+        Assert.True(Named(phone, "Hint").IsEffectivelyVisible);
+
+        ((TextBox)Named(phone, "Search")).Text = "1203";
+        PhoneRender.Settle();
+        var texts = VisibleTexts(phone.Window);
+        Assert.False(Named(phone, "Hint").IsEffectivelyVisible);
+        Assert.Contains("33", texts);
+        Assert.Contains("1203", texts);
+        Assert.Contains("BENZIN oder OTTOKRAFTSTOFF", texts);
+        Assert.Contains("Klasse 3 · Gefahrzettel 3", texts);
+        phone.Capture("22-gefahrgut-nummer.png");
+
+        vm.Query = "chlor";
+        PhoneRender.Settle();
+        texts = VisibleTexts(phone.Window);
+        Assert.Contains("CHLOR", texts);
+        Assert.Contains(vm.ResultTitle, texts);
+        phone.Capture("23-gefahrgut-name.png");
+
+        vm.Query = "9999";
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "NoHits").IsEffectivelyVisible);
+    }
+
+    [AvaloniaFact]
+    public void The_gefahrgut_clear_button_is_glove_sized_and_empties_the_field()
+    {
+        var phone = new PhoneRender();
+        var vm = OpenGefahrgut(phone);
+        vm.Query = "1005";
+        PhoneRender.Settle();
+
+        var clear = Named(phone, "ClearButton");
+        Assert.True(clear.Bounds.Height >= 48, $"LÖSCHEN is {clear.Bounds.Height} high");
+        Tap(phone, clear);
+        Assert.Equal(string.Empty, ((TextBox)Named(phone, "Search")).Text);
     }
 }

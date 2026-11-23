@@ -24,6 +24,8 @@
       "src/Helpers/Strahlenschutz/FwAssist.Helpers.Strahlenschutz/FwAssist.Helpers.Strahlenschutz.csproj",
       "src/Helpers/Sandsack/FwAssist.Helpers.Sandsack.Ui/FwAssist.Helpers.Sandsack.Ui.csproj",
       "src/Helpers/Sandsack/FwAssist.Helpers.Sandsack/FwAssist.Helpers.Sandsack.csproj",
+      "src/Helpers/Gefahrgut/FwAssist.Helpers.Gefahrgut.Ui/FwAssist.Helpers.Gefahrgut.Ui.csproj",
+      "src/Helpers/Gefahrgut/FwAssist.Helpers.Gefahrgut/FwAssist.Helpers.Gefahrgut.csproj",
       "tests/FwAssist.Acceptance.Tests/FwAssist.Acceptance.Tests.csproj",
       "tests/FwAssist.AppLogic.Tests/FwAssist.AppLogic.Tests.csproj",
       "tests/FwAssist.Core.Tests/FwAssist.Core.Tests.csproj",
@@ -35,7 +37,8 @@
       "tests/FwAssist.Helpers.Hydranten.Tests/FwAssist.Helpers.Hydranten.Tests.csproj",
       "tests/FwAssist.Helpers.Kennzeichnungen.Tests/FwAssist.Helpers.Kennzeichnungen.Tests.csproj",
       "tests/FwAssist.Helpers.Strahlenschutz.Tests/FwAssist.Helpers.Strahlenschutz.Tests.csproj",
-      "tests/FwAssist.Helpers.Sandsack.Tests/FwAssist.Helpers.Sandsack.Tests.csproj"
+      "tests/FwAssist.Helpers.Sandsack.Tests/FwAssist.Helpers.Sandsack.Tests.csproj",
+      "tests/FwAssist.Helpers.Gefahrgut.Tests/FwAssist.Helpers.Gefahrgut.Tests.csproj"
     ]
   }
 }

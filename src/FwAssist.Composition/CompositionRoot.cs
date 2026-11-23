@@ -5,6 +5,8 @@ using FwAssist.Helpers.DekonPlatz;
 using FwAssist.Helpers.DekonPlatz.Ui;
 using FwAssist.Helpers.Funkalphabet;
 using FwAssist.Helpers.Funkalphabet.Ui;
+using FwAssist.Helpers.Gefahrgut;
+using FwAssist.Helpers.Gefahrgut.Ui;
 using FwAssist.Helpers.Hydranten;
 using FwAssist.Helpers.Hydranten.Ui;
 using FwAssist.Helpers.Kennzeichnungen;
@@ -39,6 +41,7 @@ public static class CompositionRoot
         new DekonPlatzModule(),
         new HydrantenModule(),
         new KennzeichnungenModule(),
+        new GefahrgutModule(),
         new StrahlenschutzModule(),
         new SandsackModule(),
     ];
@@ -53,6 +56,7 @@ public static class CompositionRoot
         DekonPlatzViews.Register(views);
         HydrantenViews.Register(views);
         KennzeichnungenViews.Register(views);
+        GefahrgutViews.Register(views);
         StrahlenschutzViews.Register(views);
         SandsackViews.Register(views);
     }

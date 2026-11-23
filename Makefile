@@ -93,7 +93,7 @@ test: ## Run tests (PROJECT=path and/or FILTER=FullyQualifiedName~Foo to narrow)
 
 # Projects with a tests/FwAssist.<name>.Tests/stryker-config.json, by the part after "FwAssist.".
 # The acceptance tests are left out: headless UI is too slow to repeat once per mutant.
-MUTATE_PROJECTS := Core AppLogic Helpers.Stoppuhr Helpers.Funkalphabet Helpers.Schaummittel Helpers.RthLandeplatz Helpers.DekonPlatz Helpers.Hydranten Helpers.Kennzeichnungen Helpers.Strahlenschutz Helpers.Sandsack
+MUTATE_PROJECTS := Core AppLogic Helpers.Stoppuhr Helpers.Funkalphabet Helpers.Schaummittel Helpers.RthLandeplatz Helpers.DekonPlatz Helpers.Hydranten Helpers.Kennzeichnungen Helpers.Strahlenschutz Helpers.Sandsack Helpers.Gefahrgut
 
 # Where each project's source lives, for SINCE= below.
 mutate_src = $(if $(filter Helpers.%,$(1)),src/Helpers/$(patsubst Helpers.%,%,$(1))/FwAssist.$(1),src/FwAssist.$(1))

@@ -172,5 +172,17 @@
             </intent-filter>
         </activity-alias>
 
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.gefahrgut"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
+                        android:label="Gefahrgut"
+                        android:icon="@drawable/ic_helper_gefahrgut"
+                        android:exported="true"
+                        android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
     </application>
 </manifest>

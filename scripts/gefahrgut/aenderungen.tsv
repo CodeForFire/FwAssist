@@ -1,0 +1,36 @@
+# The changes the 29. and 30. ADR-Änderungsverordnung make to Tabelle A in the columns this app
+# keeps: (2) Benennung, (3a) Klasse, (5) Gefahrzettel, (20) Nummer zur Kennzeichnung der Gefahr.
+# Changes to any other column are left out on purpose.
+#
+# ADR 2023: Anlage zur 29. ADRÄndV vom 22. November 2022, BGBl. 2022 II Nr. 20 (Anlageband), S. 95-96.
+# ADR 2025: 30. ADRÄndV vom 19. Februar 2025, BGBl. 2025 II Nr. 57, Seite 56-60.
+#
+# eintrag: * for every row of the UN-Nummer, or the row's position among them, counted from 1.
+# aktion:  ersetzen (alt must occur in the cell and becomes neu), setzen (the cell becomes neu),
+#          streichen (the rows are deleted; spalte is -).
+# The columns are separated by one tab each.
+quelle	un	eintrag	spalte	aktion	alt	neu
+ADR 2023	1012	*	2	setzen		BUTEN
+ADR 2023	1169	*	-	streichen
+ADR 2023	1197	*	2	ersetzen	EXTRAKTE, GESCHMACKSTOFFE, FLÜSSIG	EXTRAKTE, FLÜSSIG, für Geschmack oder Aroma
+ADR 2023	1345	*	2	ersetzen	granuliert	granuliert, höchstens 840 μm und mehr als 45 % Kautschuk-Gehalt
+ADR 2023	1872	*	5	setzen		5.1
+ADR 2023	1872	*	20	setzen		50
+ADR 2023	1891	*	3a	setzen		3
+ADR 2023	1891	*	5	setzen		3+6.1
+ADR 2023	1891	*	20	setzen		336
+ADR 2023	1944	*	2	ersetzen	(Heftchen, Briefchen oder Schachteln)	(Heftchen, Kärtchen oder Schachteln mit Reibfläche)
+ADR 2023	2015	1	2	ersetzen	WASSERSTOFFPEROXID, WÄSSERIGE LÖSUNG	WASSERSTOFFPEROXID, STABILISIERT oder WASSERSTOFFPEROXID, WÄSSERIGE LÖSUNG
+ADR 2023	2037	*	2	ersetzen	nicht nachfüllbar	nicht wiederbefüllbar
+ADR 2023	2426	*	2	setzen		AMMONIUMNITRAT, FLÜSSIG (heiße konzentrierte Lösung)
+ADR 2023	3359	*	2	ersetzen	 (CTU)
+ADR 2025	1010	*	2	ersetzen	40 %	20 %
+ADR 2025	1345	*	2	ersetzen	, gemahlen
+ADR 2025	1835	1	2	ersetzen	LÖSUNG	WÄSSERIGE LÖSUNG mit mehr als 2,5 %, aber weniger als 25 % Tetramethylammoniumhydroxid
+ADR 2025	1835	1	5	setzen		8+6.1
+ADR 2025	1835	1	20	setzen		86
+ADR 2025	1835	2	2	ersetzen	LÖSUNG	WÄSSERIGE LÖSUNG mit höchstens 2,5 % Tetramethylammoniumhydroxid
+ADR 2025	3292	*	2	setzen		BATTERIEN, DIE METALLISCHES NATRIUM ODER NATRIUMLEGIERUNGEN ENTHALTEN oder ZELLEN, DIE METALLISCHES NATRIUM ODER NATRIUMLEGIERUNGEN ENTHALTEN
+ADR 2025	3423	*	3a	setzen		6.1
+ADR 2025	3423	*	5	setzen		6.1+8
+ADR 2025	3423	*	20	setzen		668

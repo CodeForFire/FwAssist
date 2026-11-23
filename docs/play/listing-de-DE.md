@@ -41,6 +41,7 @@ DIE HELFER
 • Dekon-Platz — Sofortmaßnahmen, Aufbau und Technik für die Dekon-Stufen I bis III
 • Hydrantenkarte — Hydranten an der Einsatzstelle auf einer Offline-Karte, die nächsten mit Entfernung und B-Schläuchen, und ein Richtungspfeil zum gewählten Hydranten
 • Kennzeichnungen — Warntafeln, Gefahrzettel, GHS-Piktogramme, Rohrleitungen und Gasflaschen erkennen, mit der Nummer auf der Warntafel Ziffer für Ziffer erklärt
+• Gefahrgut — UN-Nummer von der Warntafel nachschlagen: Stoff, Klasse und Gefahrzettel nach ADR, offline
 • Strahlenschutz — Dosisleistung aus TKZ und Abstand, Absperrgrenze, als Richtwerte neben der Messung
 • Sandsack — Sandsäcke, Sand und Arbeitszeit für einen Sandsackdamm, als Richtwerte
 

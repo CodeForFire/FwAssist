@@ -17,6 +17,7 @@
     <ProjectReference Include="..\Helpers\Kennzeichnungen\FwAssist.Helpers.Kennzeichnungen.Ui\FwAssist.Helpers.Kennzeichnungen.Ui.csproj" />
     <ProjectReference Include="..\Helpers\Strahlenschutz\FwAssist.Helpers.Strahlenschutz.Ui\FwAssist.Helpers.Strahlenschutz.Ui.csproj" />
     <ProjectReference Include="..\Helpers\Sandsack\FwAssist.Helpers.Sandsack.Ui\FwAssist.Helpers.Sandsack.Ui.csproj" />
+    <ProjectReference Include="..\Helpers\Gefahrgut\FwAssist.Helpers.Gefahrgut.Ui\FwAssist.Helpers.Gefahrgut.Ui.csproj" />
   </ItemGroup>
 
 </Project>
