@@ -16,7 +16,7 @@ namespace FwAssist.App.Android;
 /// The only Activity. Declared in AndroidManifest.xml, not by an [Activity] attribute, so the
 /// launcher aliases can follow it there; [Register] gives it the Java name the manifest uses.
 /// </summary>
-[Register("de/codeforfire/helfer/MainActivity")]
+[Register("de/codeforfire/fwassist/MainActivity")]
 public class MainActivity : AvaloniaMainActivity
 {
     // One client for the app's life, as HttpClient is meant to be used: only the Kartenpakete use it.

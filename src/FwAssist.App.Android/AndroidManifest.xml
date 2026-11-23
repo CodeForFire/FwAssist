@@ -48,7 +48,7 @@
 
         <!-- singleTask: a helper's own icon brings the running app forward and arrives through
              OnNewIntent, instead of stacking a second copy of the app on top of the first. -->
-        <activity android:name="de.codeforfire.helfer.MainActivity"
+        <activity android:name="de.codeforfire.fwassist.MainActivity"
                   android:exported="true"
                   android:launchMode="singleTask"
                   android:windowSoftInputMode="adjustResize"
@@ -60,12 +60,12 @@
         </activity>
 
         <!-- One alias per helper: its own icon on the home screen, opening that helper directly.
-             The name is de.codeforfire.helfer.launcher.<IHelperModule.Id>; MainActivity reads the
+             The name is de.codeforfire.fwassist.launcher.<IHelperModule.Id>; MainActivity reads the
              helper from it and AndroidLauncherIcons switches it on and off. Renaming one removes
              the icon from every home screen it was placed on. LauncherAliasTests keeps this list
              and CompositionRoot.Modules in step. -->
-        <activity-alias android:name="de.codeforfire.helfer.launcher.stoppuhr"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.stoppuhr"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="Stoppuhr"
                         android:icon="@drawable/ic_helper_stoppuhr"
                         android:exported="true"
@@ -76,8 +76,8 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias android:name="de.codeforfire.helfer.launcher.funkalphabet"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.funkalphabet"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="Buchstabieralphabet"
                         android:icon="@drawable/ic_helper_funkalphabet"
                         android:exported="true"
@@ -88,8 +88,8 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias android:name="de.codeforfire.helfer.launcher.schaummittel"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.schaummittel"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="Schaummittel"
                         android:icon="@drawable/ic_helper_schaummittel"
                         android:exported="true"
@@ -100,8 +100,8 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias android:name="de.codeforfire.helfer.launcher.rthlandeplatz"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.rthlandeplatz"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="RTH-Landeplatz"
                         android:icon="@drawable/ic_helper_rthlandeplatz"
                         android:exported="true"
@@ -112,8 +112,8 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias android:name="de.codeforfire.helfer.launcher.dekonplatz"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.dekonplatz"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="Dekon-Platz"
                         android:icon="@drawable/ic_helper_dekonplatz"
                         android:exported="true"
@@ -124,8 +124,8 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias android:name="de.codeforfire.helfer.launcher.hydranten"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.hydranten"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="Hydrantenkarte"
                         android:icon="@drawable/ic_helper_hydranten"
                         android:exported="true"
@@ -136,8 +136,8 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias android:name="de.codeforfire.helfer.launcher.kennzeichnungen"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.kennzeichnungen"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="Kennzeichnungen"
                         android:icon="@drawable/ic_helper_kennzeichnungen"
                         android:exported="true"
@@ -148,8 +148,8 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias android:name="de.codeforfire.helfer.launcher.strahlenschutz"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.strahlenschutz"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="Strahlenschutz"
                         android:icon="@drawable/ic_helper_strahlenschutz"
                         android:exported="true"
@@ -160,8 +160,8 @@
             </intent-filter>
         </activity-alias>
 
-        <activity-alias android:name="de.codeforfire.helfer.launcher.sandsack"
-                        android:targetActivity="de.codeforfire.helfer.MainActivity"
+        <activity-alias android:name="de.codeforfire.fwassist.launcher.sandsack"
+                        android:targetActivity="de.codeforfire.fwassist.MainActivity"
                         android:label="Sandsack"
                         android:icon="@drawable/ic_helper_sandsack"
                         android:exported="true"

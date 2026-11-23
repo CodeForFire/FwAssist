@@ -109,8 +109,8 @@ jobs:
             || { echo "::error::The google-play environment lacks ANDROID_UPLOAD_KEYSTORE_B64 or ANDROID_UPLOAD_KEYSTORE_PASS"; exit 1; }
           umask 077
           mkdir -p "$RUNNER_TEMP/keys"
-          printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/keys/helfer-upload.p12"
-          printf '%s' "$KEYSTORE_PASS" > "$RUNNER_TEMP/keys/helfer-upload.pass"
+          printf '%s' "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/keys/fwassist-upload.p12"
+          printf '%s' "$KEYSTORE_PASS" > "$RUNNER_TEMP/keys/fwassist-upload.pass"
       - name: Publish
         env:
           VERSION: ${{ needs.version.outputs.version }}
@@ -120,10 +120,10 @@ jobs:
           "-p:ApplicationVersion=${VERSION_CODE}"
           "-p:ApplicationDisplayVersion=${VERSION}"
           "-p:Version=${VERSION}"
-          "-p:AndroidSigningKeyStore=${RUNNER_TEMP}/keys/helfer-upload.p12"
-          -p:AndroidSigningKeyAlias=helfer-upload
-          "-p:AndroidSigningStorePass=file:${RUNNER_TEMP}/keys/helfer-upload.pass"
-          "-p:AndroidSigningKeyPass=file:${RUNNER_TEMP}/keys/helfer-upload.pass"
+          "-p:AndroidSigningKeyStore=${RUNNER_TEMP}/keys/fwassist-upload.p12"
+          -p:AndroidSigningKeyAlias=fwassist-upload
+          "-p:AndroidSigningStorePass=file:${RUNNER_TEMP}/keys/fwassist-upload.pass"
+          "-p:AndroidSigningKeyPass=file:${RUNNER_TEMP}/keys/fwassist-upload.pass"
           -o publish-android
       - name: Remove the upload keystore
         if: always()
@@ -147,7 +147,7 @@ jobs:
         env:
           VERSION: ${{ needs.version.outputs.version }}
         run: |
-          # The SDK writes an unsigned de.codeforfire.helfer.aab beside the -Signed one, and
+          # The SDK writes an unsigned de.codeforfire.fwassist.aab beside the -Signed one, and
           # `find | head` once picked the unsigned bundle in Lagebuch, which Play refused
           # (lagebuch v0.9.3-rc.1). Name the signed files exactly.
           apk=$(find publish-android -name "*-Signed.apk" | head -n1)
@@ -293,11 +293,11 @@ jobs:
           **Installation ohne Play Store.** Aktiviere einmalig *Installation aus unbekannten
           Quellen* für den Browser oder Dateimanager, mit dem die APK geöffnet wird.
 
-          **Update von 0.1.0 oder älter.** Bis 0.1.0 war jede APK mit einem anderen Schlüssel
-          signiert. Ab dieser Version ist der Schlüssel fest, deshalb die alte App einmalig
-          deinstallieren und diese APK neu installieren. Das löscht die gespeicherten
-          Einstellungen und Schaummittel-Eingaben. Danach installieren sich Updates
-          einfach darüber.
+          **Update von 0.3.0-alpha.2 oder älter.** Bis dahin war FwAssist ein anderes Paket,
+          und jede APK war mit einem anderen Schlüssel signiert. Diese APK installiert sich
+          deshalb neben der alten App. Die alte App einmalig deinstallieren; ihre
+          Einstellungen und Schaummittel-Eingaben werden nicht übernommen. Danach
+          installieren sich Updates einfach darüber.
           EOF
       # `gh release create` could do this too (zizmor's superfluous-actions); swapping a working
       # release step is a change of its own, tested on a tag.
@@ -347,7 +347,7 @@ jobs:
       - uses: r0adkll/upload-google-play@e738b9dd8f2476ea806d921b64aacd24f34515a5 # v1.1.5
         with:
           serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
-          packageName: de.codeforfire.helfer
+          packageName: de.codeforfire.fwassist
           releaseFiles: play/*.aab
           tracks: ${{ steps.track.outputs.track }}
           status: draft

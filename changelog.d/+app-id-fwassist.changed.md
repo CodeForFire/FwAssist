@@ -1,0 +1,1 @@
+The Android package is now `de.codeforfire.fwassist`, so it matches the app's name before the first Play release; an install of 0.3.0-alpha.2 or older is a different app that stays beside the new one and has to be uninstalled once, without its settings carrying over.

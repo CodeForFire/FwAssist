@@ -11,7 +11,7 @@ namespace FwAssist.Acceptance.Tests;
 // manifest has no launcher icon; an alias whose helper is gone opens the home screen forever.
 public class HelperRegistrationTests
 {
-    private const string AliasPrefix = "de.codeforfire.helfer.launcher.";
+    private const string AliasPrefix = "de.codeforfire.fwassist.launcher.";
     private static readonly XNamespace Android = "http://schemas.android.com/apk/res/android";
 
     private static List<XElement> Aliases() =>
@@ -37,7 +37,7 @@ public class HelperRegistrationTests
         foreach (var module in CompositionRoot.Modules)
         {
             var alias = Aliases().Single(a => (string?)a.Attribute(Android + "name") == AliasPrefix + module.Id);
-            Assert.Equal("de.codeforfire.helfer.MainActivity", (string?)alias.Attribute(Android + "targetActivity"));
+            Assert.Equal("de.codeforfire.fwassist.MainActivity", (string?)alias.Attribute(Android + "targetActivity"));
             Assert.Equal(module.Title, (string?)alias.Attribute(Android + "label"));
             Assert.Equal("@drawable/ic_helper_" + module.Id, (string?)alias.Attribute(Android + "icon"));
         }

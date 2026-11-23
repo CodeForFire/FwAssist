@@ -17,7 +17,7 @@ CONFIG       ?= Debug
 SLN          := FwAssist.sln
 SLNF         := FwAssist.Host.slnf
 ANDROID_PROJ := src/FwAssist.App.Android/FwAssist.App.Android.csproj
-APP_ID       := de.codeforfire.helfer
+APP_ID       := de.codeforfire.fwassist
 FILTER       ?=
 PROJECT      ?=
 VERSION      ?= 0.1.0
@@ -27,9 +27,9 @@ ABI          ?=
 
 # Google Play upload key. Outside the work tree on purpose — signing material is never
 # committed, and $(DOCKER_HOME) is a build cache that gets wiped. See docs/releasing.md.
-KEYSTORE      ?= $(HOME)/.config/helfer/helfer-upload.p12
-KEYSTORE_PASS ?= $(HOME)/.config/helfer/helfer-upload.pass
-KEY_ALIAS     ?= helfer-upload
+KEYSTORE      ?= $(HOME)/.config/fwassist/fwassist-upload.p12
+KEYSTORE_PASS ?= $(HOME)/.config/fwassist/fwassist-upload.pass
+KEY_ALIAS     ?= fwassist-upload
 # Derived from VERSION by scripts/android-version-code.sh, which the release workflow uses too.
 # Set it only to override that; Google Play burns a versionCode permanently on first upload, so
 # a number typed by hand is a mistake that cannot be taken back.
@@ -44,10 +44,10 @@ AVD          ?= Medium_Phone_API_35
 TABLET_AVD   ?= Tablet_API_35
 # The same Dockerfile as Lagebuch's, so IMAGE=lagebuch-android-build reuses an image already built.
 IMAGE        ?= fwassist-android-build
-# DOCKER_HOME is the container's /home/build and so holds the debug signing key. It keeps
-# the old name, like KEY_ALIAS: the applicationId is still de.codeforfire.helfer, and a new
-# path would mean a new debug key that cannot update a debug build already on a device.
-DOCKER_HOME  ?= $(HOME)/.cache/helfer-android-build
+# DOCKER_HOME is the container's /home/build and so holds the debug signing key. Keep the
+# path: a new one would mean a new debug key that cannot update a debug build already on a
+# device.
+DOCKER_HOME  ?= $(HOME)/.cache/fwassist-android-build
 APK          := src/FwAssist.App.Android/bin/$(CONFIG)/net10.0-android/$(APP_ID)-Signed.apk
 # `aab` always builds Release, whatever CONFIG says — a debug bundle is not uploadable.
 AAB          := src/FwAssist.App.Android/bin/Release/net10.0-android/$(APP_ID)-Signed.aab
@@ -258,7 +258,7 @@ install: apk ## Install the APK on the attached device/emulator
 	}
 
 run-android: emulator install ## Boot the emulator, install and launch the app
-	$(ADB) shell am start -n $(APP_ID)/de.codeforfire.helfer.MainActivity
+	$(ADB) shell am start -n $(APP_ID)/de.codeforfire.fwassist.MainActivity
 
 logcat: ## Follow logcat for the running app
 	@pid=$$($(ADB) shell pidof -s $(APP_ID) 2>/dev/null | tr -d '\r'); \

@@ -63,10 +63,11 @@ Die APK für Android 7.0 und neuer liegt bei den
 Dateimanager *Installation aus unbekannten Quellen* erlaubt werden. Ein Eintrag
 im Play Store ist in Vorbereitung.
 
-Bis Version 0.1.0 war jede APK mit einem anderen Schlüssel signiert. Wer eine
-solche Version installiert hat, deinstalliert sie einmalig vor dem nächsten
-Update. Das löscht die gespeicherten Einstellungen und Schaummittel-Eingaben.
-Danach installieren sich neue Versionen einfach darüber.
+Bis Version 0.3.0-alpha.2 war FwAssist ein anderes Paket, und jede APK war mit
+einem anderen Schlüssel signiert. Eine solche Version wird nicht aktualisiert:
+Die neue App installiert sich daneben. Die alte App einmalig deinstallieren;
+ihre Einstellungen und Schaummittel-Eingaben werden nicht übernommen. Danach
+installieren sich neue Versionen einfach darüber.
 
 ### Downloads prüfen
 
