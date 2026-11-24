@@ -15,4 +15,16 @@
     <PackageReference Include="CommunityToolkit.Mvvm" />
   </ItemGroup>
 
+  <!-- The tests read a small TSV through TabelleA.Parse, so every rule of the reader is covered
+       without the bundled table, which loads only once per process. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="FwAssist.Helpers.Kennzeichnungen.Tests" />
+  </ItemGroup>
+
+  <!-- ADR Tabelle A, written by scripts/gefahrgut/extract_tabelle_a.py. Bundled, never downloaded:
+       the lookup works offline and needs no permission. -->
+  <ItemGroup>
+    <EmbeddedResource Include="TabelleA.tsv" LogicalName="FwAssist.Helpers.Kennzeichnungen.TabelleA.tsv" />
+  </ItemGroup>
+
 </Project>

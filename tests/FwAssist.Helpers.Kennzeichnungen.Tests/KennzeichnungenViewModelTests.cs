@@ -75,7 +75,22 @@ public class KennzeichnungenViewModelTests
         Assert.Contains(nameof(vm.GroupNote), changed);
         Assert.Contains(nameof(vm.HasGroupNote), changed);
         Assert.Contains(nameof(vm.IsGasflasche), changed);
+        Assert.Contains(nameof(vm.IsUnNummer), changed);
         Assert.Contains(nameof(vm.IsRohrleitung), changed);
+    }
+
+    // The UN-Nummer group has no pictures, so the heading over the list must go when it is chosen.
+    [Fact]
+    public void Choosing_the_un_nummer_group_notifies_that_the_list_is_empty()
+    {
+        var vm = new KennzeichnungenViewModel(_settings);
+        var changed = new List<string?>();
+        vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+        vm.IsUnNummer = true;
+
+        Assert.Contains(nameof(vm.HasEntries), changed);
+        Assert.False(vm.HasEntries);
     }
 
     [Fact]
@@ -224,5 +239,132 @@ public class KennzeichnungenViewModelTests
         Assert.Contains(nameof(vm.GefahrnummerNotes), changed);
         Assert.Contains(nameof(vm.HasNoHits), changed);
         Assert.Contains(nameof(vm.HasEntries), changed);
+    }
+
+    [Fact]
+    public void The_un_nummer_group_shows_its_hint_and_no_pictures()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { IsUnNummer = true };
+
+        Assert.True(vm.IsUnNummer);
+        Assert.False(vm.IsWarntafel);
+        Assert.Empty(vm.Entries);
+        Assert.False(vm.HasEntries);
+        Assert.True(vm.HasGroupNote);
+        Assert.Contains("UN-Nummer", vm.GroupNote, StringComparison.Ordinal);
+        Assert.False(vm.HasStoffe);
+        Assert.False(vm.HasNoHits);
+        Assert.True(new KennzeichnungenViewModel(_settings).IsUnNummer);
+    }
+
+    [Theory]
+    [InlineData("1203")]
+    [InlineData("UN 1203")]
+    public void A_un_nummer_shows_its_stoff_and_no_gefahrnummer(string query)
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = query };
+
+        Assert.Equal("BENZIN oder OTTOKRAFTSTOFF", Assert.Single(vm.Stoffe).Benennung);
+        Assert.Equal("UN 1203", vm.StoffeTitle);
+        Assert.True(vm.HasStoffe);
+        Assert.False(vm.HasGefahrnummer);
+        Assert.False(vm.HasNoHits);
+    }
+
+    [Fact]
+    public void A_un_nummer_with_several_rows_counts_them()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "1202" };
+
+        Assert.Equal(3, vm.Stoffe.Count);
+        Assert.Equal("UN 1202: 3 EINTRAGUNGEN", vm.StoffeTitle);
+    }
+
+    [Fact]
+    public void A_gefahrnummer_lists_no_stoffe()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "33" };
+
+        Assert.True(vm.HasGefahrnummer);
+        Assert.False(vm.HasStoffe);
+        Assert.Equal(string.Empty, vm.StoffeTitle);
+    }
+
+    [Fact]
+    public void A_word_finds_stoffe_too_and_counts_them()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "ammoniak" };
+
+        Assert.True(vm.Stoffe.Count > 1);
+        Assert.Equal(vm.Stoffe.Count + " STOFFE IN TABELLE A", vm.StoffeTitle);
+        Assert.False(vm.HasNoHits);
+    }
+
+    [Fact]
+    public void An_unknown_un_nummer_says_nothing_was_found()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "9999" };
+
+        Assert.True(vm.HasNoHits);
+        Assert.Empty(vm.Stoffe);
+    }
+
+    // "trocken" finds exactly 50 rows and "verbindung" 51: the limit itself is still shown whole.
+    [Fact]
+    public void Exactly_fifty_stoffe_are_shown_whole()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "trocken" };
+
+        Assert.Equal(KennzeichnungenViewModel.MaxStoffe, vm.Stoffe.Count);
+        Assert.False(vm.HasMoreStoffe);
+        Assert.Equal(string.Empty, vm.MoreStoffeNote);
+        Assert.Equal("50 STOFFE IN TABELLE A", vm.StoffeTitle);
+    }
+
+    [Fact]
+    public void More_than_fifty_stoffe_show_the_first_fifty_and_say_so()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "verbindung" };
+
+        Assert.Equal(KennzeichnungenViewModel.MaxStoffe, vm.Stoffe.Count);
+        Assert.True(vm.HasMoreStoffe);
+        Assert.Contains("ersten 50", vm.MoreStoffeNote, StringComparison.Ordinal);
+        Assert.Equal("51 STOFFE IN TABELLE A", vm.StoffeTitle);
+    }
+
+    [Fact]
+    public void The_stoffe_are_looked_up_once_per_query()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "ammoniak" };
+
+        Assert.Same(vm.Stoffe, vm.Stoffe);
+    }
+
+    [Fact]
+    public void A_new_query_replaces_the_stoffe_and_tells_the_view()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "1203" };
+        var changed = new List<string?>();
+        vm.PropertyChanged += (_, e) => changed.Add(e.PropertyName);
+
+        vm.Query = "1005";
+
+        Assert.Equal("1005", Assert.Single(vm.Stoffe).UnNummer);
+        Assert.Contains(nameof(vm.Stoffe), changed);
+        Assert.Contains(nameof(vm.HasStoffe), changed);
+        Assert.Contains(nameof(vm.StoffeTitle), changed);
+        Assert.Contains(nameof(vm.HasMoreStoffe), changed);
+        Assert.Contains(nameof(vm.MoreStoffeNote), changed);
+    }
+
+    [Fact]
+    public void Clearing_the_search_empties_the_stoffe()
+    {
+        var vm = new KennzeichnungenViewModel(_settings) { Query = "1203" };
+
+        vm.ClearCommand.Execute(null);
+
+        Assert.Empty(vm.Stoffe);
+        Assert.False(vm.HasStoffe);
     }
 }

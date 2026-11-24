@@ -2,17 +2,23 @@ using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FwAssist.AppLogic.Services;
+using FwAssist.Core;
 
 namespace FwAssist.Helpers.Kennzeichnungen;
 
 /// <summary>
 /// A picture reference in three groups with one search field above it. The field takes either the
 /// upper number of a Warntafel, which is read digit by digit, or a word, which searches every group
-/// at once: a crew that does not recognise a marking does not know its group either. The group is
-/// kept in <see cref="IHelperSettings"/>; the search is not, it is typed and read in the same breath.
+/// at once: a crew that does not recognise a marking does not know its group either. The same field
+/// takes the lower number, the UN-Nummer: four digits find the Stoff in ADR Tabelle A, and a word
+/// searches its Benennungen too. The group is kept in <see cref="IHelperSettings"/>; the search is
+/// not, it is typed and read in the same breath.
 /// </summary>
 public sealed partial class KennzeichnungenViewModel : ObservableObject
 {
+    /// <summary>Stoffe shown at most. A short word finds hundreds; nobody scrolls past the first screens.</summary>
+    public const int MaxStoffe = 50;
+
     private const string GruppeKey = KennzeichnungenModule.HelperId + ".gruppe";
 
     // "atzend" finds "ätzend" and "GASFLASCHE" finds "Gasflasche": gloves type neither umlauts
@@ -20,6 +26,8 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
     private static readonly CompareInfo German = CultureInfo.GetCultureInfo("de-DE").CompareInfo;
 
     private readonly IHelperSettings _settings;
+
+    private IReadOnlyList<Stoff>? _stoffHits;
 
     public KennzeichnungenViewModel(IHelperSettings settings)
     {
@@ -36,10 +44,12 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(IsGhs))]
     [NotifyPropertyChangedFor(nameof(IsRohrleitung))]
     [NotifyPropertyChangedFor(nameof(IsGasflasche))]
+    [NotifyPropertyChangedFor(nameof(IsUnNummer))]
     [NotifyPropertyChangedFor(nameof(GroupNote))]
     [NotifyPropertyChangedFor(nameof(HasGroupNote))]
     [NotifyPropertyChangedFor(nameof(Entries))]
     [NotifyPropertyChangedFor(nameof(ListTitle))]
+    [NotifyPropertyChangedFor(nameof(HasEntries))]
     private KennzeichenGruppe _gruppe;
 
     [ObservableProperty]
@@ -53,6 +63,11 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
     [NotifyPropertyChangedFor(nameof(HasGefahrnummer))]
     [NotifyPropertyChangedFor(nameof(GefahrnummerMeaning))]
     [NotifyPropertyChangedFor(nameof(GefahrnummerNotes))]
+    [NotifyPropertyChangedFor(nameof(Stoffe))]
+    [NotifyPropertyChangedFor(nameof(HasStoffe))]
+    [NotifyPropertyChangedFor(nameof(StoffeTitle))]
+    [NotifyPropertyChangedFor(nameof(HasMoreStoffe))]
+    [NotifyPropertyChangedFor(nameof(MoreStoffeNote))]
     private string? _query = string.Empty;
 
     // A RadioButton also writes false when another one is chosen, and that must not change the group.
@@ -86,6 +101,12 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
         set => Choose(value, KennzeichenGruppe.Gasflasche);
     }
 
+    public bool IsUnNummer
+    {
+        get => Gruppe == KennzeichenGruppe.UnNummer;
+        set => Choose(value, KennzeichenGruppe.UnNummer);
+    }
+
     public bool IsSearching => !string.IsNullOrWhiteSpace(Query);
 
     /// <summary>
@@ -99,6 +120,8 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
             "Verbindlich ist der Gefahrgutaufkleber auf der Flasche. Die Farbe der Schulter hilft nur aus der Entfernung.",
         KennzeichenGruppe.Rohrleitung =>
             "Die Farben sind ein Beispiel aus der TRGS. Verbindlich ist die Beschriftung am Rohr mit Stoff und Fließrichtung.",
+        KennzeichenGruppe.UnNummer =>
+            "Die untere Nummer der orangen Warntafel eingeben, die UN-Nummer. Oder einen Teil des Stoffnamens.",
         _ => string.Empty,
     };
 
@@ -125,7 +148,7 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
     public bool HasEntries => Entries.Count > 0;
 
     /// <summary>A search that is neither a number nor found anywhere says so instead of an empty page.</summary>
-    public bool HasNoHits => IsSearching && Gefahrnummer is null && Entries.Count == 0;
+    public bool HasNoHits => IsSearching && Gefahrnummer is null && Entries.Count == 0 && !HasStoffe;
 
     /// <summary>The query read as the upper number of a Warntafel, or <see langword="null"/> when it is none.</summary>
     public Gefahrnummer? Gefahrnummer => Gefahrnummern.TryRead(Query, out var number) ? number : null;
@@ -165,10 +188,38 @@ public sealed partial class KennzeichnungenViewModel : ObservableObject
         }
     }
 
+    /// <summary>The first <see cref="MaxStoffe"/> rows of Tabelle A the search finds.</summary>
+    public IReadOnlyList<Stoff> Stoffe => StoffHits.Count > MaxStoffe ? StoffHits.Take(MaxStoffe).ToArray() : StoffHits;
+
+    public bool HasStoffe => StoffHits.Count > 0;
+
+    /// <summary>Above the Stoffe: one UN-Nummer, its rows, or how many a word found.</summary>
+    public string StoffeTitle => StoffHits switch
+    {
+        [] => string.Empty,
+        [var only] => "UN " + only.UnNummer,
+        _ when StoffHits.All(s => string.Equals(s.UnNummer, StoffHits[0].UnNummer, StringComparison.Ordinal)) =>
+            "UN " + StoffHits[0].UnNummer + ": " + Count(StoffHits.Count) + " EINTRAGUNGEN",
+        _ => Count(StoffHits.Count) + " STOFFE IN TABELLE A",
+    };
+
+    public bool HasMoreStoffe => StoffHits.Count > MaxStoffe;
+
+    public string MoreStoffeNote => HasMoreStoffe
+        ? "Nur die ersten " + Count(MaxStoffe) + " Stoffe. Genauer suchen, um die übrigen zu sehen."
+        : string.Empty;
+
+    private IReadOnlyList<Stoff> StoffHits => _stoffHits ??= TabelleA.Search(Query);
+
+    // The Stoffe are worked out once per query, before the properties that read them are told.
+    partial void OnQueryChanging(string? value) => _stoffHits = null;
+
     partial void OnGruppeChanged(KennzeichenGruppe value) => _settings.Set(GruppeKey, value.ToString());
 
     [RelayCommand]
     private void Clear() => Query = string.Empty;
+
+    private static string Count(int value) => Formatting.Number(value);
 
     private bool Matches(Kennzeichen entry)
     {

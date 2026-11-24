@@ -10,6 +10,11 @@
         <ResourceInclude Source="avares://FwAssist.Helpers.Kennzeichnungen.Ui/Pictures.axaml" />
         <ResourceInclude Source="avares://FwAssist.Helpers.Kennzeichnungen.Ui/Farbkennzeichen.axaml" />
       </ResourceDictionary.MergedDictionaries>
+      <!-- The plate's own colours, as Pictures.axaml draws them: orange with black numbers is what
+           a crew sees on the vehicle, so these are not theme tokens. The numbers carry the meaning;
+           the colour only makes the plate recognisable. -->
+      <SolidColorBrush x:Key="WarntafelBrush" Color="#F7941E" />
+      <SolidColorBrush x:Key="WarntafelInkBrush" Color="#000000" />
     </ResourceDictionary>
   </UserControl.Resources>
 
@@ -22,13 +27,20 @@
       <Setter Property="FontSize" Value="15" />
       <Setter Property="TextWrapping" Value="Wrap" />
     </Style>
+    <Style Selector="TextBlock.plate">
+      <Setter Property="Foreground" Value="{StaticResource WarntafelInkBrush}" />
+      <Setter Property="FontSize" Value="20" />
+      <Setter Property="FontWeight" Value="Bold" />
+      <Setter Property="HorizontalAlignment" Value="Center" />
+      <Setter Property="VerticalAlignment" Value="Center" />
+    </Style>
   </UserControl.Styles>
 
   <!-- The field stays at the top and the list scrolls under it, so the soft keyboard never covers
        what is being typed. The group switch sits at the bottom, in thumb reach. RadioButtons: a
        screen reader hears which group is selected, and the line above the list names it in words. -->
   <DockPanel Margin="16">
-    <!-- Five groups do not fit one row at 412 dp with glove-sized targets, so they take two. -->
+    <!-- Six groups do not fit one row at 412 dp with glove-sized targets, so they take two of three. -->
     <Grid DockPanel.Dock="Bottom" ColumnDefinitions="*,8,*,8,*" RowDefinitions="Auto,4,Auto" Margin="0,12,0,0">
       <RadioButton x:Name="WarntafelGroup" Grid.Column="0" GroupName="Gruppe" Content="WARNTAFEL"
                    HorizontalAlignment="Stretch"
@@ -46,15 +58,19 @@
                    HorizontalAlignment="Stretch"
                    IsChecked="{Binding IsRohrleitung}"
                    IsCheckedChanged="OnGruppeChanged" />
-      <RadioButton x:Name="GasflascheGroup" Grid.Row="2" Grid.Column="2" Grid.ColumnSpan="3" GroupName="Gruppe" Content="GASFLASCHE"
+      <RadioButton x:Name="GasflascheGroup" Grid.Row="2" Grid.Column="2" GroupName="Gruppe" Content="GASFLASCHE"
                    HorizontalAlignment="Stretch"
                    IsChecked="{Binding IsGasflasche}"
                    IsCheckedChanged="OnGruppeChanged" />
+      <RadioButton x:Name="UnNummerGroup" Grid.Row="2" Grid.Column="4" GroupName="Gruppe" Content="UN-NUMMER"
+                   HorizontalAlignment="Stretch"
+                   IsChecked="{Binding IsUnNummer}"
+                   IsCheckedChanged="OnGruppeChanged" />
     </Grid>
 
-    <!-- A Gefahrnummer is typed as read off the plate, so the keyboard may not correct it. -->
+    <!-- A Gefahrnummer or a UN-Nummer is typed as read off the plate, so the keyboard may not correct it. -->
     <Grid DockPanel.Dock="Top" ColumnDefinitions="*,8,Auto">
-      <TextBox x:Name="Search" Grid.Column="0" MaxLength="40"
+      <TextBox x:Name="Search" Grid.Column="0" MaxLength="60"
                PlaceholderText="Nummer oder Stichwort"
                AutomationProperties.Name="Nummer von der Warntafel oder Stichwort"
                TextInputOptions.ShowSuggestions="False"
@@ -113,6 +129,37 @@
           </ItemsControl.ItemTemplate>
         </ItemsControl>
 
+        <TextBlock x:Name="StoffeTitle" Classes="overline" TextWrapping="Wrap"
+                   IsVisible="{Binding HasStoffe}" Text="{Binding StoffeTitle}" />
+        <ItemsControl x:Name="Stoffe" ItemsSource="{Binding Stoffe}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <StackPanel Spacing="16" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:Stoff">
+              <Grid ColumnDefinitions="96,12,*">
+                <!-- The Warntafel as it hangs on the vehicle: Gefahrnummer over UN-Nummer. -->
+                <Border Grid.Column="0" Width="96" Height="64" VerticalAlignment="Top"
+                        Background="{StaticResource WarntafelBrush}"
+                        BorderBrush="{StaticResource WarntafelInkBrush}" BorderThickness="3">
+                  <Grid RowDefinitions="*,3,*">
+                    <TextBlock Grid.Row="0" Classes="plate mono" Text="{Binding Tafel}" />
+                    <Rectangle Grid.Row="1" Fill="{StaticResource WarntafelInkBrush}" />
+                    <TextBlock Grid.Row="2" Classes="plate mono" Text="{Binding UnNummer}" />
+                  </Grid>
+                </Border>
+                <StackPanel Grid.Column="2" Spacing="2">
+                  <TextBlock Classes="line" FontWeight="SemiBold" Text="{Binding Benennung}" />
+                  <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{Binding Merkmale}" />
+                </StackPanel>
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        <TextBlock x:Name="MoreStoffeNote" Classes="line" IsVisible="{Binding HasMoreStoffe}" Text="{Binding MoreStoffeNote}" />
+
         <StackPanel x:Name="SourceList" Spacing="4">
           <TextBlock Classes="overline" Text="QUELLEN" />
           <ItemsControl ItemsSource="{x:Static vm:Kennzeichenkatalog.Sources}">
@@ -123,6 +170,8 @@
             </ItemsControl.ItemTemplate>
           </ItemsControl>
           <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{x:Static vm:Kennzeichenkatalog.SourceNote}" />
+          <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{x:Static vm:TabelleA.Source}" />
+          <TextBlock Classes="secondary" TextWrapping="Wrap" Text="{x:Static vm:TabelleA.SourceNote}" />
         </StackPanel>
       </StackPanel>
     </ScrollViewer>

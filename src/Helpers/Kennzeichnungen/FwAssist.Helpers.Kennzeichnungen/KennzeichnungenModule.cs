@@ -12,7 +12,7 @@ public sealed class KennzeichnungenModule : IHelperModule
 
     public string Title => "Kennzeichnungen";
 
-    public string Summary => "Warntafeln, Gefahrzettel, GHS, Rohrleitungen und Gasflaschen erkennen.";
+    public string Summary => "Warntafeln und UN-Nummern, Gefahrzettel, GHS, Rohrleitungen und Gasflaschen erkennen.";
 
     // Drawn for this app: a diamond standing on its tip with an exclamation mark cut out of it,
     // filled even-odd. The launcher icon in the Android head draws the same path.
