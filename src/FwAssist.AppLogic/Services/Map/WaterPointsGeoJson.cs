@@ -174,9 +174,9 @@ public static partial class WaterPointsGeoJson
             }
 
             var match = OutletValue().Match(token);
-            char? size = !match.Success ? null
-                : match.Groups["letter"].Success ? char.ToUpperInvariant(match.Groups["letter"].Value[0])
-                : match.Groups["mm"].Value switch { "110" => 'A', "75" => 'B', "52" => 'C', "25" => 'D', _ => null };
+            char? size = !match.Success ? null :
+                         match.Groups["letter"].Success ? char.ToUpperInvariant(match.Groups["letter"].Value[0]) :
+                         match.Groups["mm"].Value switch { "110" => 'A', "75" => 'B', "52" => 'C', "25" => 'D', _ => null };
             if (size is not { } s)
             {
                 return diameters.Length > MaxLabelPartLength ? diameters[..MaxLabelPartLength] : diameters;
