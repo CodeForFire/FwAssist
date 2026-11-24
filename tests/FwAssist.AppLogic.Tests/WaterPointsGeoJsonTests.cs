@@ -210,10 +210,12 @@ public class WaterPointsGeoJsonTests
     }
 
     [Theory]
-    [InlineData("\"survey:date\": \"2018-03-24\"", "2018-03-24")]
-    [InlineData("\"check_date\": \"2025-03-01\", \"survey:date\": \"2018-03-24\"", "2025-03-01")]
+    [InlineData("\"survey:date\": \"2018-03-24\"", "24.03.2018")]
+    [InlineData("\"check_date\": \"2025-03-01\", \"survey:date\": \"2018-03-24\"", "01.03.2025")]
+    [InlineData("\"check_date\": \"2025-03\"", "2025-03")]
+    [InlineData("\"check_date\": \"2025-02-30\"", "2025-02-30")]
     [InlineData("\"survey:date\": \"2.2.2018\"", "2.2.2018")]
-    public void The_card_says_when_a_mapper_last_checked_the_point(string properties, string date) =>
+    public void The_card_says_in_german_when_a_mapper_last_checked_the_point_and_keeps_any_other_spelling(string properties, string date) =>
         Assert.Contains(new WaterPointDetail("Zuletzt geprüft (OSM)", date), Assert.Single(Points(Feature("fire_hydrant", properties))).Details);
 
     [Fact]

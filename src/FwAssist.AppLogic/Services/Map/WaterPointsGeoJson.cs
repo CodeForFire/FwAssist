@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using FwAssist.Core;
 using FwAssist.Core.Map;
 
 namespace FwAssist.AppLogic.Services.Map;
@@ -243,7 +244,7 @@ public static partial class WaterPointsGeoJson
             ("Name", Tag("name")),
             ("Betreiber", Tag("operator")),
             ("Zugang", Access(Tag("access"))),
-            ("Zuletzt geprüft (OSM)", Tag("check_date") ?? Tag("survey:date")),
+            ("Zuletzt geprüft (OSM)", CheckDate(Tag("check_date") ?? Tag("survey:date"))),
             ("OSM", osm is not null && OsmId().IsMatch(osm) ? osm : null),
         ];
         var details = new List<WaterPointDetail>();
@@ -257,6 +258,12 @@ public static partial class WaterPointsGeoJson
 
         return details;
     }
+
+    // OSM's "2025-03-01" said the German way, "01.03.2025"; "2025-03" or anything else as it is.
+    private static string? CheckDate(string? value) =>
+        DateOnly.TryParseExact(value, "yyyy-MM-dd", CultureInfo.InvariantCulture, DateTimeStyles.None, out var date)
+            ? Formatting.Date(new DateTimeOffset(date, TimeOnly.MinValue, TimeSpan.Zero))
+            : value;
 
     private static string? HydrantType(string? value) => value switch
     {
