@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build the Gefahrgut helper's TabelleA.tsv from the official German text of the ADR.
+"""Build the Kennzeichnungen helper's TabelleA.tsv from the official German text of the ADR.
 
 Germany publishes no consolidated ADR 2025. The text in force is the Bekanntmachung of the ADR 2021
 (BGBl. 2021 II S. 1184, Anlageband), amended by the 29. and the 30. ADR-Änderungsverordnung. This
@@ -35,7 +35,7 @@ import pdfplumber  # noqa: E402
 import tabelle_a_pdf  # noqa: E402
 
 REPO = HERE.parent.parent
-OUTPUT = REPO / "src/Helpers/Gefahrgut/FwAssist.Helpers.Gefahrgut/TabelleA.tsv"
+OUTPUT = REPO / "src/Helpers/Kennzeichnungen/FwAssist.Helpers.Kennzeichnungen/TabelleA.tsv"
 
 ANLAGEBAND = "bgbl221024_Anlageband.pdf"
 XAVER = "https://www.bgbl.de/xaver/bgbl/"

@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace FwAssist.Helpers.Gefahrgut.Tests;
+namespace FwAssist.Helpers.Kennzeichnungen.Tests;
 
 public partial class TabelleATests
 {
@@ -10,8 +10,8 @@ public partial class TabelleATests
         return Assert.Single(rows);
     }
 
-    // The shape Kennzeichnungen reads off the upper half of a plate, written out again here because a
-    // helper never references another. 1.5D is the one exception, carried by UN 0331 and 0332.
+    // The shape of the upper half of a plate, written out on its own so the data is checked against
+    // the ADR, not against Gefahrnummern. 1.5D is the one exception, carried by UN 0331 and 0332.
     [GeneratedRegex(@"^(X?\d{2,3}|1\.5D)$")]
     private static partial Regex GefahrnummerShape();
 
@@ -160,7 +160,9 @@ public partial class TabelleATests
     [InlineData("1203", "1203")]
     [InlineData(" UN 1203 ", "1203")]
     [InlineData("un1203", "1203")]
-    [InlineData("12", "12")]
+    [InlineData("12", null)]
+    [InlineData("120", null)]
+    [InlineData("UN 12", null)]
     [InlineData("Benzin", null)]
     [InlineData("12034", null)]
     [InlineData("", null)]
@@ -180,14 +182,30 @@ public partial class TabelleATests
         Assert.False(TabelleA.TryFind(query, out _));
     }
 
-    [Fact]
-    public void A_number_finds_the_un_nummern_it_starts()
+    [Theory]
+    [InlineData("1203")]
+    [InlineData("UN 1203")]
+    [InlineData("un1203")]
+    public void A_un_nummer_finds_exactly_its_rows(string query)
     {
-        var hits = TabelleA.Search("120");
+        var hits = TabelleA.Search(query);
 
-        Assert.NotEmpty(hits);
-        Assert.All(hits, s => Assert.StartsWith("120", s.UnNummer, StringComparison.Ordinal));
-        Assert.Contains(hits, s => s.UnNummer == "1203");
+        Assert.Equal("BENZIN oder OTTOKRAFTSTOFF", Assert.Single(hits).Benennung);
+    }
+
+    // Two or three digits are the upper number of a plate: they list no UN-Nummern that start with
+    // them and search no Benennung, although names such as "1,1,1-TRICHLORETHAN" hold digits.
+    [Theory]
+    [InlineData("1")]
+    [InlineData("12")]
+    [InlineData("33")]
+    [InlineData("268")]
+    [InlineData("UN 12")]
+    [InlineData("12034")]
+    [InlineData("9999")]
+    public void Any_other_number_finds_nothing(string query)
+    {
+        Assert.Empty(TabelleA.Search(query));
     }
 
     [Fact]
@@ -238,5 +256,37 @@ public partial class TabelleATests
         Assert.Equal("5-tert-BUTYL-2,4,6-TRINITRO-m-XYLEN (XYLENMOSCHUS)", Single("2956").Benennung);
         Assert.Equal("ETHYLENGLYCOLMONOETHYLETHER", Single("1171").Benennung);
         Assert.Equal("KALIUMQUECKSILBER(II)-CYANID", Single("1626").Benennung);
+    }
+
+    [Fact]
+    public void The_reader_skips_comments_and_blank_lines_and_reads_every_column()
+    {
+        const string tsv = "# Kommentar\n\n1203\tBENZIN\t3\t3\t33\t\n0004\tAMMONIUMPIKRAT\t1\t1\t\t\n";
+
+        var catalogue = TabelleA.Parse(new StringReader(tsv));
+
+        Assert.Equal(2, catalogue.All.Count);
+        Assert.Equal(new Stoff("1203", "BENZIN", "3", "3", "33", StoffStatus.Gefahrgut), catalogue.All[0]);
+        Assert.Null(catalogue.All[1].Gefahrnummer);
+        Assert.Equal(string.Empty, catalogue.All[1].Tafel);
+        Assert.Same(catalogue.All[0], Assert.Single(catalogue.ByNumber["1203"]));
+    }
+
+    [Theory]
+    [InlineData("verboten", StoffStatus.BefoerderungVerboten)]
+    [InlineData("frei", StoffStatus.NichtAdr)]
+    public void The_reader_maps_the_status_column(string cell, StoffStatus expected)
+    {
+        var catalogue = TabelleA.Parse(new StringReader("1845\tTROCKENEIS\t9\t\t\t" + cell + "\n"));
+
+        Assert.Equal(expected, Assert.Single(catalogue.All).Status);
+    }
+
+    [Theory]
+    [InlineData("1203\tBENZIN\t3\t3\t33")]
+    [InlineData("1203\tBENZIN\t3\t3\t33\tunbekannt")]
+    public void The_reader_rejects_a_malformed_row(string line)
+    {
+        Assert.Throws<InvalidDataException>(() => TabelleA.Parse(new StringReader(line)));
     }
 }

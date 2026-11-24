@@ -1,1 +1,0 @@
-A new Gefahrgut helper looks up a UN-Nummer from the Warntafel, or a Stoff by name, offline in the ADR 2025 Tabelle A and shows its Benennung, Klasse, Gefahrzettel and Nummer zur Kennzeichnung der Gefahr (#24).

@@ -9,7 +9,6 @@ using FwAssist.AppLogic.ViewModels;
 using FwAssist.Composition;
 using FwAssist.Helpers.DekonPlatz;
 using FwAssist.Helpers.Funkalphabet;
-using FwAssist.Helpers.Gefahrgut;
 using FwAssist.Helpers.Hydranten;
 using FwAssist.Helpers.Kennzeichnungen;
 using FwAssist.Helpers.Kennzeichnungen.Ui;
@@ -998,7 +997,7 @@ public class DemoFlowRenderTests
         var phone = new PhoneRender();
         _ = OpenKennzeichnungen(phone);
 
-        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup" })
+        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup", "UnNummerGroup" })
         {
             var button = Named(phone, group);
             Assert.True(button.Bounds.Height >= 48, $"{group} is {button.Bounds.Height} high");
@@ -1011,7 +1010,7 @@ public class DemoFlowRenderTests
         var phone = new PhoneRender();
         var vm = OpenKennzeichnungen(phone);
 
-        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup" })
+        foreach (var group in new[] { "WarntafelGroup", "GefahrzettelGroup", "GhsGroup", "RohrleitungGroup", "GasflascheGroup", "UnNummerGroup" })
         {
             ((RadioButton)Named(phone, group)).IsChecked = true;
             PhoneRender.Settle();
@@ -1045,6 +1044,8 @@ public class DemoFlowRenderTests
 
         Assert.All(Kennzeichenkatalog.Sources, source => Assert.Contains(source, texts));
         Assert.Contains(Kennzeichenkatalog.SourceNote, texts);
+        Assert.Contains(TabelleA.Source, texts);
+        Assert.Contains(TabelleA.SourceNote, texts);
     }
 
     private static void Tap(PhoneRender phone, Control control)
@@ -1056,37 +1057,33 @@ public class DemoFlowRenderTests
         PhoneRender.Settle();
     }
 
-    private static GefahrgutViewModel OpenGefahrgut(PhoneRender phone)
-    {
-        phone.Shell.Open(GefahrgutModule.HelperId);
-        PhoneRender.Settle();
-        return phone.Window.GetVisualDescendants().OfType<Control>()
-            .Select(c => c.DataContext).OfType<GefahrgutViewModel>().First();
-    }
-
     [AvaloniaFact]
-    public void The_gefahrgut_lookup_shows_the_plate_and_the_stoff_for_a_un_nummer_and_a_name()
+    public void The_kennzeichnungen_look_up_a_un_nummer_and_a_stoff()
     {
         var phone = new PhoneRender();
-        var vm = OpenGefahrgut(phone);
-        Assert.True(Named(phone, "Hint").IsEffectivelyVisible);
+        var vm = OpenKennzeichnungen(phone);
+        ((RadioButton)Named(phone, "UnNummerGroup")).IsChecked = true;
+        PhoneRender.Settle();
+        Assert.True(Named(phone, "GroupNote").IsEffectivelyVisible);
+        Assert.False(Named(phone, "ListTitle").IsEffectivelyVisible);
 
         ((TextBox)Named(phone, "Search")).Text = "1203";
         PhoneRender.Settle();
         var texts = VisibleTexts(phone.Window);
-        Assert.False(Named(phone, "Hint").IsEffectivelyVisible);
+        Assert.False(Named(phone, "GroupNote").IsEffectivelyVisible);
+        Assert.False(Named(phone, "GefahrnummerCard").IsEffectivelyVisible);
         Assert.Contains("33", texts);
         Assert.Contains("1203", texts);
         Assert.Contains("BENZIN oder OTTOKRAFTSTOFF", texts);
         Assert.Contains("Klasse 3 · Gefahrzettel 3", texts);
-        phone.Capture("22-gefahrgut-nummer.png");
+        phone.Capture("22-kennzeichnungen-un-nummer.png");
 
         vm.Query = "chlor";
         PhoneRender.Settle();
         texts = VisibleTexts(phone.Window);
         Assert.Contains("CHLOR", texts);
-        Assert.Contains(vm.ResultTitle, texts);
-        phone.Capture("23-gefahrgut-name.png");
+        Assert.Contains(vm.StoffeTitle, texts);
+        phone.Capture("23-kennzeichnungen-stoff.png");
 
         vm.Query = "9999";
         PhoneRender.Settle();
@@ -1094,10 +1091,10 @@ public class DemoFlowRenderTests
     }
 
     [AvaloniaFact]
-    public void The_gefahrgut_clear_button_is_glove_sized_and_empties_the_field()
+    public void The_kennzeichnungen_clear_button_is_glove_sized_and_empties_the_field()
     {
         var phone = new PhoneRender();
-        var vm = OpenGefahrgut(phone);
+        var vm = OpenKennzeichnungen(phone);
         vm.Query = "1005";
         PhoneRender.Settle();
 

@@ -29,8 +29,7 @@ deshalb auch so aus.
 | **RTH-Landeplatz** | Vorgaben und Ablauf, wenn die Feuerwehr einen Landeplatz für den Rettungshubschrauber vorbereitet, getrennt für Tag und Nacht. |
 | **Dekon-Platz** | Dekon-Stufen I bis III: Sofortmaßnahmen, Aufbau und Plan für Stufe II, Technik und Ablauf für Stufe III. |
 | **Hydrantenkarte** | Hydranten rund um die Einsatzstelle auf einer Offline-Karte aus OpenStreetMap: die nächsten mit Entfernung (Luftlinie) und Zahl der B-Schläuche, und ein Richtungspfeil vom eigenen Standort zum gewählten Hydranten. Kartenpakete gibt es bisher für Landkreise in Bayern. |
-| **Kennzeichnungen** | Orange Warntafeln, Gefahrzettel nach ADR, GHS-Piktogramme, die Farben von Rohrleitungen und die Schulterfarben von Gasflaschen mit Bild und Bedeutung, offline und durchsuchbar. Die obere Nummer einer Warntafel wird Ziffer für Ziffer erklärt, das X für die Gefahr mit Wasser eingeschlossen. |
-| **Gefahrgut** | Die UN-Nummer von der Warntafel nachschlagen: Stoff, Klasse, Gefahrzettel und die passende Nummer zur Kennzeichnung der Gefahr, nach Tabelle A des ADR 2025. Auch die Suche nach dem Namen des Stoffs geht, offline. |
+| **Kennzeichnungen** | Orange Warntafeln, Gefahrzettel nach ADR, GHS-Piktogramme, die Farben von Rohrleitungen und die Schulterfarben von Gasflaschen mit Bild und Bedeutung, offline und durchsuchbar. Die obere Nummer einer Warntafel wird Ziffer für Ziffer erklärt, das X für die Gefahr mit Wasser eingeschlossen. Die untere, die UN-Nummer, nennt den Stoff mit Klasse, Gefahrzettel und passender oberer Nummer nach Tabelle A des ADR 2025; auch die Suche nach dem Namen des Stoffs geht. |
 | **Strahlenschutz** | Richtwerte: die Dosisleistung aus der Transportkennzahl (TKZ) eines Versandstücks, die Dosisleistung in einem anderen Abstand und wo die Absperrgrenze liegt. Ersetzt keine Messung. |
 | **Sandsack** | Richtwerte für einen Sandsackdamm: aus Länge, Höhe und Zahl der Helfer die Sandsäcke, der Sand in m³ und Tonnen und die Arbeitszeit für Füllen, Tragen und Verlegen, nach der THW-Taschenkarte Deichverteidigung. |
 
@@ -112,17 +111,17 @@ weiteren Helfer.
 |---|---|---|
 | ![Kennzeichnungen: Nummer auf der Warntafel](docs/screenshots/15-kennzeichnungen-nummer.png) | ![Kennzeichnungen: Gefahrzettel](docs/screenshots/16-kennzeichnungen-gefahrzettel.png) | ![Kennzeichnungen: GHS-Piktogramme](docs/screenshots/17-kennzeichnungen-ghs.png) |
 
-| Kennzeichnungen: Rohrleitungen | Kennzeichnungen: Gasflaschen |
-|---|---|
-| ![Kennzeichnungen: Rohrleitungen](docs/screenshots/18-kennzeichnungen-rohrleitungen.png) | ![Kennzeichnungen: Gasflaschen](docs/screenshots/19-kennzeichnungen-gasflaschen.png) |
+| Kennzeichnungen: Rohrleitungen | Kennzeichnungen: Gasflaschen | Kennzeichnungen: UN-Nummer |
+|---|---|---|
+| ![Kennzeichnungen: Rohrleitungen](docs/screenshots/18-kennzeichnungen-rohrleitungen.png) | ![Kennzeichnungen: Gasflaschen](docs/screenshots/19-kennzeichnungen-gasflaschen.png) | ![Kennzeichnungen: UN-Nummer](docs/screenshots/22-kennzeichnungen-un-nummer.png) |
+
+| Kennzeichnungen: Suche nach dem Stoff |
+|---|
+| ![Kennzeichnungen: Suche nach dem Stoff](docs/screenshots/23-kennzeichnungen-stoff.png) |
 
 | Strahlenschutz | Sandsack |
 |---|---|
 | ![Strahlenschutz](docs/screenshots/20-strahlenschutz.png) | ![Sandsack](docs/screenshots/21-sandsack.png) |
-
-| Gefahrgut: UN-Nummer | Gefahrgut: Suche nach dem Stoff |
-|---|---|
-| ![Gefahrgut: UN-Nummer](docs/screenshots/22-gefahrgut-nummer.png) | ![Gefahrgut: Suche nach dem Stoff](docs/screenshots/23-gefahrgut-name.png) |
 
 ## Mitmachen & Kontakt
 

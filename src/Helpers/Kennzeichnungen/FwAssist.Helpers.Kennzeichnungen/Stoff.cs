@@ -1,4 +1,4 @@
-namespace FwAssist.Helpers.Gefahrgut;
+namespace FwAssist.Helpers.Kennzeichnungen;
 
 /// <summary>
 /// One row of ADR Tabelle A (3.2.1), reduced to what a crew reads off a vehicle: UN-Nummer (column 1),

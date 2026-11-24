@@ -65,22 +65,6 @@
           "FwAssist.Ui": "[1.0.0, )"
         }
       },
-      "fwassist.helpers.gefahrgut": {
-        "type": "Project",
-        "dependencies": {
-          "CommunityToolkit.Mvvm": "[8.4.2, )",
-          "FwAssist.AppLogic": "[1.0.0, )",
-          "FwAssist.Core": "[1.0.0, )"
-        }
-      },
-      "fwassist.helpers.gefahrgut.ui": {
-        "type": "Project",
-        "dependencies": {
-          "Avalonia": "[12.1.6, )",
-          "FwAssist.Helpers.Gefahrgut": "[1.0.0, )",
-          "FwAssist.Ui": "[1.0.0, )"
-        }
-      },
       "fwassist.helpers.hydranten": {
         "type": "Project",
         "dependencies": {

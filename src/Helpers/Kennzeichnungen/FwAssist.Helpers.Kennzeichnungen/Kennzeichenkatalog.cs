@@ -156,6 +156,9 @@ public static class Kennzeichenkatalog
         KennzeichenGruppe.Ghs => Ghs,
         KennzeichenGruppe.Rohrleitung => Rohrleitungen,
         KennzeichenGruppe.Gasflasche => Gasflaschen,
+
+        // Its page is Tabelle A, searched by UN-Nummer: no pictures of its own.
+        KennzeichenGruppe.UnNummer => [],
         _ => Warntafeln,
     };
 

@@ -1,4 +1,4 @@
-namespace FwAssist.Helpers.Gefahrgut;
+namespace FwAssist.Helpers.Kennzeichnungen;
 
 /// <summary>What Tabelle A says in place of the transport columns.</summary>
 public enum StoffStatus

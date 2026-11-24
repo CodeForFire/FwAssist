@@ -3,7 +3,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Text.RegularExpressions;
 
-namespace FwAssist.Helpers.Gefahrgut;
+namespace FwAssist.Helpers.Kennzeichnungen;
 
 /// <summary>
 /// ADR Tabelle A (3.2.1) by UN-Nummer, as bundled in TabelleA.tsv. Source: the official German text
@@ -21,7 +21,7 @@ public static partial class TabelleA
         "Amtliche deutsche Übersetzung, Bekanntmachung vom 16. November 2021 (BGBl. 2021 II S. 1184), " +
         "geändert durch die 29. und die 30. ADR-Änderungsverordnung (BGBl. 2022 II Nr. 20, BGBl. 2025 II Nr. 57).";
 
-    private const string ResourceName = "FwAssist.Helpers.Gefahrgut.TabelleA.tsv";
+    private const string ResourceName = "FwAssist.Helpers.Kennzeichnungen.TabelleA.tsv";
 
     // "atzend" finds "ÄTZEND" and "benzin" finds "BENZIN": gloves type neither umlauts nor capitals
     // reliably. The culture is fixed so that the phone's setting changes nothing.
@@ -33,19 +33,20 @@ public static partial class TabelleA
     public static IReadOnlyList<Stoff> All => Data.Value.All;
 
     /// <summary>
-    /// The query read as a UN-Nummer or the start of one: "1203", "UN 1203", "un1203" and "12" all
-    /// count. <see langword="null"/> for anything else, which is then a search by name.
+    /// The query read as a UN-Nummer: four digits, "1203", "UN 1203" or "un1203". <see langword="null"/>
+    /// for anything else. Two or three digits are the upper number of the plate, not the start of a
+    /// UN-Nummer, so "33" lists no UN 33xx.
     /// </summary>
     public static string? ReadNumber(string? query)
     {
         var match = NumberPattern().Match(query?.Trim() ?? string.Empty);
-        return match.Success ? match.Groups["digits"].Value : null;
+        return match.Success && match.Groups["digits"].Value is { Length: 4 } digits ? digits : null;
     }
 
     /// <summary>The rows of one UN-Nummer, written as on the Warntafel or with "UN" in front.</summary>
     public static bool TryFind(string? unNummer, [MaybeNullWhen(false)] out IReadOnlyList<Stoff> stoffe)
     {
-        if (ReadNumber(unNummer) is { Length: 4 } number && Data.Value.ByNumber.TryGetValue(number, out var rows))
+        if (ReadNumber(unNummer) is { } number && Data.Value.ByNumber.TryGetValue(number, out var rows))
         {
             stoffe = rows;
             return true;
@@ -56,8 +57,9 @@ public static partial class TabelleA
     }
 
     /// <summary>
-    /// Every row the query finds. A number finds the UN-Nummern it starts, in their order. A word
-    /// finds the Benennungen that contain it, those that begin with it first.
+    /// Every row the query finds. A UN-Nummer finds its rows. Any other number finds nothing: it is a
+    /// Gefahrnummer or a typo, never part of a Benennung. A word finds the Benennungen that contain it,
+    /// those that begin with it first.
     /// </summary>
     public static IReadOnlyList<Stoff> Search(string? query)
     {
@@ -67,9 +69,9 @@ public static partial class TabelleA
             return [];
         }
 
-        if (ReadNumber(text) is { } number)
+        if (NumberPattern().IsMatch(text))
         {
-            return Data.Value.All.Where(s => s.UnNummer.StartsWith(number, StringComparison.Ordinal)).ToArray();
+            return TryFind(text, out var rows) ? rows : [];
         }
 
         const CompareOptions options = CompareOptions.IgnoreCase | CompareOptions.IgnoreNonSpace;
@@ -81,7 +83,7 @@ public static partial class TabelleA
             .ToArray();
     }
 
-    [GeneratedRegex(@"^(?:UN\s*)?(?<digits>\d{1,4})$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
+    [GeneratedRegex(@"^(?:UN\s*)?(?<digits>\d+)$", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant)]
     private static partial Regex NumberPattern();
 
     private static Catalogue Load()
@@ -93,7 +95,7 @@ public static partial class TabelleA
     }
 
     /// <summary>Reads the TSV the extraction script writes. Lines starting with # are comments.</summary>
-    private static Catalogue Parse(TextReader reader)
+    internal static Catalogue Parse(TextReader reader)
     {
         var rows = new List<Stoff>();
         while (reader.ReadLine() is { } line)
@@ -126,5 +128,5 @@ public static partial class TabelleA
         return new Catalogue(rows.ToArray(), byNumber);
     }
 
-    private sealed record Catalogue(IReadOnlyList<Stoff> All, FrozenDictionary<string, IReadOnlyList<Stoff>> ByNumber);
+    internal sealed record Catalogue(IReadOnlyList<Stoff> All, FrozenDictionary<string, IReadOnlyList<Stoff>> ByNumber);
 }
