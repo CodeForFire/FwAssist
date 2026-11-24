@@ -136,7 +136,7 @@ public static partial class WaterPointsGeoJson
     // The Nennweite from "100", "DN 100", "DN100" or "100 mm"; anything else is unknown.
     private static int? Diameter(string? value) =>
         value is not null && DiameterValue().Match(value) is { Success: true } match
-            && int.TryParse(match.Groups["dn"].Value, NumberStyles.None, CultureInfo.InvariantCulture, out var dn)
+        && int.TryParse(match.Groups["dn"].Value, NumberStyles.None, CultureInfo.InvariantCulture, out var dn)
             ? dn
             : null;
 

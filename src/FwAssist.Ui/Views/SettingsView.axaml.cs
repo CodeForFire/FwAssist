@@ -87,10 +87,11 @@ public partial class SettingsView : UserControl
                 continue;
             }
 
-            var shift = i == _from ? offset
-                : _from < i && i <= _to ? -_rowHeight
-                : _to <= i && i < _from ? _rowHeight
-                : 0;
+            var shift =
+                i == _from ? offset :
+                _from < i && i <= _to ? -_rowHeight :
+                _to <= i && i < _from ? _rowHeight :
+                0;
             container.RenderTransform = new TranslateTransform(0, shift);
         }
 

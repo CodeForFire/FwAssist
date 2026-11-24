@@ -179,10 +179,10 @@ public sealed partial class HydrantenkarteViewModel : ObservableObject, IHelperP
     public string? Status =>
         LoadError
         ?? StandortMeldung
-        ?? (!HasMap ? NoMapText
-            : Einsatzstelle is { } e && !_packs.Any(p => p.Info.Covers(e)) ? NoPackForEinsatzstelleText
-            : IsPlacing ? PlacingText
-            : null);
+        ?? (!HasMap ? NoMapText :
+            Einsatzstelle is { } e && !_packs.Any(p => p.Info.Covers(e)) ? NoPackForEinsatzstelleText :
+            IsPlacing ? PlacingText :
+            null);
 
     /// <summary>The last load of the hydrants, for tests to await.</summary>
     internal Task Loading { get; private set; } = Task.CompletedTask;

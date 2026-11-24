@@ -70,13 +70,7 @@ public sealed record WaterPoint(GeoPoint Position, WaterPointKind Kind, string L
     /// <summary>The marker's glyph; unless set, the one <see cref="Kind"/> stands for.</summary>
     public WaterPointSymbol Symbol
     {
-        get => symbol ?? Kind switch
-        {
-            WaterPointKind.Saugstelle => WaterPointSymbol.Saugstelle,
-            WaterPointKind.Loeschwasserbehaelter => WaterPointSymbol.Zisterne,
-            WaterPointKind.Loeschteich => WaterPointSymbol.OffenesGewaesser,
-            _ => WaterPointSymbol.Unterflurhydrant,
-        };
+        get => symbol ?? SymbolOf(Kind);
         init => symbol = value;
     }
 
@@ -114,5 +108,13 @@ public sealed record WaterPoint(GeoPoint Position, WaterPointKind Kind, string L
         WaterPointKind.Saugstelle => "Saugstelle",
         WaterPointKind.Loeschwasserbehaelter => "Löschwasserbehälter",
         _ => "Löschteich",
+    };
+
+    private static WaterPointSymbol SymbolOf(WaterPointKind kind) => kind switch
+    {
+        WaterPointKind.Saugstelle => WaterPointSymbol.Saugstelle,
+        WaterPointKind.Loeschwasserbehaelter => WaterPointSymbol.Zisterne,
+        WaterPointKind.Loeschteich => WaterPointSymbol.OffenesGewaesser,
+        _ => WaterPointSymbol.Unterflurhydrant,
     };
 }

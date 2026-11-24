@@ -299,9 +299,9 @@ public sealed partial class MapPackRow : ObservableObject
     public string Detail => MapPacksSection.Detail(_shown);
 
     public MapPackState State =>
-        Installed is null ? MapPackState.NotInstalled
-        : Offered is null || IsSameEdition(Installed.Info, Offered) ? MapPackState.Installed
-        : MapPackState.UpdateAvailable;
+        Installed is null ? MapPackState.NotInstalled :
+        Offered is null || IsSameEdition(Installed.Info, Offered) ? MapPackState.Installed :
+        MapPackState.UpdateAvailable;
 
     /// <summary>The device holds this pack and nothing newer is on offer.</summary>
     public bool IsCurrent => State == MapPackState.Installed;
@@ -323,9 +323,10 @@ public sealed partial class MapPackRow : ObservableObject
     public bool ShowsDetail => !IsDownloading;
 
     /// <summary>Why AKTUALISIEREN is offered, so an update with the same version number is not a riddle; null otherwise.</summary>
-    public string? UpdateReason => State != MapPackState.UpdateAvailable || Installed?.Info is not { } installed || Offered is not { } offered ? null
-        : installed.Version != offered.Version ? $"Neue Version {Formatting.Number(offered.Version)} – installiert ist Version {Formatting.Number(installed.Version)}."
-        : $"Neu gebaut am {MapPacksSection.BuiltDay(offered)} – installiert ist der Stand vom {MapPacksSection.BuiltDay(installed)}.";
+    public string? UpdateReason =>
+        State != MapPackState.UpdateAvailable || Installed?.Info is not { } installed || Offered is not { } offered ? null :
+        installed.Version != offered.Version ? $"Neue Version {Formatting.Number(offered.Version)} – installiert ist Version {Formatting.Number(installed.Version)}." :
+        $"Neu gebaut am {MapPacksSection.BuiltDay(offered)} – installiert ist der Stand vom {MapPacksSection.BuiltDay(installed)}.";
 
     [ObservableProperty]
     [NotifyPropertyChangedFor(nameof(ShowsAction))]
