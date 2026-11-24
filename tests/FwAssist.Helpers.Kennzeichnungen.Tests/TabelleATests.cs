@@ -267,6 +267,7 @@ public partial class TabelleATests
 
         Assert.Equal(2, catalogue.All.Count);
         Assert.Equal(new Stoff("1203", "BENZIN", "3", "3", "33", StoffStatus.Gefahrgut), catalogue.All[0]);
+        Assert.Equal("33", catalogue.All[0].Tafel);
         Assert.Null(catalogue.All[1].Gefahrnummer);
         Assert.Equal(string.Empty, catalogue.All[1].Tafel);
         Assert.Same(catalogue.All[0], Assert.Single(catalogue.ByNumber["1203"]));
