@@ -54,6 +54,8 @@ public sealed record WaterPoint(GeoPoint Position, WaterPointKind Kind, string L
 {
     private readonly WaterPointSymbol? symbol;
 
+    private readonly bool? independent;
+
     /// <summary>The card's rows: Bauart, Durchmesser, Nummer and whatever else OSM holds.</summary>
     public IReadOnlyList<WaterPointDetail> Details { get; init; } = [];
 
@@ -72,9 +74,14 @@ public sealed record WaterPoint(GeoPoint Position, WaterPointKind Kind, string L
 
     /// <summary>
     /// Fed from somewhere other than the Trinkwassernetz: open water, a well or a tank, which a
-    /// burst main or a weak network does not take down with the hydrants.
+    /// burst main or a weak network does not take down with the hydrants. Unless set, every kind
+    /// but a hydrant; a hydrant OSM says draws on a pond, a river or a tank is one too.
     /// </summary>
-    public bool IsIndependent => Kind != WaterPointKind.Hydrant;
+    public bool IsIndependent
+    {
+        get => independent ?? Kind != WaterPointKind.Hydrant;
+        init => independent = value;
+    }
 
     /// <summary>The Nennweite of the main, DN; null when unknown.</summary>
     public int? NominalDiameter { get; init; }

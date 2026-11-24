@@ -105,6 +105,18 @@ public class WaterPointsGeoJsonTests
         Assert.Equal(symbol, Assert.Single(Points(Feature(emergency, properties))).Symbol);
 
     [Theory]
+    [InlineData("fire_hydrant", "\"osm\": \"node/1\"", false)]
+    [InlineData("fire_hydrant", "\"water_source\": \"main\"", false)]
+    [InlineData("fire_hydrant", "\"water_source\": \"pond\"", true)]
+    [InlineData("fire_hydrant", "\"water_source\": \"river\"", true)]
+    [InlineData("fire_hydrant", "\"water_source\": \"water_tank\"", true)]
+    [InlineData("fire_hydrant", "\"water_source\": \"groundwater\"", true)]
+    [InlineData("suction_point", "\"osm\": \"node/1\"", true)]
+    [InlineData("water_tank", "\"water_source\": \"main\"", true)]
+    public void A_hydrant_fed_from_open_water_a_well_or_a_tank_is_independent_of_the_mains(string emergency, string properties, bool independent) =>
+        Assert.Equal(independent, Assert.Single(Points(Feature(emergency, properties))).IsIndependent);
+
+    [Theory]
     [InlineData("1600 l/min")]
     [InlineData("1.600 l/min")]
     [InlineData("viel")]
@@ -162,14 +174,19 @@ public class WaterPointsGeoJsonTests
     [InlineData("150 m3", 150)]
     [InlineData("100", 100)]
     [InlineData("100000", 100)]
+    [InlineData("1000", 1000)]
+    [InlineData("10000", 10)]
     [InlineData("20000", 20)]
-    public void A_tank_s_volume_is_read_in_cubic_metres_and_a_bare_figure_beyond_a_thousand_as_litres(string volume, int cubicMetres) =>
+    public void A_tank_s_volume_is_read_in_cubic_metres_and_a_bare_figure_of_ten_thousand_or_more_as_litres(string volume, int cubicMetres) =>
         Assert.Equal(cubicMetres, Assert.Single(Points(Feature("water_tank", $"\"water_tank:volume\": \"{volume}\""))).VolumeCubicMetres);
 
     [Theory]
     [InlineData("groß")]
     [InlineData("0")]
     [InlineData("ca. 100")]
+    [InlineData("1001")]
+    [InlineData("2000")]
+    [InlineData("9999")]
     public void A_volume_that_is_no_sure_figure_reads_as_unknown_and_stays_on_the_card(string volume)
     {
         var point = Assert.Single(Points(Feature("water_tank", $"\"water_tank:volume\": \"{volume}\"")));

@@ -47,6 +47,10 @@ public class WaterPointMarkingTests
     public void Only_a_hydrant_hangs_on_the_mains(WaterPointKind kind, bool independent) =>
         Assert.Equal(independent, (Hydrant with { Kind = kind }).IsIndependent);
 
+    [Fact]
+    public void A_source_set_explicitly_is_kept() =>
+        Assert.True((Hydrant with { IsIndependent = true }).IsIndependent);
+
     [Theory]
     [InlineData(WaterPointKind.Hydrant, WaterPointSymbol.Unterflurhydrant)]
     [InlineData(WaterPointKind.Saugstelle, WaterPointSymbol.Saugstelle)]

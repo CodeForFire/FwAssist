@@ -85,6 +85,7 @@ public static partial class WaterPointsGeoJson
         {
             Details = Details(properties),
             Symbol = Symbol(k, properties),
+            IsIndependent = k != WaterPointKind.Hydrant || IsOffTheMains(Text(properties, "water_source")),
             NominalDiameter = Diameter(Text(properties, "fire_hydrant:diameter")),
             VolumeCubicMetres = Volume(Text(properties, "water_tank:volume")),
             Lage = Lage(Text(properties, "fire_hydrant:position")),
@@ -109,13 +110,24 @@ public static partial class WaterPointsGeoJson
         _ => WaterPointSymbol.OffenesGewaesser,
     };
 
+    // OSM lets a fire_hydrant draw on open water, a well or a tank; without water_source, or with
+    // one it does not know, a hydrant hangs on the Trinkwassernetz.
+    private static bool IsOffTheMains(string? waterSource) =>
+        waterSource is "pond" or "river" or "stream" or "lake" or "groundwater" or "water_tank";
+
     // A tank's volume in m³ from "250 m³", "300m3" or a bare "100". OSM documents the key in m³,
-    // but mappers often give litres: a bare figure beyond a thousand is no Löschwasserbehälter's m³
-    // and is read as litres. Anything else reads as unknown; the card still shows it as it is.
+    // but mappers often give litres: a bare figure of ten thousand or more is no Löschwasserbehälter's
+    // m³ and is read as litres. One between a thousand and that could be either, "2000" a big tank
+    // or a small one, and reads as unknown, as does anything else; the card still shows it as it is.
     private static int? Volume(string? value)
     {
         if (value is null || VolumeValue().Match(value) is not { Success: true } match
             || !double.TryParse(match.Groups["number"].Value.Replace(',', '.'), NumberStyles.AllowDecimalPoint, CultureInfo.InvariantCulture, out var amount))
+        {
+            return null;
+        }
+
+        if (!match.Groups["unit"].Success && amount is > 1000 and < 10_000)
         {
             return null;
         }
