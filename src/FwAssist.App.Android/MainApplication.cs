@@ -11,7 +11,7 @@ namespace FwAssist.App.Android;
 [Application]
 public class MainApplication : AvaloniaAndroidApplication<FwAssist.Ui.App>
 {
-    public MainApplication(IntPtr handle, JniHandleOwnership ownership)
+    public MainApplication(nint handle, JniHandleOwnership ownership)
         : base(handle, ownership)
     {
     }

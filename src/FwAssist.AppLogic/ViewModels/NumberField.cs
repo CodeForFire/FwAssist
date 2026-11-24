@@ -34,7 +34,11 @@ public sealed class NumberField : ObservableObject
     [AllowNull]
     public string Text
     {
-        get => _text;
+        get
+        {
+            return _text;
+        }
+
         set
         {
             if (SetProperty(ref _text, value ?? string.Empty))

@@ -139,7 +139,7 @@ public static class SandsackRechenweg
     /// <summary>The rounding note for the dry range: it applies when either end was rounded up.</summary>
     private static string TrockenAufgerundet(decimal kubikmeter, decimal min, decimal max) =>
         kubikmeter * Sandsackvorgaben.SandTrockenMinTonnenJeKubikmeter == min
-            && kubikmeter * Sandsackvorgaben.SandTrockenMaxTonnenJeKubikmeter == max
+        && kubikmeter * Sandsackvorgaben.SandTrockenMaxTonnenJeKubikmeter == max
             ? string.Empty
             : ", aufgerundet";
 
